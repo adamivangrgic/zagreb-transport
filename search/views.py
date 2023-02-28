@@ -2,7 +2,8 @@ from django.shortcuts import render
 from .models import *
 from django.http import JsonResponse, HttpResponseRedirect
 from datetime import datetime
-from django.db.models import Q, F, ExpressionWrapper, fields, OuterRef, ArraySubquery
+from django.db.models import Q, F, ExpressionWrapper, fields, OuterRef
+from django.contrib.postgres.expressions import ArraySubquery
 
 
 def index(request):
