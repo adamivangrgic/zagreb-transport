@@ -6,7 +6,7 @@ from google.transit import gtfs_realtime_pb2  # protobuf==3.20.1, requests
 import requests
 from datetime import datetime, timedelta
 from django.db.models import Case, When, fields, Q, F, ExpressionWrapper
-from .zip import download_zip
+from .parse_utils import download_zip, date_formatter
 from io import TextIOWrapper
 
 
@@ -161,7 +161,7 @@ def update_calendar_dates(file):
         for data in csvreader:
             new_cd = CalendarDate(
                 service_id=data[0],
-                date=data[1],
+                date=date_formatter(data[1]),
                 exception_type=data[2],
                 provider=provider
             )
@@ -266,8 +266,8 @@ def update_calendar(file):
                 friday=data[5],
                 saturday=data[6],
                 sunday=data[7],
-                start_date=data[8],
-                end_date=data[9],
+                start_date=date_formatter(data[8]),
+                end_date=date_formatter(data[9]),
                 provider=provider
             )
 

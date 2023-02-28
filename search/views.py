@@ -37,7 +37,7 @@ def search_suggestions(request):
     output = [[], [], []]  # rail 0, tram 1, bus 2
 
     if len(query) > 1:
-        stations = Stop.objects.filter(Q(stop_name__icontains=query) & Q(location_type=1)) #Author.objects.filter(name__unaccent__lower__trigram_similar='Hélène')
+        stations = Stop.objects.filter(Q(name__unaccent__lower__trigram_similar=query) & Q(location_type=1))
 
         for station in stations:
             stop = station.stops.first() if station.stops.first() else station

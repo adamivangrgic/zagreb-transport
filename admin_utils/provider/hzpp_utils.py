@@ -8,7 +8,7 @@ from django.utils.dateparse import parse_duration
 # import requests
 # from datetime import datetime, timedelta
 # from django.db.models import Case, When, fields, Q, F, ExpressionWrapper
-from .zip import download_zip
+from .parse_utils import download_zip
 from io import TextIOWrapper
 
 
@@ -209,8 +209,8 @@ def update_calendar(file):
                 friday=data[7],
                 saturday=data[8],
                 sunday=data[9],
-                start_date=data[1],
-                end_date=data[2],
+                start_date=date_formatter(data[1]),
+                end_date=date_formatter(data[2]),
                 provider=provider
             )
 
