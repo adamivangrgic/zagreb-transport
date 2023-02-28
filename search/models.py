@@ -1,6 +1,21 @@
 from django.db import models
 from datetime import timedelta
 
+date_formats = [
+    '%Y-%m-%d',  # '2006-10-25'
+    '%m/%d/%Y',  # '10/25/2006'
+    '%m/%d/%y',  # '10/25/06'
+    '%b %d %Y',  # 'Oct 25 2006'
+    '%b %d, %Y',  # 'Oct 25, 2006'
+    '%d %b %Y',  # '25 Oct 2006'
+    '%d %b, %Y',  # '25 Oct, 2006'
+    '%B %d %Y',  # 'October 25 2006'
+    '%B %d, %Y',  # 'October 25, 2006'
+    '%d %B %Y',  # '25 October 2006'
+    '%d %B, %Y',  # '25 October, 2006'
+    '%Y%m%d'
+]
+
 
 class Agency(models.Model):
     agency_id = models.CharField(primary_key=True, max_length=10)
@@ -81,14 +96,14 @@ class Calendar(models.Model):
     friday = models.BooleanField()
     saturday = models.BooleanField()
     sunday = models.BooleanField()
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(input_formats=date_formats)
+    end_date = models.DateField(input_formats=date_formats)
     provider = models.CharField(max_length=10)
 
 
 class CalendarDate(models.Model):
     service_id = models.CharField(max_length=20)
-    date = models.DateField()
+    date = models.DateField(input_formats=date_formats)
     exception_type = models.IntegerField()
     provider = models.CharField(max_length=10)
 
