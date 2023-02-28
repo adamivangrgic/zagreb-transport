@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import *
 from django.http import JsonResponse, HttpResponseRedirect
 from datetime import datetime
-from django.db.models import Q, F, ExpressionWrapper, fields, Subquery, OuterRef
+from django.db.models import Q, F, ExpressionWrapper, fields, OuterRef, ArraySubquery
 
 
 def index(request):
@@ -179,16 +179,16 @@ def route(request):
 
     service_ids = get_service_ids(day)
 
-    first_stop_time = Subquery(StopTime.objects.filter(trip=OuterRef('pk')).order_by('stop_sequence').values('departure_time'))
-    last_stop_time = Subquery(StopTime.objects.filter(trip=OuterRef('pk')).order_by('-stop_sequence').values('arrival_time'))
+    first_stop_time = StopTime.objects.filter(trip=OuterRef('pk')).order_by('stop_sequence').values('departure_time')
+    last_stop_time = StopTime.objects.filter(trip=OuterRef('pk')).order_by('-stop_sequence').values('arrival_time')
 
-    first_stop = Subquery(StopTime.objects.filter(trip=OuterRef('pk')).order_by('stop_sequence').values('stop__stop_name'))
-    last_stop = Subquery(StopTime.objects.filter(trip=OuterRef('pk')).order_by('-stop_sequence').values('stop__stop_name'))
+    first_stop = StopTime.objects.filter(trip=OuterRef('pk')).order_by('stop_sequence').values('stop__stop_name')
+    last_stop = StopTime.objects.filter(trip=OuterRef('pk')).order_by('-stop_sequence').values('stop__stop_name')
 
     trips = Trip.objects.filter(route__route_id=route_id, service_id__in=service_ids) \
-        .annotate(first_stop_time=ExpressionWrapper(first_stop_time + day, output_field=fields.DateTimeField())) \
-        .annotate(last_stop_time=ExpressionWrapper(last_stop_time + day, output_field=fields.DateTimeField())) \
-        .annotate(first_stop=first_stop).annotate(last_stop=last_stop) \
+        .annotate(first_stop_time=ExpressionWrapper(ArraySubquery(first_stop_time) + day, output_field=fields.DateTimeField())) \
+        .annotate(last_stop_time=ExpressionWrapper(ArraySubquery(last_stop_time) + day, output_field=fields.DateTimeField())) \
+        .annotate(first_stop=ArraySubquery(first_stop)).annotate(last_stop=ArraySubquery(last_stop)) \
         .order_by('first_stop_time')
 
     route = Route.objects.get(route_id=route_id)
