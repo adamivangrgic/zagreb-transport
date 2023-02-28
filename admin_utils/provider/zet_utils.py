@@ -1,0 +1,339 @@
+from search.models import *
+from django.shortcuts import get_object_or_404
+import csv
+from django.utils.dateparse import parse_duration
+from google.transit import gtfs_realtime_pb2  # protobuf==3.20.1, requests
+import requests
+from datetime import datetime, timedelta
+from django.db.models import Case, When, fields, Q, F, ExpressionWrapper
+from .zip import download_zip
+from io import TextIOWrapper
+
+
+static_url = "https://zet.hr/gtfs-scheduled/latest"
+realtime_url = "https://zet.hr/gtfs-rt-protobuf"
+provider = 'zet'
+
+
+def run_static_update():
+    file = download_zip(static_url)
+
+    update_agencies(file)
+    update_stops(file)
+    update_routes(file)
+    update_calendar_dates(file)
+    update_trips(file)
+    update_stops_times(file)
+    update_calendar(file)
+
+
+def update_agencies(file):
+    Agency.objects.filter(provider=provider).delete()
+
+    with file.open("agency.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        for data in csvreader:
+
+            new_agency = Agency(
+                agency_id=data[0],
+                agency_name=data[1],
+                agency_url=data[2],
+                agency_phone=data[5],
+                agency_fare_url=data[6],
+                provider=provider
+            )
+
+            bulk_list.append(new_agency)
+            if len(bulk_list) > 5000:
+                Agency.objects.bulk_create(bulk_list)
+                bulk_list = []
+
+        Agency.objects.bulk_create(bulk_list)
+
+
+def update_stops(file):
+    Stop.objects.filter(provider=provider).delete()
+
+    # stations
+    with file.open("stops.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        for data in csvreader:
+            if int(data[8]) == 1:
+                new_stop = Stop(
+                    stop_id=data[0],
+                    stop_code=data[1],
+                    stop_name=data[2],
+                    stop_lat=data[4],
+                    stop_lon=data[5],
+                    location_type=data[8],
+                    provider=provider
+                )
+
+                bulk_list.append(new_stop)
+                if len(bulk_list) > 5000:
+                    Stop.objects.bulk_create(bulk_list)
+                    bulk_list = []
+
+        Stop.objects.bulk_create(bulk_list)
+
+    # stops
+    with file.open("stops.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        for data in csvreader:
+
+            if int(data[8]) == 0:
+                parent = get_object_or_404(Stop, stop_id=data[9])
+
+                new_stop = Stop(
+                    stop_id=data[0],
+                    stop_code=data[1],
+                    stop_name=data[2],
+                    parent_station=parent,
+                    stop_lat=data[4],
+                    stop_lon=data[5],
+                    location_type=data[8],
+                    provider=provider
+                )
+
+                bulk_list.append(new_stop)
+                if len(bulk_list) > 5000:
+                    Stop.objects.bulk_create(bulk_list)
+                    bulk_list = []
+
+        Stop.objects.bulk_create(bulk_list)
+
+
+def update_routes(file):
+    Route.objects.filter(provider=provider).delete()
+
+    with file.open("routes.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        agencies = {agency.agency_id: agency for agency in Agency.objects.all()}
+
+        for data in csvreader:
+
+            agency = agencies.get(data[1])
+
+            new_route = Route(
+                route_id=data[0],
+                route_short_name=data[2],
+                route_long_name=data[3],
+                route_type=data[5],
+                route_color=data[7],
+                route_text_color=data[8],
+                agency=agency,
+                provider=provider
+            )
+
+            bulk_list.append(new_route)
+            if len(bulk_list) > 5000:
+                Route.objects.bulk_create(bulk_list)
+                bulk_list = []
+
+        Route.objects.bulk_create(bulk_list)
+
+
+def update_calendar_dates(file):
+    CalendarDate.objects.filter(provider=provider).delete()
+
+    with file.open("calendar_dates.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        for data in csvreader:
+            new_cd = CalendarDate(
+                service_id=data[0],
+                date=data[1],
+                exception_type=data[2],
+                provider=provider
+            )
+
+            bulk_list.append(new_cd)
+            if len(bulk_list) > 5000:
+                Trip.objects.bulk_create(bulk_list)
+                bulk_list = []
+
+        CalendarDate.objects.bulk_create(bulk_list)
+
+
+def update_trips(file):
+    Trip.objects.filter(provider=provider).delete()
+
+    with file.open("trips.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        routes = {route.route_id: route for route in Route.objects.all()}
+
+        for data in csvreader:
+
+            route = routes.get(data[0])
+
+            new_trip = Trip(
+                trip_id=data[2],
+                trip_headsign=data[3],
+                route=route,
+                service_id=data[1],
+                block_id=data[6],
+                provider=provider
+            )
+
+            bulk_list.append(new_trip)
+            if len(bulk_list) > 5000:
+                Trip.objects.bulk_create(bulk_list)
+                bulk_list = []
+
+        Trip.objects.bulk_create(bulk_list)
+
+
+def update_stops_times(file):
+    StopTime.objects.filter(provider=provider).delete()
+
+    with file.open("stop_times.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        trips = {trip.trip_id: trip for trip in Trip.objects.all()}
+        stops = {stop.stop_id: stop for stop in Stop.objects.all()}
+
+        progress_sum = 0
+
+        for data in csvreader:
+
+            trip = trips.get(data[0])
+            stop = stops.get(data[3])
+
+            new_stop_time = StopTime(
+                trip=trip,
+                arrival_time=parse_duration(data[1]),
+                departure_time=parse_duration(data[2]),
+                stop=stop,
+                stop_sequence=data[4],
+                provider=provider
+            )
+
+            bulk_list.append(new_stop_time)
+            if len(bulk_list) > 5000:
+                StopTime.objects.bulk_create(bulk_list)
+                bulk_list = []
+
+                ###
+                progress_sum += 5000
+                print(progress_sum / 1500000 * 100, '%')
+
+        StopTime.objects.bulk_create(bulk_list)
+
+
+def update_calendar(file):
+    Calendar.objects.filter(provider=provider).delete()
+
+    with file.open("calendar.txt", mode="r") as f:
+        csvreader = csv.reader(TextIOWrapper(f, 'utf-8'))
+        next(csvreader)
+
+        bulk_list = []
+
+        for data in csvreader:
+
+            new_cal = Calendar(
+                service_id=data[0],
+                monday=data[1],
+                tuesday=data[2],
+                wednesday=data[3],
+                thursday=data[4],
+                friday=data[5],
+                saturday=data[6],
+                sunday=data[7],
+                start_date=data[8],
+                end_date=data[9],
+                provider=provider
+            )
+
+            bulk_list.append(new_cal)
+            if len(bulk_list) > 5000:
+                Calendar.objects.bulk_create(bulk_list)
+                bulk_list = []
+
+        Calendar.objects.bulk_create(bulk_list)
+
+
+# def sync_realtime():
+#     feed = gtfs_realtime_pb2.FeedMessage()
+#     response = requests.get(realtime_url)
+#     feed.ParseFromString(response.content)
+#
+#     current_time = datetime.now()
+#     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+#
+#     trip_objs = {trip.trip_id: trip.block_id for trip in Trip.objects.all()}
+#
+#     blocks = []
+#     trips = []
+#     for entity in feed.entity:
+#         if entity.trip_update.stop_time_update[-1].departure.time > 0:
+#             trip_id = entity.trip_update.trip.trip_id
+#             blocks.append(trip_objs.get(trip_id))
+#             trips.append(trip_id)
+#
+#     trip_ids = StopTime.objects\
+#         .exclude(trip__trip_id__in=trips).filter((Q(trip__block_id__in=blocks) & Q(stop_sequence=1)))\
+#         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + today_mid, output_field=fields.DateTimeField()))\
+#         .filter(departure_time_an__time__range=[current_time, current_time + timedelta(minutes=30)])\
+#         .values_list('trip__trip_id', flat=True)
+#
+#     stop_times = StopTime.objects.filter(trip__trip_id__in=trip_ids)
+#     stop_times.update(updated_at=current_time)
+#
+#     print(datetime.now() - current_time)
+
+
+def sync_realtime_feed_only():  # no blocks
+    feed = gtfs_realtime_pb2.FeedMessage()
+    response = requests.get(realtime_url)
+    feed.ParseFromString(response.content)
+
+    current_time = datetime.now()
+    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    delays = {}
+    awaiting_departure = []
+    for entity in feed.entity:
+        if abs(entity.trip_update.stop_time_update[-1].arrival.delay) < 1800 and entity.trip_update.stop_time_update[-1].departure.time > 0:  # delay up to 30 min
+            delays[entity.trip_update.trip.trip_id] = timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay)  # + (current_time.timestamp() - entity.trip_update.timestamp)
+
+        elif entity.trip_update.stop_time_update[-1].stop_sequence == 1:  # waiting to depart
+            awaiting_departure.append(entity.trip_update.trip.trip_id)
+
+    stop_times = StopTime.objects \
+        .filter(trip__trip_id__in=delays.keys()) \
+        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField())) \
+        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
+        .filter(departure_time_an__gt=current_time - timedelta(minutes=3))
+    stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
+
+    stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
+    stops_waiting.update(updated_at=current_time)
+
+    print(datetime.now() - current_time)

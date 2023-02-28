@@ -1,0 +1,263 @@
+{% extends 'search/base.html' %}
+{% block content %}
+<meta http-equiv="refresh" content="60">
+
+{% load custom_tags %}
+{% load static %}
+
+<div id="map" style="height: 320px"></div>
+<script>
+    var map = L.map('map').setView([45,16], 18);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+
+    var station_icon = L.icon({
+        iconUrl: '{% static '/icons/station_icon.png' %}',
+        iconSize:     [14, 14],
+        iconAnchor:   [7, 7],
+        popupAnchor:  [7, 7]
+    });
+    var station_icon_grey = L.icon({
+        iconUrl: '{% static '/icons/station_icon_grey.png' %}',
+        iconSize:     [14, 14],
+        iconAnchor:   [7, 7],
+        popupAnchor:  [7, 7]
+    });
+    var pos_icon = L.icon({
+        iconUrl: '{% static '/icons/pulse.svg' %}',
+        iconSize:     [60, 60],
+        iconAnchor:   [30, 30],
+        popupAnchor:  [30, 30]
+    });
+
+    var past_stops = [
+
+    {% for stime in past_stops %}
+        [{{ stime.stop.stop_lat }}, {{ stime.stop.stop_lon }}, "#{{ stime.stop.stop_id }}"],
+    {% endfor %}
+
+    ];
+
+    var future_stops = [
+
+    {% for stime in future_stops %}
+        [{{ stime.stop.stop_lat }}, {{ stime.stop.stop_lon }}, "#{{ stime.stop.stop_id }}"],
+    {% endfor %}
+
+    ];
+
+    var markers= [];
+
+
+    for (var i = 0; i < past_stops.length; i++) {
+        markers[i] = new L.marker([past_stops[i][0], past_stops[i][1]], {win_url: past_stops[i][2], icon: station_icon_grey});
+        markers[i].addTo(map);
+        markers[i].on('click', onClick);
+    };
+
+    for (var j = 0; j < future_stops.length; j++) {
+        markers[j + i + 1] = new L.marker([future_stops[j][0], future_stops[j][1]], {win_url: future_stops[j][2], icon: station_icon});
+        markers[j + i + 1].addTo(map);
+        markers[j + i + 1].on('click', onClick);
+    };
+
+    function onClick(e) {
+        window.location.replace(this.options.win_url, "_self");
+    };
+
+    if (future_stops.length > 0){
+        past_stops.push(future_stops[0]);
+        L.marker([future_stops[0][0], future_stops[0][1]], {icon: pos_icon}).addTo(map);
+    };
+
+    var line_past = L.polyline(past_stops, {color: 'gray', weight: 5}).addTo(map);
+    var line_future = L.polyline(future_stops, {color: 'red', weight: 5}).addTo(map);
+    map.fitBounds(past_stops.concat(future_stops), {padding: [10, 10]})
+
+</script>
+
+<div class="list-group" style="border-radius: 29.6px">
+    <div class="list-group-item list-group-item-dark">
+        <div class="row">
+            <div class="col-auto">
+                <strong>
+                    {% if trip.provider == 'zet' %}
+                        {{ trip.route.route_short_name }}
+                    {% elif trip.provider == 'hzpp' %}
+                        {{ trip.trip_short_name }}
+                    {% endif %}
+                </strong>
+            </div>
+            <div class="col">
+                 {{ trip.route.route_long_name }}
+            </div>
+            <div class="col-auto">
+                <a href="/route/?id={{ trip.route.route_id }}" style="color: black;"><i
+                        class="bi bi-calendar-week"></i></a>
+            </div>
+        </div>
+    </div>
+
+    {% if past_stops %}
+    <div id="collapse"
+         {% if next_stop %}
+         class="collapse"
+         {% else %}
+         class="collapse show"
+         {% endif %}
+    >
+        {% for stime in past_stops %}
+        <a {% if stime.stop.location_type == 0 %}
+           href="/station/?id={{ stime.stop.parent_station.stop_id }}"
+           {% elif stime.stop.location_type == 1 %}
+           href="/station/?id={{ stime.stop.stop_id }}"
+           {% endif %}
+           class="list-group-item list-group-item-action"
+           id="{{ stime.stop.stop_id }}">
+            <div class="row">
+                <div class="col">
+                    {{ stime.stop.stop_name }}
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-light text-dark" style="font-size: 13px;">Stigao u {{ stime.arrival_time_an|date:'H:i' }}</span>
+                </div>
+            </div>
+        </a>
+        {% if user.is_superuser %}
+        <div class="row font-monospace bg-dark text-white">
+            <div class="col-auto">
+                Departure time:<br>
+                Stop sequence:<br>
+                Trip id:<br>
+                Delay:<br>
+                Updated at:
+            </div>
+            <div class="col">
+                {{ stime.departure_time }}<br>
+                {{ stime.stop_sequence }}<br>
+                {{ stime.trip.trip_id }}<br>
+                {{ stime.delay_departure }}<br>
+                {{ stime.updated_at|timesince }}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <a class="list-group-item list-group-item-dark text-center border-0" data-bs-toggle="collapse" href="#collapse"
+       role="button"
+       aria-expanded="false" aria-controls="collapse" style="font-size: 11px">
+        Prethodne stanice <i class="bi bi-arrows-collapse"></i>
+    </a>
+
+    {% endif %}
+
+    {% for stime in future_stops %}
+    <a {% if stime.stop.location_type == 0 %}
+           href="/station/?id={{ stime.stop.parent_station.stop_id }}"
+           {% elif stime.stop.location_type == 1 %}
+           href="/station/?id={{ stime.stop.stop_id }}"
+           {% endif %}
+       class="list-group-item list-group-item-action"
+       id="{{ stime.stop.stop_id }}">
+        <div class="row">
+            <div class="col">
+                {{ stime.stop.stop_name }}
+            </div>
+            <div class="col-auto">
+                {% if stime.updated_at|within_last:4 and stime == next_stop %}
+                <span class="badge bg-success" style="font-size: 15px;">
+                    {%if stime.arrival_time_an == stime.departure_time_an %}
+                    {{ stime.arrival_time_an|min_convert }}
+                    {% else %}
+                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                    {% endif %}
+                    <i class="bi bi-broadcast-pin"></i></span>
+                {% elif stime.updated_at|within_last:8 and stime == next_stop %}
+                <span class="badge bg-warning" style="font-size: 15px;">
+                    {%if stime.arrival_time_an == stime.departure_time_an %}
+                    {{ stime.arrival_time_an|min_convert }}
+                    {% else %}
+                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                    {% endif %}
+                    <i class="bi bi-broadcast-pin"></i>
+                </span>
+                {% elif stime.updated_at|within_last:15 and stime == next_stop %}
+                <span class="badge bg-danger" style="font-size: 15px;">
+                    {%if stime.arrival_time_an == stime.departure_time_an %}
+                    {{ stime.arrival_time_an|min_convert }}
+                    {% else %}
+                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                    {% endif %}
+                    <i class="bi bi-broadcast-pin"></i>
+                </span>
+                {% else %}
+                <span class="badge bg-light text-dark" style="font-size: 15px;">
+                    {%if stime.arrival_time_an == stime.departure_time_an %}
+                    {{ stime.arrival_time_an|min_convert }}
+                    {% else %}
+                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                    {% endif %}
+                </span>
+                {% endif %}
+            </div>
+
+        </div>
+    </a>
+    {% if user.is_superuser %}
+        <div class="row font-monospace bg-dark text-white">
+            <div class="col-auto">
+                Departure time:<br>
+                Stop sequence:<br>
+                Trip id:<br>
+                Delay:<br>
+                Updated at:
+            </div>
+            <div class="col">
+                {{ stime.departure_time }}<br>
+                {{ stime.stop_sequence }}<br>
+                {{ stime.trip.trip_id }}<br>
+                {{ stime.delay_departure }}<br>
+                {{ stime.updated_at|timesince }}
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+
+
+<div>
+    {% if trip.bikes_allowed %}
+    <p><span class="d-flex align-items-center"><i class="icon-bike"></i> - Bicikli dozvoljeni</span></p>
+    {% endif %}
+    {% if trip.wheelchair_accessible %}
+    <p><span class="d-flex align-items-center"><i class="icon-wheelchair"></i> - Pristup invalidskim kolicima</span></p>
+    {% endif %}
+    <p><span class="badge bg-success">3 min <i class="bi bi-broadcast-pin"></i></span> - Uživo praćenje vozila</p>
+    <p><span class="badge bg-warning">3 min <i class="bi bi-broadcast-pin"></i></span> - Vozilo odaslalo lokaciju do
+        prije 8 minuta</p>
+    <p><span class="badge bg-danger">3 min <i class="bi bi-broadcast-pin"></i></span> - Vozilo odaslalo lokaciju do
+        prije 15 minuta</p>
+    <p><span class="badge bg-light text-dark">3 min</span> - Planirano vrijeme</p>
+</div>
+
+<p class="text-center">
+    <small>{{ trip.route.agency.agency_name }} - Telefon: {{ trip.route.agency.agency_phone }}
+    {% if trip.route.agency.agency_email %}
+    <a href="mailto: {{ trip.route.agency.agency_email }}">{{ trip.route.agency.agency_email }}</a>
+    {% endif %}
+    <br>
+    {% if trip.route.agency.agency_url %}
+    <a href="{{ trip.route.agency.agency_url }}">Web stranica</a>
+    {% endif %}
+    {% if trip.route.agency.agency_fare_url %}
+    <a href="{{ trip.route.agency.agency_fare_url }}">Cijene karata</a>
+    {% endif %}
+    </small>
+</p>
+
+{% endblock %}

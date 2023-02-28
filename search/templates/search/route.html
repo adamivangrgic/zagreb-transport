@@ -1,0 +1,94 @@
+{% extends 'search/base.html' %}
+{% block content %}
+
+{% load custom_tags %}
+
+<div class="btn-group btn-group-sm">
+    {% for d in days %}
+    {% if forloop.first %}
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
+       style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;" href="?id={{ route.route_id }}&td={{ d.td }}">{{ d.wd }}<br>{{ d.day }}</a>
+    {% elif forloop.last %}
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
+       style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;" href="?id={{ route.route_id }}&td={{ d.td }}">{{ d.wd }}<br>{{ d.day }}</a>
+    {% else %}
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}" href="?id={{ route.route_id }}&td={{ d.td }}">{{ d.wd }}<br>{{ d.day }}</a>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<div class="list-group" style="border-radius: 29.6px">
+    <div class="list-group-item list-group-item-dark">
+        <div class="row">
+            {% if route.provider == 'zet' %}
+            <div class="col-auto">
+                <strong>{{ route.route_short_name }}</strong>
+            </div>
+            {% endif %}
+            <div class="col">
+                 {{ route.route_long_name }}
+            </div>
+        </div>
+    </div>
+
+    {% for trip in trips %}
+    <a class="list-group-item list-group-item-action"
+       id="{{ stime.stop.stop_id }}"
+       href="/trip/?id={{ trip.trip_id }}&td={{ td }}">
+        <div class="row">
+<!--            {% if trip.provider == 'hzpp' %}-->
+<!--            <div class="col-2">-->
+<!--                {{ trip.trip_short_name }}-->
+<!--            </div>-->
+<!--            {% endif %}-->
+            <div class="col-4 d-flex align-items-center">
+                {{ trip.first_stop }}
+            </div>
+            <div class="col-4 d-flex justify-content-center align-items-center">
+                <span class="h-auto badge bg-light text-dark" style="font-size: 15px;">{{ trip.first_stop_time|date:'H:i' }} &#x2022; {{ trip.last_stop_time|date:'H:i' }}</span>
+            </div>
+            <div class="col-4 text-end d-flex justify-content-end align-items-center">
+                {{ trip.last_stop }}
+            </div>
+<!--            <div class="col-auto">-->
+<!--                {% if next_stop.updated_at|within_last:4 %}-->
+<!--                <span class="badge rounded-pill bg-success" style="font-size: 15px;"><i-->
+<!--                        class="bi bi-broadcast-pin"></i></span>-->
+<!--                {% elif next_stop.updated_at|within_last:8 %}-->
+<!--                <span class="badge rounded-pill bg-warning" style="font-size: 15px;"><i-->
+<!--                        class="bi bi-broadcast-pin"></i></span>-->
+<!--                {% elif next_stop.updated_at|within_last:15 %}-->
+<!--                <span class="badge rounded-pill bg-danger" style="font-size: 15px;"><i-->
+<!--                        class="bi bi-broadcast-pin"></i></span>-->
+<!--                {% elif next_stop.updated_at|within_last:30 %}-->
+<!--                <span class="badge rounded-pill bg-secondary" style="font-size: 15px;"><i-->
+<!--                        class="bi bi-broadcast-pin"></i></span>-->
+<!--                {% endif %}-->
+<!--            </div>-->
+        </div>
+    </a>
+    {% if user.is_superuser %}
+    <div class="row font-monospace bg-dark text-white">
+    </div>
+    {% endif %}
+    {% empty %}
+    <div class="list-group-item">Nema polazaka.</div>
+    {% endfor %}
+</div>
+
+<p class="text-center">
+    <small>{{ route.agency.agency_name }} - Telefon: {{ route.agency.agency_phone }}
+    {% if route.agency.agency_email %}
+    <a href="mailto: {{ route.agency.agency_email }}">{{ route.agency.agency_email }}</a>
+    {% endif %}
+    <br>
+    {% if route.agency.agency_url %}
+    <a href="{{ route.agency.agency_url }}">Web stranica</a>
+    {% endif %}
+    {% if route.agency.agency_fare_url %}
+    <a href="{{ route.agency.agency_fare_url }}">Cijene karata</a>
+    {% endif %}
+    </small>
+</p>
+
+{% endblock %}

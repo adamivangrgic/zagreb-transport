@@ -1,0 +1,166 @@
+{% extends 'search/base.html' %}
+{% block content %}
+<meta http-equiv="refresh" content="60">
+
+{% load custom_tags %}
+
+{% if 'td' not in request.GET %}
+<div id="map" style="height: 320px"></div>
+<script>
+    var map = L.map('map').setView([{{ station.stop_lat }}, {{ station.stop_lon }}], 18);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+
+    var points = [
+
+    {% for stop in station.stops.all %}
+        [{{ stop.stop_lat }}, {{ stop.stop_lon }}, "#{{ stop.stop_id }}"],
+    {% empty %}
+        [{{ station.stop_lat }}, {{ station.stop_lon }}, "#{{ station.stop_id }}"],
+    {% endfor %}
+
+    ];
+
+    var markers = [];
+
+    for (var i = 0; i < points.length; i++) {
+        markers[i] = new L.marker([points[i][0], points[i][1]], {win_url: points[i][2]});
+        markers[i].addTo(map);
+        markers[i].on('click', onClick);
+    };
+
+    function onClick(e) {
+        window.location.replace(this.options.win_url, "_self");
+    };
+
+    var group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds(), {padding: [10,10]})
+
+</script>
+
+{% elif 'td' in request.GET %}
+<div class="btn-group btn-group-sm">
+    {% for d in days %}
+    {% if forloop.first %}
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
+       style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;" href="?id={{ request.GET.id }}&td={{ d.td }}&ad=1">{{ d.wd }}<br>{{ d.day }}</a>
+    {% elif forloop.last %}
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
+       style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;" href="?id={{ request.GET.id }}&td={{ d.td }}&ad=1">{{ d.wd }}<br>{{ d.day }}</a>
+    {% else %}
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}" href="?id={{ request.GET.id }}&td={{ d.td }}&ad=1">{{ d.wd }}<br>{{ d.day }}</a>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% for key, val in stops.items %}
+<div id="{{ key }}" class="list-group" style="border-radius: 29.6px">
+    <div class="list-group-item list-group-item-dark">
+            <div class="row">
+                <div class="col">
+                    {% if station.provider == 'zet' %}
+                        {{ val.hs }}
+                    {% elif station.provider == 'hzpp' %}
+                        {{ station.stop_name }}
+                    {% endif %}
+                </div>
+                <div class="col-auto">
+                    <a href="/station/?id={{ key }}" style="color: black;"><i
+                            class="bi bi-box-arrow-up-right"></i></a>
+                </div>
+                <div class="col-auto">
+                    <a href="?id={{ key }}&td=0&ad=1" style="color: black;"><i class="bi bi-calendar-week"></i></a>
+                </div>
+                <div class="col-auto">
+                    <a href="/save_stop/?id={{ key }}" style="color: black;">
+                        {% if key in request.COOKIES.saved_stops %}
+                        <i class="bi bi-star-fill"></i>
+                        {% else %}
+                        <i class="bi bi-star"></i>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+    </div>
+
+    {% for stime in val.stimes %}
+    <a href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action">
+        <div class="row">
+            {% if stime.provider == 'zet' %}
+            <div class="col-2">
+                {{ stime.trip.route.route_short_name }}
+            </div>
+            {% endif %}
+            <div class="col">
+                {% if stime.provider == 'zet' %}
+                <strong>{{ stime.trip.trip_headsign }}</strong>
+                {% elif stime.provider == 'hzpp' %}
+                <strong>{{ stime.trip.route.route_long_name }}</strong>
+                {% endif %}
+            </div>
+            <div class="col-auto d-flex align-items-center gap-1">
+                {% if stime.trip.bikes_allowed %}
+                <i class="icon-bike"></i>
+                {% endif %}
+                {% if stime.trip.wheelchair_accessible %}
+                <i class="icon-wheelchair"></i>
+                {% endif %}
+
+                {% if stime.departure_time_an|arrived:2 %}
+                <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
+                {% elif stime.updated_at|within_last:4 %}
+                <span class="badge bg-success" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
+                        class="bi bi-broadcast-pin"></i></span>
+                {% elif stime.updated_at|within_last:8 %}
+                <span class="badge bg-warning" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
+                        class="bi bi-broadcast-pin"></i></span>
+                {% elif stime.updated_at|within_last:15 %}
+                <span class="badge bg-danger" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
+                        class="bi bi-broadcast-pin"></i></span>
+                {% elif stime.updated_at|within_last:30 %}
+                <span class="badge bg-secondary" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}</span>
+                {% else %}
+                <span class="badge bg-light text-dark" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% if user.is_superuser %}
+        <div class="row font-monospace bg-dark text-white">
+            <div class="col-auto">
+                Departure time:<br>
+                Stop sequence:<br>
+                Trip id:<br>
+                Delay:<br>
+                Updated at:
+            </div>
+            <div class="col">
+                {{ stime.departure_time }}<br>
+                {{ stime.stop_sequence }}<br>
+                {{ stime.trip.trip_id }}<br>
+                {{ stime.delay_departure }}<br>
+                {{ stime.updated_at|timesince }}
+            </div>
+        </div>
+        {% endif %}
+    </a>
+    {% empty %}
+    <div class="list-group-item">Nema polazaka.</div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+<div>
+    <p><span class="badge bg-success">3 min <i class="bi bi-broadcast-pin"></i></span> - Uživo praćenje vozila</p>
+    <p><span class="badge bg-warning">3 min <i class="bi bi-broadcast-pin"></i></span> - Vozilo odaslalo lokaciju do
+        prije 8 minuta</p>
+    <p><span class="badge bg-danger">3 min <i class="bi bi-broadcast-pin"></i></span> - Vozilo odaslalo lokaciju do
+        prije 15 minuta</p>
+    <p><span class="badge bg-light text-dark">3 min</span> - Planirano vrijeme</p>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,26 @@
+from django import template
+from datetime import datetime, timedelta
+from zet_live.settings import TIME_ZONE
+import pytz
+
+register = template.Library()
+
+
+@register.filter(name='within_last')
+def within_last(value, arg):
+    if not value: return False
+    return datetime.now().timestamp() - value.timestamp() < timedelta(minutes=arg).seconds
+
+
+@register.filter(name='arrived')
+def arrived(value, arg):
+    if not value: return False
+    return 0 < datetime.now().timestamp() - value.timestamp() < timedelta(minutes=arg).seconds
+
+
+@register.filter(name='min_convert')
+def min_convert(value):
+    if None: return None
+    sec = value.timestamp() - datetime.now().timestamp()
+    # if sec < 60: return sec
+    return "{} min".format(int(sec // 60)) if 0 < sec < 600 else value.astimezone(pytz.timezone(TIME_ZONE)).strftime("%H:%M")

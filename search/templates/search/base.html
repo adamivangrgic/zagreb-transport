@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% load static %}
+{% load custom_tags %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% load pwa %}
+    {% progressive_web_app_meta %}
+
+    <title>ZET Live</title>
+
+    <meta name="description" content="Uživo pratite ZET tramvaje i autobuse!">
+
+    <link href="{% static '/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static '/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static '/icons/icons.css' %}"/>
+    <link rel="stylesheet" href="{% static '/leaflet/leaflet.css' %}"/>
+    <script src="{% static '/leaflet/leaflet.js' %}"></script>
+</head>
+
+<body>
+
+<div class="my-4 mx-3">
+    <div class="row">
+        <div class="col-lg-4">
+        </div>
+        <div class="col-lg-4 d-grid gap-4">
+
+            <div class="input-group active p-1 bg-secondary rounded-pill">
+                {% if request.path == '/' %}
+                      <span class="input-group-text border-0 bg-transparent bold" style="font-size: 1.3rem; color: white;"
+                      id="search-addon"><i class="bi bi-search"></i></span>
+                {% else %}
+                      <button type="button" class="btn btn-primary bg-transparent border-0" style="font-size: 1.3rem; color: white;" onclick="window.history.back(); "><i class="bi bi-arrow-left"></i></button>
+                {% endif %}
+                <input id="search" type="search" class="form-control border-0 rounded-pill"
+                       {% if station %}
+                       placeholder="{{ station.stop_name }}"
+                       {% else %}
+                       placeholder="npr. Trg J. Jelačića"
+                       {% endif %}
+                       aria-label="Search"/>
+            </div>
+            <div id="results" class="list-group" style="border-radius: 18px; display:none; border-radius: 29.6px"></div>
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+        <div class="col-lg-4">
+        </div>
+    </div>
+</div>
+
+<script>
+let timer;
+const waitTime = 250;
+
+const input = document.querySelector('#search');
+input.addEventListener('keyup', (e) => {
+    const text = e.currentTarget.value;
+
+    // Clear timer
+    clearTimeout(timer);
+
+    // Wait for X ms and then process the request
+    timer = setTimeout(() => {
+        search(text);
+    }, waitTime);
+});
+
+function search(){
+    let q = input.value;
+
+    if (q.length > 1){
+        const url = "/search_suggestions/?q=" + q;
+        fetch(url)
+          .then(
+            response => response.json()
+          ).then(
+            json => populate(json)
+          );
+    }
+};
+
+function populate(json){
+    const res = document.getElementById("results");
+
+    res.style.display = 'initial';
+    res.innerHTML = '';
+
+    if (json.data[0].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Vlak</strong></div>'; };
+    for (const st of json.data[0]){
+        let name = st[0];
+        let id = st[1];
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
+    };
+
+    if (json.data[1].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Tramvaji</strong></div>'; };
+    for (const st of json.data[1]){
+        let name = st[0];
+        let id = st[1];
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
+    };
+
+    if (json.data[2].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Autobusi</strong></div>'; };
+    for (const st of json.data[2]){
+        let name = st[0];
+        let id = st[1];
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
+    };
+
+};
+
+<!--window.addEventListener( "pageshow", function ( event ) {-->
+<!--  var historyTraversal = event.persisted ||-->
+<!--                         ( typeof window.performance != "undefined" &&-->
+<!--                              window.performance.navigation.type === 2 );-->
+<!--  if ( historyTraversal ) {-->
+<!--    // Handle page restore.-->
+<!--    window.location.reload(true);-->
+<!--  }-->
+<!--});-->
+</script>
+
+</body>
+</html>
