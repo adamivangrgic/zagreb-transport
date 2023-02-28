@@ -1,3 +1,0 @@
-protobuf==3.20.1, gtfs_realtime_pb2
-requests
-pytz
