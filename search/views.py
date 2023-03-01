@@ -173,13 +173,13 @@ def route(request):
     td = int(request.GET.get('td', 0))
 
     current_time = datetime.now()
-    weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
-    days = [{'td': d, 'wd': weekday_enum[(current_time + timedelta(days=d)).weekday()], 'day': (current_time + timedelta(days=d)).day} for d in range(-1, 7)]
-
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
     if current_time.time().hour < 5:
         today_mid = today_mid - timedelta(days=1)
     day = today_mid + timedelta(days=td)
+
+    weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
+    days = [{'td': d, 'wd': weekday_enum[(today_mid + timedelta(days=d)).weekday()], 'day': (today_mid + timedelta(days=d)).day} for d in range(-1, 7)]
 
     service_ids = get_service_ids(day)
 
