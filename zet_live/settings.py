@@ -146,7 +146,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 PWA_APP_NAME = 'Zagreb Transport'
-PWA_APP_DESCRIPTION = "Pratite vlakove, tramvaje i autobuse u Zagrebu!"
+PWA_APP_DESCRIPTION = "Uživo pratite vlakove, tramvaje i autobuse u Zagrebu!"
 PWA_APP_THEME_COLOR = '#ffffff'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'

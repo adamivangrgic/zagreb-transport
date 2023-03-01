@@ -7,7 +7,7 @@ import email.utils
 import time
 
 
-def update_static(request):
+def update_static():
     zet_feed = StaticFeed.objects.get(provider='zet')
     hzpp_feed = StaticFeed.objects.get(provider='hzpp')
 
@@ -36,7 +36,7 @@ def update_hzpp():
     hzpp.run_static_update()
 
 
-def sync(request):
+def sync():
     sync_run()
 
 
