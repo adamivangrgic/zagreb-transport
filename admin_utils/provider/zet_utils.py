@@ -316,6 +316,8 @@ def sync_realtime_feed_only():  # no blocks
 
     current_time = datetime.now()
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    if current_time.time().hour < 5:
+        today_mid = today_mid - timedelta(days=1)
 
     delays = {}
     awaiting_departure = []
