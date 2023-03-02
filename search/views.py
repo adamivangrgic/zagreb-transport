@@ -28,7 +28,9 @@ def index(request):
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
                               'station_name': stop.stop_name}
 
-    return render(request, 'search/index.html', {'stops': data})
+    map_stations = Stop.objects.filter(Q(location_type=1))
+
+    return render(request, 'search/index.html', {'stops': data, 'map_stations': map_stations})
 
 
 def search_suggestions(request):
@@ -90,7 +92,6 @@ def get_stop_times(stop, date, num_of_stations, time_offset, current_time, all_d
         .filter(Q(trip__service_id__in=service_ids)).order_by('departure_time_an')
 
     return stimes.filter(future_filter)[:num_of_stations] if not all_day else stimes
-    # .annotate(updated_at_an=ExpressionWrapper(F('updated_at') + timedelta(days=td), output_field=fields.DateTimeField())) \
 
 
 def station(request):
@@ -173,13 +174,13 @@ def route(request):
     td = int(request.GET.get('td', 0))
 
     current_time = datetime.now()
-    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    if current_time.time().hour < 5:
-        today_mid = today_mid - timedelta(days=1)
-    day = today_mid + timedelta(days=td)
-
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
-    days = [{'td': d, 'wd': weekday_enum[(today_mid + timedelta(days=d)).weekday()], 'day': (today_mid + timedelta(days=d)).day} for d in range(-1, 7)]
+    days = [{'td': d, 'wd': weekday_enum[(current_time + timedelta(days=d)).weekday()], 'day': (current_time + timedelta(days=d)).day} for d in range(-1, 7)]
+
+    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    # if current_time.time().hour < 5:
+    #     today_mid = today_mid - timedelta(days=1)
+    day = today_mid + timedelta(days=td)
 
     service_ids = get_service_ids(day)
 
