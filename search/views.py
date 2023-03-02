@@ -28,9 +28,9 @@ def index(request):
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
                               'station_name': stop.stop_name}
 
-    map_stations = Stop.objects.filter(Q(location_type=1))
+    # map_stations = Stop.objects.filter(Q(location_type=1))
 
-    return render(request, 'search/index.html', {'stops': data, 'map_stations': map_stations})
+    return render(request, 'search/index.html', {'stops': data})
 
 
 def search_suggestions(request):
