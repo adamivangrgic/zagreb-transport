@@ -39,7 +39,7 @@ def search_suggestions(request):
     output = [[], [], []]  # rail 0, tram 1, bus 2
 
     if len(query) > 1:
-        stations = Stop.objects.filter(Q(stop_name__unaccent__lower__trigram_similar=query) & Q(location_type=1)) # stop_name__unaccent__lower__trigram_similar
+        stations = Stop.objects.filter(Q(stop_name__trigram_similar=query) & Q(location_type=1)) # stop_name__unaccent__lower__trigram_similar
 
         for station in stations:
             stop = station.stops.first() if station.stops.first() else station
