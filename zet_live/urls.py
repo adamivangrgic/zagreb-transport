@@ -5,5 +5,5 @@ urlpatterns = [
     path('', include('search.urls'), name='index'),
     path('admin_utils/', include('admin_utils.urls')),
     path('admin/', admin.site.urls),
-    path('', include('pwa.urls')),
+    # path('', include('pwa.urls')),
 ]
