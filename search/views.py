@@ -39,7 +39,7 @@ def search_suggestions(request):
     output = [[], [], []]  # rail 0, tram 1, bus 2
 
     if len(query) > 1:
-        stations = Stop.objects.filter(Q(stop_name__icontains=query) & Q(location_type=1)) # stop_name__unaccent__lower__trigram_similar
+        stations = Stop.objects.filter(Q(stop_name__unaccent__lower__trigram_similar=query) & Q(location_type=1)) # stop_name__unaccent__lower__trigram_similar
 
         for station in stations:
             stop = station.stops.first() if station.stops.first() else station
@@ -104,8 +104,9 @@ def station(request):
 
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
-    days = [{'td': d, 'wd': weekday_enum[(current_time + timedelta(days=d)).weekday()],
-             'day': (current_time + timedelta(days=d)).day} for d in range(-1, 7)]
+    weekday = current_time if not current_time.time().hour < 5 else current_time - timedelta(days=1)
+    days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
+
     day = current_time.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=td)
     if current_time.time().hour < 5 and not ad:
         day = day - timedelta(days=1)
@@ -175,11 +176,10 @@ def route(request):
 
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
-    days = [{'td': d, 'wd': weekday_enum[(current_time + timedelta(days=d)).weekday()], 'day': (current_time + timedelta(days=d)).day} for d in range(-1, 7)]
+    weekday = current_time if not current_time.time().hour < 5 else current_time - timedelta(days=1)
+    days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
 
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    # if current_time.time().hour < 5:
-    #     today_mid = today_mid - timedelta(days=1)
     day = today_mid + timedelta(days=td)
 
     service_ids = get_service_ids(day)
