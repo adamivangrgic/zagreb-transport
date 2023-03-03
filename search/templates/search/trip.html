@@ -7,11 +7,10 @@
 
 <div id="map" style="height: 320px"></div>
 <script>
-    var map = L.map('map').setView([45,16], 18);
+    var map = L.map('map', {attributionControl: false}).setView([45,16], 18);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 18,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(map);
 
     var station_icon = L.icon({
@@ -257,6 +256,11 @@
     {% if trip.route.agency.agency_fare_url %}
     <a href="{{ trip.route.agency.agency_fare_url }}">Cijene karata</a>
     {% endif %}
+    <br>
+
+    <a href="https://leafletjs.com/">Leaflet</a>|
+    &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>
+    &copy; <a href="https://carto.com/attributions">CARTO</a>
     </small>
 </p>
 
