@@ -76,17 +76,20 @@
     {% endfor %}
 </div>
 
-<p class="text-center">
-    <small>{{ route.agency.agency_name }} - Telefon: {{ route.agency.agency_phone }}
-    {% if route.agency.agency_email %}
-    <a href="mailto: {{ route.agency.agency_email }}">{{ route.agency.agency_email }}</a>
+<p class="text-center text-muted">
+    <small>
+    {{ trip.route.agency.agency_name }}<br>
+    {% if trip.route.agency.agency_phone %}
+    <a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone-fill"></i></a>
     {% endif %}
-    <br>
-    {% if route.agency.agency_url %}
-    <a href="{{ route.agency.agency_url }}">Web stranica</a>
+    {% if trip.route.agency.agency_url %}
+    <a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe2"></i></a>
     {% endif %}
-    {% if route.agency.agency_fare_url %}
-    <a href="{{ route.agency.agency_fare_url }}">Cijene karata</a>
+    {% if trip.route.agency.agency_email %}
+    <a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope-at"></i></a>
+    {% endif %}
+    {% if trip.route.agency.agency_fare_url %}
+    <a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-currency-euro"></i></a>
     {% endif %}
     </small>
 </p>
