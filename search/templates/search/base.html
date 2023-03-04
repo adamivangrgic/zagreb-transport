@@ -95,21 +95,21 @@ function populate(json){
     res.style.display = 'initial';
     res.innerHTML = '';
 
-    if (json.data[0].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true" style="font-size: 11px"><strong>Vlak</strong></div>'; };
+    if (json.data[0].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Vlak</strong></div>'; };
     for (const st of json.data[0]){
         let name = st[0];
         let id = st[1];
         res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
     };
 
-    if (json.data[1].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true" style="font-size: 11px"><strong>Tramvaji</strong></div>'; };
+    if (json.data[1].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Tramvaji</strong></div>'; };
     for (const st of json.data[1]){
         let name = st[0];
         let id = st[1];
         res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
     };
 
-    if (json.data[2].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true" style="font-size: 11px"><strong>Autobusi</strong></div>'; };
+    if (json.data[2].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Autobusi</strong></div>'; };
     for (const st of json.data[2]){
         let name = st[0];
         let id = st[1];
