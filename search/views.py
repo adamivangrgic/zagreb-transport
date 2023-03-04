@@ -105,8 +105,11 @@ def station(request):
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td) - timedelta(days=1)
-    days = [{'td': d, 'wd': weekday_enum[(day + timedelta(days=d)).weekday()], 'day': (day + timedelta(days=d)).day} for d in range(-1, 7)]
+
+    weekday = today_mid if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
+    days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
+
+    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
 
     data = {}
 
@@ -176,8 +179,11 @@ def route(request):
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td) - timedelta(days=1)
-    days = [{'td': d, 'wd': weekday_enum[(day + timedelta(days=d)).weekday()], 'day': (day + timedelta(days=d)).day} for d in range(-1, 7)]
+
+    weekday = today_mid if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
+    days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
+
+    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
 
     service_ids = get_service_ids(day)
 
