@@ -78,18 +78,18 @@
 
 <p class="text-center text-muted">
     <small>
-    {{ trip.route.agency.agency_name }} &#8199
+    {{ route.agency.agency_name }}
     {% if route.agency.agency_phone %}
-    <a href="tel:{{ route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>&#8199
+    &#8199<a href="tel:{{ route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
     {% endif %}
     {% if route.agency.agency_url %}
-    <a href="{{ route.agency.agency_url }}"><i class="bi bi-globe"></i></a>&#8199
+    &#8199<a href="{{ route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
     {% endif %}
     {% if route.agency.agency_email %}
-    <a href="mailto: {{ route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>&#8199
+    &#8199<a href="mailto: {{ route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
     {% endif %}
     {% if route.agency.agency_fare_url %}
-    <a href="{{ route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>&#8199
+    &#8199<a href="{{ route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
     {% endif %}
     </small>
 </p>

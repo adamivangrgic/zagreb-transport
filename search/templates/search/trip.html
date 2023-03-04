@@ -243,18 +243,18 @@
 
 <p class="text-center text-muted">
     <small>
-    {{ trip.route.agency.agency_name }} &#8199
+    {{ trip.route.agency.agency_name }}
     {% if trip.route.agency.agency_phone %}
-    <a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>&#8199
+    &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
     {% endif %}
     {% if trip.route.agency.agency_url %}
-    <a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>&#8199
+    &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
     {% endif %}
     {% if trip.route.agency.agency_email %}
-    <a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>&#8199
+    &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
     {% endif %}
     {% if trip.route.agency.agency_fare_url %}
-    <a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>&#8199
+    &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
     {% endif %}
 
     <br><a href="https://leafletjs.com/">Leaflet</a>
