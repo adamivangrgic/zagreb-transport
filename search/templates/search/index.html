@@ -24,11 +24,13 @@
                         class="bi bi-box-arrow-up-right"></i></a>
             </div>
             <div class="col-auto">
-                <a href="/save_stop/?id={{ key }}" style="color: black;">
+                <a onclick="save_stop('{{ key }}')" style="color: black;">
                     {% if key in request.COOKIES.saved_stops %}
-                    <i class="bi bi-star-fill"></i>
+                    <i id="save-fill-{{ key }}" class="bi bi-star-fill" style="display:none;"></i>
+                    <i id="save-nfill-{{ key }}" class="bi bi-star"></i>
                     {% else %}
-                    <i class="bi bi-star"></i>
+                    <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
+                    <i id="save-nfill-{{ key }}" class="bi bi-star" style="display:none;"></i>
                     {% endif %}
                 </a>
             </div>

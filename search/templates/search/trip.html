@@ -245,24 +245,23 @@
 </div>
 
 <p class="text-center">
-    <small>{{ trip.route.agency.agency_name }} - Telefon: {{ trip.route.agency.agency_phone }}
-    {% if trip.route.agency.agency_email %}
-    <a href="mailto: {{ trip.route.agency.agency_email }}">{{ trip.route.agency.agency_email }}</a>
-    {% endif %}
-    <br>
-    {% if trip.route.agency.agency_url %}
-    <a href="{{ trip.route.agency.agency_url }}">Web stranica</a>
-    {% endif %}
-    {% if trip.route.agency.agency_fare_url %}
-    <a href="{{ trip.route.agency.agency_fare_url }}">Cijene karata</a>
-    {% endif %}
-    </small>
-</p>
-<p class="text-center">
     <small>
         <a href="https://leafletjs.com/">Leaflet</a>
         &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>
         &copy;<a href="https://carto.com/attributions">CARTO</a>
+    </small>
+</p>
+<p class="text-center">
+    <small>{{ trip.route.agency.agency_name }} - Telefon: {{ trip.route.agency.agency_phone }}<br>
+    {% if trip.route.agency.agency_email %}
+    <a href="mailto: {{ trip.route.agency.agency_email }}">Email</a>
+    {% endif %}
+    {% if trip.route.agency.agency_url %}
+    <a href="{{ trip.route.agency.agency_url }}">Web</a>
+    {% endif %}
+    {% if trip.route.agency.agency_fare_url %}
+    <a href="{{ trip.route.agency.agency_fare_url }}">Cijene karata</a>
+    {% endif %}
     </small>
 </p>
 

@@ -50,6 +50,12 @@
             {% block content %}
             {% endblock %}
 
+            <p class="text-center">
+                <small>
+                    &copy;Zagreb Transport - Ivan Adam Grgić
+                </small>
+            </p>
+
         </div>
         <div class="col-lg-4">
         </div>
@@ -124,6 +130,30 @@ window.addEventListener( "pageshow", function ( event ) {
     window.location.reload();
   }
 });
+
+function save_stop(id){
+    const url = "/save_stops/?id=" + id;
+    fetch(url)
+    .then(
+        response => response.json()
+    ).then(
+        json => save_stop_response(json.action, id)
+    );
+};
+
+function save_stop_response(action, id){
+    const fill = document.getElementById("save-fill-" + id);
+    const nfill = document.getElementById("save-nfill-" + id);
+
+    if (action == 1){
+        fill.style.display = 'initial';
+        nfill.style.display = 'none';
+
+    } else if (action == 0){
+        fill.style.display = 'none';
+        nfill.style.display = 'initial';
+    }
+}
 </script>
 
 </body>

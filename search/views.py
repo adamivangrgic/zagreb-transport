@@ -105,7 +105,7 @@ def station(request):
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
+    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td) - timedelta(days=1)
     days = [{'td': d, 'wd': weekday_enum[(day + timedelta(days=d)).weekday()], 'day': (day + timedelta(days=d)).day} for d in range(-1, 7)]
 
     data = {}
@@ -130,10 +130,12 @@ def save_stop(request):
 
     if stop_id in saved_stops:
         saved_stops.remove(stop_id)
+        action = 0
     else:
         saved_stops.append(stop_id)
+        action = 1
 
-    response = HttpResponseRedirect(request.META['HTTP_REFERER'])
+    response = JsonResponse({'status': 200, 'action': action})
     response.set_cookie('saved_stops', '|'.join(saved_stops), max_age=52560000)
 
     return response
@@ -174,7 +176,7 @@ def route(request):
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
+    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td) - timedelta(days=1)
     days = [{'td': d, 'wd': weekday_enum[(day + timedelta(days=d)).weekday()], 'day': (day + timedelta(days=d)).day} for d in range(-1, 7)]
 
     service_ids = get_service_ids(day)
