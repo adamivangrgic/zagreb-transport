@@ -249,16 +249,16 @@
 
     {{ trip.route.agency.agency_name }} &#8226
     {% if trip.route.agency.agency_phone %}
-    <a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
+    <a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i> </a>
     {% endif %}
     {% if trip.route.agency.agency_url %}
-    <a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
+    <a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i> </a>
     {% endif %}
     {% if trip.route.agency.agency_email %}
-    <a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
+    <a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i> </a>
     {% endif %}
     {% if trip.route.agency.agency_fare_url %}
-    <a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
+    <a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i> </a>
     {% endif %}
     </small>
 </p>
