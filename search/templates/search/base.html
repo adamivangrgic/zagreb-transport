@@ -132,7 +132,7 @@ window.addEventListener( "pageshow", function ( event ) {
 });
 
 function save_stop(id){
-    const url = "/save_stops/?id=" + id;
+    const url = "/save_stop/?id=" + id;
     fetch(url)
     .then(
         response => response.json()

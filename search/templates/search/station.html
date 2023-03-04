@@ -77,11 +77,11 @@
                 <div class="col-auto">
                     <a onclick="save_stop('{{ key }}')" style="color: black;">
                         {% if key in request.COOKIES.saved_stops %}
-                        <i id="save-fill-{{ key }}" class="bi bi-star-fill" style="display:none;"></i>
-                        <i id="save-nfill-{{ key }}" class="bi bi-star"></i>
-                        {% else %}
                         <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
                         <i id="save-nfill-{{ key }}" class="bi bi-star" style="display:none;"></i>
+                        {% else %}
+                        <i id="save-fill-{{ key }}" class="bi bi-star-fill" style="display:none;"></i>
+                        <i id="save-nfill-{{ key }}" class="bi bi-star"></i>
                         {% endif %}
                     </a>
                 </div>
