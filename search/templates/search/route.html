@@ -78,18 +78,18 @@
 
 <p class="text-center text-muted">
     <small>
-    {{ trip.route.agency.agency_name }} &#8226
-    {% if trip.route.agency.agency_phone %}
-    <a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>&#8193
+    {{ trip.route.agency.agency_name }} &#8199
+    {% if route.agency.agency_phone %}
+    <a href="tel:{{ route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>&#8199
     {% endif %}
-    {% if trip.route.agency.agency_url %}
-    <a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>&#8193
+    {% if route.agency.agency_url %}
+    <a href="{{ route.agency.agency_url }}"><i class="bi bi-globe"></i></a>&#8199
     {% endif %}
-    {% if trip.route.agency.agency_email %}
-    <a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>&#8193
+    {% if route.agency.agency_email %}
+    <a href="mailto: {{ route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>&#8199
     {% endif %}
-    {% if trip.route.agency.agency_fare_url %}
-    <a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>&#8193
+    {% if route.agency.agency_fare_url %}
+    <a href="{{ route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>&#8199
     {% endif %}
     </small>
 </p>
