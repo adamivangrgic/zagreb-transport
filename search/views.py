@@ -38,7 +38,7 @@ def search_suggestions(request):
 
     output = [[], [], []]  # rail 0, tram 1, bus 2
 
-    if len(query) > 1:
+    if len(query) > 2:
         stations = Stop.objects.filter(Q(stop_name__icontains=query) & Q(location_type=1)) # stop_name__unaccent__lower__trigram_similar
 
         for station in stations:
@@ -104,12 +104,9 @@ def station(request):
 
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
-    weekday = current_time if not current_time.time().hour < 5 else current_time - timedelta(days=1)
-    days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
-
-    day = current_time.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=td)
-    if current_time.time().hour < 5 and not ad:
-        day = day - timedelta(days=1)
+    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
+    days = [{'td': d, 'wd': weekday_enum[(day + timedelta(days=d)).weekday()], 'day': (day + timedelta(days=d)).day} for d in range(-1, 7)]
 
     data = {}
 
@@ -176,11 +173,9 @@ def route(request):
 
     current_time = datetime.now()
     weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
-    weekday = current_time if not current_time.time().hour < 5 else current_time - timedelta(days=1)
-    days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
-
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    day = today_mid + timedelta(days=td)
+    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
+    days = [{'td': d, 'wd': weekday_enum[(day + timedelta(days=d)).weekday()], 'day': (day + timedelta(days=d)).day} for d in range(-1, 7)]
 
     service_ids = get_service_ids(day)
 

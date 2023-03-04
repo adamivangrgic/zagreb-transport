@@ -76,7 +76,7 @@ input.addEventListener('keyup', (e) => {
 function search(){
     let q = input.value;
 
-    if (q.length > 1){
+    if (q.length > 2){
         const url = "/search_suggestions/?q=" + q;
         fetch(url)
           .then(
