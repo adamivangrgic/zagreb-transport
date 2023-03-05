@@ -13,7 +13,7 @@ class Agency(models.Model):
 
 
 class Stop(models.Model):
-    stop_id = models.CharField(max_length=10)
+    stop_id = models.CharField(primary_key=True, max_length=10)
     stop_name = models.CharField(max_length=200)
     stop_code = models.CharField(max_length=10, blank=True, null=True)
     stop_lat = models.FloatField()
