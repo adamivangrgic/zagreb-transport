@@ -33,5 +33,5 @@ def update_hzpp():
     hzpp.run_static_update()
 
 
-def sync_zet():
+def sync_zet(a):
     zet.sync_realtime_feed_only()
