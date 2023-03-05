@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     # 'pwa',
-    'django_crontab',
     'search',
     'admin_utils',
 ]
