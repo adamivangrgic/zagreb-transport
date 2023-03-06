@@ -295,19 +295,17 @@ def sync_realtime():  # no blocks
     awaiting_departure = []
     for entity in feed.entity:
         if abs(entity.trip_update.stop_time_update[-1].arrival.delay) < 1800 and entity.trip_update.stop_time_update[-1].departure.time > 0:  # delay up to 30 min
-            delays[entity.trip_update.trip.trip_id] = [timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay),
-                                                       datetime.fromtimestamp(entity.trip_update.timestamp, tz=pytz.timezone(settings.TIME_ZONE)) ]
+            delays[entity.trip_update.trip.trip_id] = timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay)
 
         elif entity.trip_update.stop_time_update[-1].stop_sequence == 1:  # waiting to depart
             awaiting_departure.append(entity.trip_update.trip.trip_id)
 
     stop_times = StopTime.objects \
         .filter(trip__trip_id__in=delays.keys()) \
-        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t][0]) for t in delays], output_field=fields.DurationField())) \
-        .annotate(timestamp_an=Case(*[When(trip__trip_id=t, then=delays[t][1]) for t in delays])) \
+        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField())) \
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
         .filter(departure_time_an__gt=current_time - timedelta(minutes=3))
-    stop_times.update(updated_at=F('timestamp_an'), delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
+    stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
     stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
     stops_waiting.update(updated_at=current_time)

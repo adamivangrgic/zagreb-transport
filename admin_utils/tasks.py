@@ -13,8 +13,8 @@ def update_static():
     zet_last_update = zet_feed.last_update
     hzpp_last_update = hzpp_feed.last_update
 
-    zet_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', "https://zet.hr/gtfs-scheduled/latest").headers['Last-Modified'])
-    hzpp_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', "http://www.hzpp.hr/Media/Default/GTFS/GTFS_files.zip").headers['Last-Modified'])
+    zet_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', zet.static_url).headers['Last-Modified'])
+    hzpp_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', hzpp.static_url).headers['Last-Modified'])
 
     if zet_latest_version_time > zet_last_update:
         update_zet()
