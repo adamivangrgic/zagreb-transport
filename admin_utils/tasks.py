@@ -34,4 +34,4 @@ def update_hzpp():
 
 
 def sync_zet(a):
-    zet.sync_realtime_feed_only()
+    zet.sync_realtime()

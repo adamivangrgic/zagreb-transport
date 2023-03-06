@@ -279,37 +279,7 @@ def update_calendar(file):
         Calendar.objects.bulk_create(bulk_list)
 
 
-# def sync_realtime():
-#     feed = gtfs_realtime_pb2.FeedMessage()
-#     response = requests.get(realtime_url)
-#     feed.ParseFromString(response.content)
-#
-#     current_time = datetime.now()
-#     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-#
-#     trip_objs = {trip.trip_id: trip.block_id for trip in Trip.objects.all()}
-#
-#     blocks = []
-#     trips = []
-#     for entity in feed.entity:
-#         if entity.trip_update.stop_time_update[-1].departure.time > 0:
-#             trip_id = entity.trip_update.trip.trip_id
-#             blocks.append(trip_objs.get(trip_id))
-#             trips.append(trip_id)
-#
-#     trip_ids = StopTime.objects\
-#         .exclude(trip__trip_id__in=trips).filter((Q(trip__block_id__in=blocks) & Q(stop_sequence=1)))\
-#         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + today_mid, output_field=fields.DateTimeField()))\
-#         .filter(departure_time_an__time__range=[current_time, current_time + timedelta(minutes=30)])\
-#         .values_list('trip__trip_id', flat=True)
-#
-#     stop_times = StopTime.objects.filter(trip__trip_id__in=trip_ids)
-#     stop_times.update(updated_at=current_time)
-#
-#     print(datetime.now() - current_time)
-
-
-def sync_realtime_feed_only():  # no blocks
+def sync_realtime():  # no blocks
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(realtime_url)
     feed.ParseFromString(response.content)
@@ -323,17 +293,18 @@ def sync_realtime_feed_only():  # no blocks
     awaiting_departure = []
     for entity in feed.entity:
         if abs(entity.trip_update.stop_time_update[-1].arrival.delay) < 1800 and entity.trip_update.stop_time_update[-1].departure.time > 0:  # delay up to 30 min
-            delays[entity.trip_update.trip.trip_id] = timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay)  # + (current_time.timestamp() - entity.trip_update.timestamp)
+            delays[entity.trip_update.trip.trip_id] = [timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay), entity.trip_update.timestamp]
 
         elif entity.trip_update.stop_time_update[-1].stop_sequence == 1:  # waiting to depart
             awaiting_departure.append(entity.trip_update.trip.trip_id)
 
     stop_times = StopTime.objects \
         .filter(trip__trip_id__in=delays.keys()) \
-        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField())) \
+        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t][0]) for t in delays], output_field=fields.DurationField())) \
+        .annotate(timestamp_an=Case(*[When(trip__trip_id=t, then=delays[t][1]) for t in delays])) \
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
         .filter(departure_time_an__gt=current_time - timedelta(minutes=3))
-    stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
+    stop_times.update(updated_at=F('timestamp_an'), delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
     stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
     stops_waiting.update(updated_at=current_time)
