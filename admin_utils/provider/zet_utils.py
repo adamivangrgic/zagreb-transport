@@ -301,7 +301,7 @@ def sync_realtime():  # no blocks
     stop_times = StopTime.objects \
         .filter(trip__trip_id__in=delays.keys()) \
         .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t][0]) for t in delays], output_field=fields.DurationField())) \
-        .annotate(timestamp_an=Case(*[When(trip__trip_id=t, then=delays[t][1]) for t in delays])) \
+        .annotate(timestamp_an=Case(*[When(trip__trip_id=t, then=delays[t][1]) for t in delays], output_field=fields.DateTimeField())) \
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
         .filter(departure_time_an__gt=current_time - timedelta(minutes=3))
     stop_times.update(updated_at=F('timestamp_an'), delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
