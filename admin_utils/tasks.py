@@ -4,6 +4,8 @@ from .models import *
 import requests
 import email.utils
 
+import time
+
 def update_static():
     zet_feed = StaticFeed.objects.get(provider='zet')
     hzpp_feed = StaticFeed.objects.get(provider='hzpp')
