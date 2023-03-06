@@ -9,6 +9,7 @@ from django.db.models import Case, When, fields, Q, F, ExpressionWrapper
 from .parse_utils import download_zip, date_formatter
 from io import TextIOWrapper
 from django.conf import settings
+import pytz
 
 
 static_url = "https://zet.hr/gtfs-scheduled/latest"
@@ -295,7 +296,7 @@ def sync_realtime():  # no blocks
     for entity in feed.entity:
         if abs(entity.trip_update.stop_time_update[-1].arrival.delay) < 1800 and entity.trip_update.stop_time_update[-1].departure.time > 0:  # delay up to 30 min
             delays[entity.trip_update.trip.trip_id] = [timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay),
-                                                       datetime.fromtimestamp(entity.trip_update.timestamp, tz=settings.TIME_ZONE) ]
+                                                       datetime.fromtimestamp(entity.trip_update.timestamp, tz=pytz.timezone(settings.TIME_ZONE)) ]
 
         elif entity.trip_update.stop_time_update[-1].stop_sequence == 1:  # waiting to depart
             awaiting_departure.append(entity.trip_update.trip.trip_id)
