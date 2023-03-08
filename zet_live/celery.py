@@ -1,6 +1,6 @@
 import os
 from celery import Celery
-from celery import periodic_task
+from celery.task import periodic_task
 from admin_utils.tasks import zet_sync
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zet_live.settings")
