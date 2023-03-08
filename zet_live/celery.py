@@ -1,6 +1,6 @@
 import os
 from celery import Celery
-from celery.task.schedules import crontab
+from celery.schedules import crontab
 from celery.decorators import periodic_task
 from admin_utils.tasks import zet_sync
 
