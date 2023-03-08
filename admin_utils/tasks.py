@@ -4,7 +4,17 @@ from .models import *
 import requests
 import email.utils
 
-from celery import shared_task
+from backend.celery import app
+from backend.celery import task
+from time import timedelta
+
+
+@app.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(
+        timedelta(seconds=20), sync_zet()
+    )
+
 
 def update_static():
     zet_feed = StaticFeed.objects.get(provider='zet')
@@ -35,6 +45,6 @@ def update_hzpp():
     hzpp.run_static_update()
 
 
-@shared_task
+@task
 def sync_zet():
     zet.sync_realtime()

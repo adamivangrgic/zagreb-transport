@@ -7,8 +7,3 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zet_live.settings")
 app = Celery("zet_live")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
-
-
-@periodic_task(run_every=20.0)
-def run_print_message():
-    zet_sync.delay()
