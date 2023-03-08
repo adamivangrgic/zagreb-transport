@@ -35,6 +35,5 @@ def update_hzpp():
     hzpp.run_static_update()
 
 
-@app.task
 def sync_zet():
     zet.sync_realtime()
