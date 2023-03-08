@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
-import logging.config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +26,7 @@ SECRET_KEY = "7CA*PPSGWkx}?*d}6Zyy4kySLX[$~GC-"
 DEBUG = "True"
 DEVELOPMENT_MODE = "True"
 
-ALLOWED_HOSTS = ['46.101.148.16', 'zagrebtransport.eu', 'www.zagrebtransport.eu', 'localhost']
+ALLOWED_HOSTS = ['46.101.148.16', 'zagrebtransport.eu', 'localhost']
 
 
 # Application definition
