@@ -137,29 +137,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Logging Configuration
-
-# Clear prev config
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-        'logfile': {
-            'level':'DEBUG',
-            'class':'logging.FileHandler',
-            'filename': BASE_DIR + "/logfile",
-        },
-    },
-    'root': {
-        'level': 'INFO',
-        'handlers': ['console', 'logfile']
-    },
-}
-
 # Celery
 
 CELERY_BROKER_URL = "redis://localhost:6379"
