@@ -4,7 +4,7 @@ from .models import *
 import requests
 import email.utils
 
-import time
+from celery import shared_task
 
 def update_static():
     zet_feed = StaticFeed.objects.get(provider='zet')
@@ -35,5 +35,6 @@ def update_hzpp():
     hzpp.run_static_update()
 
 
+@shared_task
 def sync_zet():
     zet.sync_realtime()
