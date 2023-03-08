@@ -6,7 +6,7 @@ import email.utils
 
 from zet_live.celery import app
 from zet_live.celery import task
-from time import timedelta
+from datetime import timedelta
 
 
 @app.on_after_finalize.connect
