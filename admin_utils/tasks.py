@@ -6,14 +6,11 @@ import email.utils
 
 from zet_live.celery import app
 from zet_live.celery import task
-from datetime import timedelta
 
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(
-        timedelta(seconds=20), sync_zet()
-    )
+    sender.add_periodic_task(20.0, sync_zet())
 
 
 def update_static():
