@@ -4,8 +4,8 @@ from .models import *
 import requests
 import email.utils
 
-from backend.celery import app
-from backend.celery import task
+from zet_live.celery import app
+from zet_live.celery import task
 from time import timedelta
 
 
