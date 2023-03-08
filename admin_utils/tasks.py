@@ -5,12 +5,6 @@ import requests
 import email.utils
 
 from zet_live.celery import app
-from zet_live.celery import task
-
-
-@app.on_after_finalize.connect
-def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(20.0, sync_zet())
 
 
 def update_static():
@@ -42,6 +36,7 @@ def update_hzpp():
     hzpp.run_static_update()
 
 
-@task
+@app.task
 def sync_zet():
     zet.sync_realtime()
+    

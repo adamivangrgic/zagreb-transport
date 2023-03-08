@@ -6,11 +6,9 @@ app = Celery("zet_live")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
-task = app.task
-
 app.conf.beat_schedule = {
     'zet sync every 20 sec': {
-        'task': 'tasks.sync_zet',
+        'task': 'admin_utils.tasks.sync_zet',
         'schedule': 20
     },
 }
