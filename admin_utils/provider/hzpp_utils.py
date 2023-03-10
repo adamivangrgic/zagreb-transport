@@ -17,8 +17,8 @@ static_url = "http://www.hzpp.hr/Media/Default/GTFS/GTFS_files.zip"
 provider = 'hzpp'
 
 
-def run_static_update():
-    file = download_zip(static_url)
+def run_static_update(url):
+    file = download_zip(url)
 
     update_agencies(file)
     update_stops(file)

@@ -28,12 +28,12 @@ def update_static():
         hzpp_feed.save()
 
 
-def update_zet():
-    zet.run_static_update()
+def update_zet(url=zet.static_url):
+    zet.run_static_update(url)
 
 
-def update_hzpp():
-    hzpp.run_static_update()
+def update_hzpp(url=hzpp.static_url):
+    hzpp.run_static_update(url)
 
 
 @app.task
