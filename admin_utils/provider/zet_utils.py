@@ -17,8 +17,8 @@ realtime_url = "https://zet.hr/gtfs-rt-protobuf"
 provider = 'zet'
 
 
-def run_static_update():
-    file = download_zip(static_url)
+def run_static_update(url=static_url):
+    file = download_zip(url)
 
     update_agencies(file)
     update_stops(file)
