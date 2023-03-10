@@ -6,7 +6,7 @@ import email.utils
 
 from zet_live.celery import app
 
-
+@app.task
 def update_static():
     zet_feed = StaticFeed.objects.get(provider='zet')
     hzpp_feed = StaticFeed.objects.get(provider='hzpp')
