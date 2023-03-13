@@ -10,6 +10,7 @@ from django.utils.dateparse import parse_duration
 # from django.db.models import Case, When, fields, Q, F, ExpressionWrapper
 from .parse_utils import download_zip, date_formatter
 from io import TextIOWrapper
+from django.contrib.gis.geos import Point
 
 
 static_url = "http://www.hzpp.hr/Media/Default/GTFS/GTFS_files.zip"
@@ -70,7 +71,7 @@ def update_stops(file):
             new_station = Stop(
                 stop_id=data[0],
                 stop_name=data[1],
-                stop_loc = [data[2], data[3]],
+                stop_loc=Point(float(data[2]), float(data[3])),
                 location_type=1,
                 provider=provider
             )

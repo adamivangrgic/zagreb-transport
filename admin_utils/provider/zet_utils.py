@@ -5,11 +5,10 @@ from django.utils.dateparse import parse_duration
 from google.transit import gtfs_realtime_pb2  # protobuf==3.20.1, requests
 import requests
 from datetime import datetime, timedelta
-from django.db.models import Case, When, fields, Q, F, ExpressionWrapper
+from django.db.models import Case, When, fields, F, ExpressionWrapper
 from .parse_utils import download_zip, date_formatter
 from io import TextIOWrapper
-from django.conf import settings
-import pytz
+from django.contrib.gis.geos import Point
 
 
 static_url = "https://zet.hr/gtfs-scheduled/latest"
@@ -73,7 +72,7 @@ def update_stops(file):
                     stop_id=data[0],
                     stop_code=data[1],
                     stop_name=data[2],
-                    stop_loc = [data[2], data[3]],
+                    stop_loc = Point(float(data[2]), float(data[3])),
                     location_type=data[8],
                     provider=provider
                 )
@@ -102,7 +101,7 @@ def update_stops(file):
                     stop_code=data[1],
                     stop_name=data[2],
                     parent_station=parent,
-                    stop_loc = [data[2], data[3]],
+                    stop_loc=Point(float(data[2]), float(data[3])),
                     location_type=data[8],
                     provider=provider
                 )
