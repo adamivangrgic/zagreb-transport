@@ -9,4 +9,5 @@ urlpatterns = [
     path('trip/', views.trip, name='trip'),
     path('save_stop/', views.save_stop, name='save_stop'),
     path('route/', views.route, name='route'),
+    path('location_search/', views.location_search, name='location_search'),
 ]

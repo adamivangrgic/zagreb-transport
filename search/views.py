@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from .models import *
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from datetime import datetime
 from django.db.models import Q, F, ExpressionWrapper, fields, Subquery, OuterRef
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
+from django.core.serializers import serialize
 
 
 def index(request):
@@ -54,6 +57,22 @@ def search_suggestions(request):
                 output[2].append([station.stop_name, station.stop_id])
 
     return JsonResponse({'status': 200, 'data': output})
+
+
+def location_search(request):
+    lon = float(request.GET.get('lon', 0))
+    lat = float(request.GET.get('lat', 0))
+    rad = float(request.GET.get('rad', 0))
+
+    stops = get_stops_location(lon, lat, rad)
+    json = serialize('json', stops, cls=LazyEncoder)
+
+    return JsonResponse({'status': 200, 'data': json})
+
+
+def get_stops_location(lon, lat, radius):
+    point = Point(lon, lat)
+    return Stop.objects.filter(stop_loc__distance_lt=(point, Distance(m=radius)))
 
 
 def get_service_ids(date):
