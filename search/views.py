@@ -72,7 +72,7 @@ def location_search(request):
 
 def get_stops_location(lon, lat, radius):
     point = Point(lon, lat)
-    return Stop.objects.filter(stop_loc__distance_lt=(point, Distance(m=radius)))
+    return Stop.objects.filter(stop_loc__distance_lt=(point, radius))
 
 
 def get_service_ids(date):
