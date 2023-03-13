@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    'django.contrib.gis',
     # 'pwa',
     'search',
     'admin_utils',
@@ -80,7 +81,7 @@ WSGI_APPLICATION = 'zet_live.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'zagreb_transport',
         'USER': 'doadmin',
         'PASSWORD': 'AVNS_G7gHqq-AYp-2h5mY6cE',

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models
 from datetime import timedelta
 
 
@@ -16,8 +17,7 @@ class Stop(models.Model):
     stop_id = models.CharField(primary_key=True, max_length=10)
     stop_name = models.CharField(max_length=200)
     stop_code = models.CharField(max_length=10, blank=True, null=True)
-    stop_lat = models.FloatField()
-    stop_lon = models.FloatField()
+    stop_loc = models.PointField(blank=True, null=True)
     parent_station = models.ForeignKey('self', on_delete=models.CASCADE, related_name='stops', blank=True, null=True)
     location_type = models.IntegerField(blank=True, null=True)
     provider = models.CharField(max_length=10)
