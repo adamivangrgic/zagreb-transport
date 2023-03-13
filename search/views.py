@@ -64,10 +64,9 @@ def location_search(request):
     lat = float(request.GET.get('lat', 0))
     rad = float(request.GET.get('rad', 0))
 
-    stops = get_stops_location(lon, lat, rad)
-    json = serialize('json', stops, cls=LazyEncoder)
+    stops = get_stops_location(lon, lat, rad).values_list('stop_name', flat=True)
 
-    return JsonResponse({'status': 200, 'data': json})
+    return JsonResponse({'status': 200, 'data': stops})
 
 
 def get_stops_location(lon, lat, radius):
