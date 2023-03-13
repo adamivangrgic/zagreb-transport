@@ -72,7 +72,7 @@ def update_stops(file):
                     stop_id=data[0],
                     stop_code=data[1],
                     stop_name=data[2],
-                    stop_loc = Point(float(data[2]), float(data[3])),
+                    stop_loc = Point(float(data[4]), float(data[5])),
                     location_type=data[8],
                     provider=provider
                 )
@@ -101,7 +101,7 @@ def update_stops(file):
                     stop_code=data[1],
                     stop_name=data[2],
                     parent_station=parent,
-                    stop_loc=Point(float(data[2]), float(data[3])),
+                    stop_loc=Point(float(data[4]), float(data[5])),
                     location_type=data[8],
                     provider=provider
                 )
