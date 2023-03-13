@@ -73,8 +73,7 @@ def update_stops(file):
                     stop_id=data[0],
                     stop_code=data[1],
                     stop_name=data[2],
-                    stop_lat=data[4],
-                    stop_lon=data[5],
+                    stop_loc = [data[2], data[3]],
                     location_type=data[8],
                     provider=provider
                 )
@@ -103,8 +102,7 @@ def update_stops(file):
                     stop_code=data[1],
                     stop_name=data[2],
                     parent_station=parent,
-                    stop_lat=data[4],
-                    stop_lon=data[5],
+                    stop_loc = [data[2], data[3]],
                     location_type=data[8],
                     provider=provider
                 )

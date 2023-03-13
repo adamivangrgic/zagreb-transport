@@ -70,8 +70,7 @@ def update_stops(file):
             new_station = Stop(
                 stop_id=data[0],
                 stop_name=data[1],
-                stop_lat=data[2],
-                stop_lon=data[3],
+                stop_loc = [data[2], data[3]],
                 location_type=1,
                 provider=provider
             )
