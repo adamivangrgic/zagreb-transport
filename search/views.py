@@ -64,9 +64,10 @@ def location_search(request):
     lat = float(request.GET.get('lat', 0))
     rad = float(request.GET.get('rad', 0))
 
-    stops = get_stops_location(lon, lat, rad).values_list('stop_name', flat=True)
+    stops = get_stops_location(lon, lat, rad)
+    json = serialize('json', stops)
 
-    return JsonResponse({'status': 200, 'data': stops})
+    return JsonResponse(json, safe=False)
 
 
 def get_stops_location(lon, lat, radius):
