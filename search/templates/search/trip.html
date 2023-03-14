@@ -35,7 +35,7 @@
     var past_stops = [
 
     {% for stime in past_stops %}
-        [{{ stime.stop.stop_lat }}, {{ stime.stop.stop_lon }}, "#{{ stime.stop.stop_id }}"],
+        [{{ stime.stop.stop_loc.x }}, {{ stime.stop.stop_loc.y }}, "#{{ stime.stop.stop_id }}"],
     {% endfor %}
 
     ];
@@ -43,7 +43,7 @@
     var future_stops = [
 
     {% for stime in future_stops %}
-        [{{ stime.stop.stop_lat }}, {{ stime.stop.stop_lon }}, "#{{ stime.stop.stop_id }}"],
+        [{{ stime.stop.stop_loc.x }}, {{ stime.stop.stop_loc.y }}, "#{{ stime.stop.stop_id }}"],
     {% endfor %}
 
     ];

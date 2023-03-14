@@ -7,7 +7,7 @@
 {% if 'td' not in request.GET %}
 <div id="map" style="height: 320px"></div>
 <script>
-    var map = L.map('map', {attributionControl: false}).setView([{{ station.stop_lat }}, {{ station.stop_lon }}], 18);
+    var map = L.map('map', {attributionControl: false}).setView([{{ station.stop_loc.x }}, {{ station.stop_loc.y }}], 18);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 18,
@@ -16,9 +16,9 @@
     var points = [
 
     {% for stop in station.stops.all %}
-        [{{ stop.stop_lat }}, {{ stop.stop_lon }}, "#{{ stop.stop_id }}"],
+        [{{ stop.stop_loc.x }}, {{ stop.stop_loc.y }}, "#{{ stop.stop_id }}"],
     {% empty %}
-        [{{ station.stop_lat }}, {{ station.stop_lon }}, "#{{ station.stop_id }}"],
+        [{{ station.stop_loc.x }}, {{ station.stop_loc.y }}, "#{{ station.stop_id }}"],
     {% endfor %}
 
     ];
