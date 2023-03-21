@@ -1,6 +1,6 @@
 db.sqlite3
 *.pyc
 .idea/
-static/
+/static/
 celerybeat-schedule
 search/migrations/
