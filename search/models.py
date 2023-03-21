@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.gis.db import models
 from datetime import timedelta
 
+from django.utils.functional import cached_property
+
 
 class Agency(models.Model):
     agency_id = models.CharField(primary_key=True, max_length=10)
@@ -15,12 +17,15 @@ class Agency(models.Model):
 
 class Stop(models.Model):
     stop_id = models.CharField(primary_key=True, max_length=10)
-    stop_name = models.CharField(max_length=200)
+    stop_name = models.CharField(max_length=200, db_index=True)
     stop_code = models.CharField(max_length=10, blank=True, null=True)
     stop_loc = models.PointField(blank=True, null=True)
     parent_station = models.ForeignKey('self', on_delete=models.CASCADE, related_name='stops', blank=True, null=True)
     location_type = models.IntegerField(blank=True, null=True)
     provider = models.CharField(max_length=10)
+
+    stop_route_type = models.IntegerField(blank=True, null=True)
+    has_trips = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} - {}".format(self.stop_id, self.stop_name)

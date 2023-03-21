@@ -2,16 +2,15 @@ from django.shortcuts import render
 from .models import *
 from django.http import JsonResponse
 from datetime import datetime
-from django.db.models import Q, F, ExpressionWrapper, fields, Subquery, OuterRef
+from django.db.models import Q, F, ExpressionWrapper, fields, Subquery, OuterRef, Case, When, IntegerField
+from django.contrib.gis.geos import Point, Polygon
 from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.geos import Point
-from django.core.serializers import serialize
 
 
 def index(request):
     saved_stops = request.COOKIES.get('saved_stops')
 
-    if saved_stops is None:
+    if not saved_stops:
         saved_stops = []
     else:
         saved_stops = saved_stops.split('|')
@@ -33,7 +32,11 @@ def index(request):
 
     # map_stations = Stop.objects.filter(Q(location_type=1))
 
-    return render(request, 'search/index.html', {'stops': data})
+    return render(request, 'search/map.html', {'stops': data})
+
+
+def map(request):
+    return render(request, 'search/map.html')
 
 
 def search_suggestions(request):
@@ -45,34 +48,60 @@ def search_suggestions(request):
         stations = Stop.objects.filter(Q(stop_name__icontains=query) & Q(location_type=1)) # stop_name__unaccent__lower__trigram_similar
 
         for station in stations:
-            stop = station.stops.first() if station.stops.first() else station
+            route_type = station.stop_route_type
 
-            if stop.stop_times.first().trip.route.route_type == 2:  # rail
+            if route_type == 2:  # rail
                 output[0].append([station.stop_name, station.stop_id])
 
-            elif stop.stop_times.first().trip.route.route_type == 0:  # tram
+            elif route_type == 0:  # tram
                 output[1].append([station.stop_name, station.stop_id])
 
-            elif stop.stop_times.first().trip.route.route_type == 3:  # bus
+            elif route_type == 3:  # bus
                 output[2].append([station.stop_name, station.stop_id])
 
     return JsonResponse({'status': 200, 'data': output})
 
 
 def location_search(request):
-    lon = float(request.GET.get('lon', 0))
-    lat = float(request.GET.get('lat', 0))
-    rad = float(request.GET.get('rad', 0))
+    sw_lon = float(request.GET.get('sw_lon', 0))
+    sw_lat = float(request.GET.get('sw_lat', 0))
+    ne_lon = float(request.GET.get('ne_lon', 0))
+    ne_lat = float(request.GET.get('ne_lat', 0))
+    zoom = float(request.GET.get('zoom', 0))
 
-    stops = get_stops_location(lon, lat, rad)
-    json = serialize('json', stops)
+    stops = get_stops_bbox(sw_lon, sw_lat, ne_lon, ne_lat)
 
-    return JsonResponse(json, safe=False)
+    order_priority = Case(
+        When(stop_route_type=2, then=0),
+        When(stop_route_type=0, then=1),
+        When(stop_route_type=3, then=2),
+        default=3,  # handle other priorities
+        output_field=IntegerField(),
+    )
+
+    if zoom >= 17:
+        stops = stops.exclude(stop_times__isnull=True).order_by(order_priority)[:150]
+    elif zoom <= 11:
+        stops = stops.filter(stop_route_type=2).order_by(order_priority)[:150]
+    else:
+        stops = stops.filter(location_type=1).order_by(order_priority)[:150]
+
+    data = []
+
+    for stop in stops:
+        data.append({'lat': stop.stop_loc.x, 'lon': stop.stop_loc.y, 'id': stop.stop_id, 'name': stop.stop_name, 'type': stop.stop_route_type})
+
+    return JsonResponse({'status': 200, 'data': data})
 
 
-def get_stops_location(lon, lat, radius):
-    point = Point(lon, lat)
-    return Stop.objects.filter(stop_loc__distance_lt=(point, radius))
+# def get_stops_radius(lat, lon, radius):
+#     point = Point(lat, lon)
+#     return Stop.objects.filter(stop_loc__distance_lt=(point, radius))
+
+
+def get_stops_bbox(sw_lon, sw_lat, ne_lon, ne_lat):
+    polygon = Polygon.from_bbox((sw_lat, sw_lon, ne_lat, ne_lon))
+    return Stop.objects.filter(stop_loc__within=polygon)
 
 
 def get_service_ids(date):

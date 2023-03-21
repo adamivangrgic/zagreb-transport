@@ -6,7 +6,7 @@ from google.transit import gtfs_realtime_pb2  # protobuf==3.20.1, requests
 import requests
 from datetime import datetime, timedelta
 from django.db.models import Case, When, fields, F, ExpressionWrapper
-from .parse_utils import download_zip, date_formatter
+from .parse_utils import *
 from io import TextIOWrapper
 from django.contrib.gis.geos import Point
 
@@ -243,6 +243,8 @@ def update_stops_times(file):
                 print(progress_sum / 1500000 * 100, '%')
 
         StopTime.objects.bulk_create(bulk_list)
+
+    set_stop_route_type(provider)
 
 
 def update_calendar(file):

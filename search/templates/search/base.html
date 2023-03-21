@@ -20,41 +20,45 @@
     <link rel="stylesheet" href="{% static 'icons/icons.css' %}"/>
     <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}"/>
     <script src="{% static 'leaflet/leaflet.js' %}"></script>
+    <script src="{% static 'a/a.js' %}"></script>
 </head>
 
 <body>
 
-<div class="my-4 mx-3">
+<div class="mb-3 mx-3">
     <div class="row">
-        <div class="col-lg-4">
-        </div>
+        <div class="col-lg-4"></div>
         <div class="col-lg-4 d-grid gap-4">
 
-            <div class="input-group active p-1 bg-secondary rounded-pill">
-                {% if request.path == '/' %}
-                      <span class="input-group-text border-0 bg-transparent bold" style="font-size: 1.3rem; color: white;"
-                      id="search-addon"><i class="bi bi-search"></i></span>
-                {% else %}
-                      <button type="button" class="btn btn-primary bg-transparent border-0" style="font-size: 1.3rem; color: white;" onclick="window.history.back(); "><i class="bi bi-arrow-left"></i></button>
-                {% endif %}
-                <input id="search" type="search" class="form-control border-0 rounded-pill"
-                       {% if station %}
-                       placeholder="{{ station.stop_name }}"
-                       {% else %}
-                       placeholder="npr. Trg J. Jelačića"
-                       {% endif %}
-                       aria-label="Search"/>
+            <div class="sticky-top pt-3">
+                <div class="col p-1 d-grid gap-1 bg-secondary" style="border-radius: 25.6px">
+                    <div class="input-group active">
+                        {% if request.path == '/' %}
+                            <span class="input-group-text border-0 bg-transparent bold" style="font-size: 1.3rem; color: white;"
+                            id="search-addon"><i class="bi bi-search"></i></span>
+                        {% else %}
+                            <button type="button" class="btn btn-primary bg-transparent border-0" style="font-size: 1.3rem; color: white;" onclick="window.history.back(); "><i class="bi bi-arrow-left"></i></button>
+                        {% endif %}
+                        <input id="search" type="search" class="form-control border-0 rounded-pill"
+                            {% if station %}
+                            placeholder="{{ station.stop_name }}"
+                            {% else %}
+                            placeholder="npr. Trg J. Jelačića"
+                            {% endif %}
+                            aria-label="Search"/>
+                    </div>
+                    <div id="results" class="col p-2" style="display:none;"></div>
+
+                </div>
             </div>
-            <div id="results" class="list-group" style="border-radius: 18px; display:none; border-radius: 29.6px"></div>
 
             {% block content %}
             {% endblock %}
 
-            <p class="text-center text-muted"><small>&copy;Zagreb Transport 2023 - Ivan Adam Grgić</small></p>
+            {% comment %} <p class="text-center text-muted"><small>&copy;Zagreb Transport 2023 - Ivan Adam Grgić</small></p> {% endcomment %}
 
         </div>
-        <div class="col-lg-4">
-        </div>
+        <div class="col-lg-4"></div>
     </div>
 </div>
 
@@ -65,11 +69,9 @@ const waitTime = 400;
 const input = document.querySelector('#search');
 input.addEventListener('keyup', (e) => {
     const text = e.currentTarget.value;
-
-    // Clear timer
+    
     clearTimeout(timer);
-
-    // Wait for X ms and then process the request
+    
     timer = setTimeout(() => {
         search(text);
     }, waitTime);
@@ -95,25 +97,25 @@ function populate(json){
     res.style.display = 'initial';
     res.innerHTML = '';
 
-    if (json.data[0].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Vlak</strong></div>'; };
+    if (json.data[0].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Vlak</div>'; };
     for (const st of json.data[0]){
         let name = st[0];
         let id = st[1];
-        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
     };
 
-    if (json.data[1].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Tramvaji</strong></div>'; };
+    if (json.data[1].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Tramvaji</div>'; };
     for (const st of json.data[1]){
         let name = st[0];
         let id = st[1];
-        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
     };
 
-    if (json.data[2].length != 0){ res.innerHTML += '<div class="list-group-item list-group-item-dark" aria-current="true"><strong>Autobusi</strong></div>'; };
+    if (json.data[2].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Autobusi</div>'; };
     for (const st of json.data[2]){
         let name = st[0];
         let id = st[1];
-        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item list-group-item-action">' + name + '</a>';
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
     };
 
 };
