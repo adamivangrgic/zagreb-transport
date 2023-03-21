@@ -7,22 +7,37 @@
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:100%; width:100%; pointer-events:auto;"></div>
 <div style="width:100%; aspect-ratio:5/4; z-index: -1; pointer-events:none;"></div>
 
-<div class="d-grid gap-4" style="z-index: 2;">
+<div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
 
 {% for key, val in stops.items %}
 <div class="shadow list-group" style="border-radius: 29.6px;">
     <div class="list-group-item list-group-item-dark">
         <div class="row">
             <div class="col">
-                <strong>{{ val.station_name }}</strong>
-                {% if val.hs %}
-                : {{ val.hs }}
+                {% if not station %}
+                    <strong>{{ val.station_name }}</strong>
+                    {% if val.hs %} &rarr; {{ val.hs }}
+                {% endif %}
+
+                {% else %}
+                    {% if station.provider == 'zet' %}
+                        {{ val.hs }}
+                    {% elif station.provider == 'hzpp' %}
+                        {{ station.stop_name }}
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="col-auto">
                 <a href="/station/?id={{ key }}" style="color: black;"><i
                         class="bi bi-box-arrow-up-right"></i></a>
             </div>
+
+            {% if station %}
+            <div class="col-auto">
+                <a href="?id={{ key }}&td=0&ad=1" style="color: black;"><i class="bi bi-calendar-week"></i></a>
+            </div>
+            {% endif %}
+
             <div class="col-auto">
                 <a onclick="save_stop('{{ key }}')" style="color: black;">
                     {% if key in request.COOKIES.saved_stops %}
@@ -41,7 +56,7 @@
     <a href="/trip/?id={{ stime.trip.trip_id }}" class="list-group-item list-group-item-action">
         <div class="row">
             {% if stime.provider == 'zet' %}
-            <div class="col-2">
+            <div class="d-inline" style="width: 50px">
                 {{ stime.trip.route.route_short_name }}
             </div>
             {% endif %}
@@ -82,13 +97,28 @@
     {% empty %}
     <div class="list-group-item">Nema polazaka.</div>
     {% endfor %}
+
+    {% if station %}
+        {% if val.stimes|length < 25 and 'td' not in request.GET %}
+        <a href="?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center" style="font-size: 11px">Sljedeći dan <i class="bi bi-calendar-plus"></i></a>
+        {% endif %}
+    {% endif %}
 </div>
 {% endfor %}
 
 </div>
 
 <script>
-    var map = L.map('map', {attributionControl: false, zoomControl: false}).setView([45.81299864080138 - 0.0045, 15.977298264650766], 15);
+    {% if station %}
+    const center = [{{ station.stop_loc.x }} - 0.001, {{ station.stop_loc.y }}];
+    const init_zoom = 17;
+    {% else %}
+    const center = [45.81299864080138 - 0.0045, 15.977298264650766];
+    const init_zoom = 15;
+    navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options);
+    {% endif %}
+
+    var map = L.map('map', {attributionControl: false, zoomControl: false}).setView(center, init_zoom);
     var renderer = L.canvas({ padding: 0.5 });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 18, minZoom: 10}).addTo(map);
@@ -117,6 +147,21 @@
     var markers = L.layerGroup();
 
     refresh_stops();
+
+    function succes_get_location(position){
+        map.setView([position.coords.latitude - 0.0045, position.coords.longitude]);
+        L.circleMarker([position.coords.latitude, position.coords.longitude]).addTo(map);
+    };
+    
+    function error_get_location(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+    };
+    
+    var get_location_options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+    };
 
     ////
 
@@ -161,6 +206,10 @@
         var url = '/station/?id=' + this.options.win_url;
         window.open(url, '_self'); 
     };
+
+    var refresh_interval = window.setInterval(function(){
+        $('#timetable').load(document.URL +  ' #timetable');
+    }, 20 * 1000);
 
 </script>
 

@@ -184,7 +184,7 @@ def update_stops_times(file):
 
                 ###
                 progress_sum += 5000
-                print(progress_sum / 600000 * 100, '%')
+                print('update_stop_times - ' + provider, progress_sum / 600000 * 100, '%')
 
         StopTime.objects.bulk_create(bulk_list)
 

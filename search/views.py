@@ -80,7 +80,7 @@ def location_search(request):
     )
 
     if zoom >= 17:
-        stops = stops.exclude(stop_times__isnull=True).order_by(order_priority)[:150]
+        stops = stops.exclude(has_trips=False).order_by(order_priority)[:150]
     elif zoom <= 11:
         stops = stops.filter(stop_route_type=2).order_by(order_priority)[:150]
     else:
@@ -167,7 +167,10 @@ def station(request):
 
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code}
 
-    return render(request, 'search/station.html', {'stops': data, 'station': station, 'days': days, 'td': td})
+    if ad:
+        return render(request, 'search/station.html', {'stops': data, 'station': station, 'days': days, 'td': td})
+    else:
+        return render(request, 'search/map.html', {'stops': data, 'station': station})
 
 
 def save_stop(request):

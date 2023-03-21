@@ -26,22 +26,22 @@ def set_stop_route_type(provider=None):
     for stop in stops:
         if stop.stop_times.count() > 0:
             route_type = stop.stop_times.first().trip.route.route_type
-            hasTrips = True
+            has_trips = True
         elif stop.stops.first().stop_times.count() > 0:
             route_type = stop.stops.first().stop_times.first().trip.route.route_type
-            hasTrips = False
+            has_trips = False
         else:
             route_type = None
-            hasTrips = False
+            has_trips = False
             
-        updated_stops.append(Stop(pk=stop.pk, stop_route_type=route_type, hasTrips=hasTrips))
+        updated_stops.append(Stop(pk=stop.pk, stop_route_type=route_type, has_trips=has_trips))
 
-        if len(updated_stops) > 500:
-            Stop.objects.bulk_update(updated_stops, ['stop_route_type', 'hasTrips'])
+        if len(updated_stops) > 100:
+            Stop.objects.bulk_update(updated_stops, ['stop_route_type', 'has_trips'])
             updated_stops = []
 
             ###
-            progress_sum += 500
-            print(progress_sum / stops.count() * 100, '%')
+            progress_sum += 100
+            print('set_stop_route_type - ', progress_sum / stops.count() * 100, '%')
 
-    Stop.objects.bulk_update(updated_stops, ['stop_route_type', 'hasTrips'])
+    Stop.objects.bulk_update(updated_stops, ['stop_route_type', 'has_trips'])

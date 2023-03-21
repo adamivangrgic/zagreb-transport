@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 {% load custom_tags %}
+
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -20,6 +21,7 @@
     <link rel="stylesheet" href="{% static 'icons/icons.css' %}"/>
     <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}"/>
     <script src="{% static 'leaflet/leaflet.js' %}"></script>
+    <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
     <script src="{% static 'a/a.js' %}"></script>
 </head>
 
@@ -31,7 +33,7 @@
         <div class="col-lg-4 d-grid gap-4">
 
             <div class="sticky-top pt-3">
-                <div class="col p-1 d-grid gap-1 bg-secondary" style="border-radius: 25.6px">
+                <div class="col p-1 d-grid gap-1 bg-secondary shadow" style="border-radius: 25.6px">
                     <div class="input-group active">
                         {% if request.path == '/' %}
                             <span class="input-group-text border-0 bg-transparent bold" style="font-size: 1.3rem; color: white;"
@@ -120,14 +122,14 @@ function populate(json){
 
 };
 
-window.addEventListener( "pageshow", function ( event ) {
+{% comment %} window.addEventListener( "pageshow", function ( event ) {
   var historyTraversal = event.persisted ||
                          ( typeof window.performance != "undefined" &&
                               window.performance.navigation.type === 2 );
   if ( historyTraversal ) {
     window.location.reload();
   }
-});
+}); {% endcomment %}
 
 function save_stop(id){
     const url = "/save_stop/?id=" + id;
