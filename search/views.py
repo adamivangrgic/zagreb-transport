@@ -28,9 +28,7 @@ def index(request):
         headsigns = Trip.objects.filter(stop_times__in=f_stimes).distinct().values_list('trip_headsign', flat=True)
 
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
-                              'station_name': stop.stop_name}
-
-    # map_stations = Stop.objects.filter(Q(location_type=1))
+                              'station_name': stop.stop_name, 'provider': stop.provider}
 
     return render(request, 'search/map.html', {'stops': data})
 
@@ -144,8 +142,9 @@ def get_stop_times(stop, date, num_of_stations, time_offset, current_time, all_d
 
 def station(request):
     station_id = request.GET.get('id')
-    td = int(request.GET.get('td', 0))
-    ad = bool(request.GET.get('ad', 0))
+    td = int(request.GET.get('td', 0)) # time delay (usually days)
+    ad = bool(request.GET.get('ad', 0)) # all day
+    num = int(request.GET.get('num', 25)) # number of stations
 
     station = Stop.objects.get(stop_id=station_id)
     stops = station.stops.all() if station.stops.all() else [station]
@@ -162,7 +161,7 @@ def station(request):
     data = {}
 
     for stop in stops:
-        f_stimes = get_stop_times(stop, day, 25, -1, current_time, all_day=ad)
+        f_stimes = get_stop_times(stop, day, num, -1, current_time, all_day=ad)
         headsigns = Trip.objects.filter(stop_times__in=f_stimes).distinct().values_list('trip_headsign', flat=True)
 
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code}
@@ -170,7 +169,7 @@ def station(request):
     if ad:
         return render(request, 'search/station.html', {'stops': data, 'station': station, 'days': days, 'td': td})
     else:
-        return render(request, 'search/map.html', {'stops': data, 'station': station})
+        return render(request, 'search/map.html', {'stops': data, 'station': station, 'num': num})
 
 
 def save_stop(request):

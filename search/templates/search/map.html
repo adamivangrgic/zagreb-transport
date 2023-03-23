@@ -14,11 +14,10 @@
     <div class="list-group-item list-group-item-dark">
         <div class="row">
             <div class="col">
+                <a class="text-reset text-decoration-none" href="/station/?id={{ key }}">
                 {% if not station %}
                     <strong>{{ val.station_name }}</strong>
-                    {% if val.hs %} &rarr; {{ val.hs }}
-                {% endif %}
-
+                    {% if val.hs %} &rarr; {{ val.hs }}{% endif %}
                 {% else %}
                     {% if station.provider == 'zet' %}
                         {{ val.hs }}
@@ -26,15 +25,16 @@
                         {{ station.stop_name }}
                     {% endif %}
                 {% endif %}
+                </a>
             </div>
-            <div class="col-auto">
+            {% comment %} <div class="col-auto">
                 <a href="/station/?id={{ key }}" style="color: black;"><i
                         class="bi bi-box-arrow-up-right"></i></a>
-            </div>
+            </div> {% endcomment %}
 
             {% if station %}
             <div class="col-auto">
-                <a href="?id={{ key }}&td=0&ad=1" style="color: black;"><i class="bi bi-calendar-week"></i></a>
+                <a href="/station/?id={{ key }}&td=0&ad=1" style="color: black;"><i class="bi bi-calendar-week"></i></a>
             </div>
             {% endif %}
 
@@ -99,29 +99,49 @@
     {% endfor %}
 
     {% if station %}
-        {% if val.stimes|length < 25 and 'td' not in request.GET %}
-        <a href="?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center" style="font-size: 11px">Sljedeći dan <i class="bi bi-calendar-plus"></i></a>
+        {% if val.stimes|length < num and 'td' not in request.GET %}
+        <a href="/station/?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center" style="font-size: 11px">Sljedeći dan
+            <i class="bi bi-calendar-plus"></i></a>
+        {% elif num %}
+        <a href="javascript: load_more_stations('{{ key }}', {{ num }});" class="list-group-item list-group-item-action text-center" style="font-size: 11px">Učitaj još
+            <i class="bi bi-arrow-clockwise"></i></a>
         {% endif %}
     {% endif %}
 </div>
 {% endfor %}
 
+{% comment %} <button type="button" class="btn btn-secondary mx-auto" style="min-height: 51.2px; border-radius: 25.6px">
+    <i class="bi bi-star-fill"></i> Prikaži spremljene stanice
+</button> {% endcomment %}
+
+
 </div>
 
 <script>
+    var curr_url = document.URL;
+
     {% if station %}
-    const center = [{{ station.stop_loc.x }} - 0.001, {{ station.stop_loc.y }}];
-    const init_zoom = 17;
+        const center = [{{ station.stop_loc.x }}, {{ station.stop_loc.y }}];
+        const init_zoom = 17;
     {% else %}
-    const center = [45.81299864080138 - 0.0045, 15.977298264650766];
-    const init_zoom = 15;
-    navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options);
+        const center = [45.81299864080138, 15.977298264650766];
+        const init_zoom = 15;
+        navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options);
     {% endif %}
 
-    var map = L.map('map', {attributionControl: false, zoomControl: false}).setView(center, init_zoom);
+    var map = L.map('map', {attributionControl: false, zoomControl: false});
     var renderer = L.canvas({ padding: 0.5 });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 18, minZoom: 10}).addTo(map);
+    var map_offset = new L.Point(0, map.getSize().y * 0.225)
+    set_view_offset(center, init_zoom);
+
+    function set_view_offset(latlang, targetZoom){
+        var targetPoint = map.project(latlang, targetZoom).add(map_offset),
+        latlang = map.unproject(targetPoint, targetZoom);
+        map.setView(latlang, targetZoom)
+    }
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 30, minZoom: 9}).addTo(map);
 
     var train_red = L.icon({
         iconUrl: '{% static '/icons/train_red.png' %}',
@@ -149,7 +169,7 @@
     refresh_stops();
 
     function succes_get_location(position){
-        map.setView([position.coords.latitude - 0.0045, position.coords.longitude]);
+        set_view_offset([position.coords.latitude, position.coords.longitude], map.getZoom());
         L.circleMarker([position.coords.latitude, position.coords.longitude]).addTo(map);
     };
     
@@ -186,7 +206,7 @@
             else if (points[i].type == 0) {icon = tram_red}
             else if (points[i].type == 3) {icon = bus_red}
 
-            marker_arr[i] = new L.marker([points[i].lat, points[i].lon], {win_url: points[i].id, renderer: renderer, icon:icon});
+            marker_arr[i] = new L.marker([points[i].lat, points[i].lon], {stop_id: points[i].id, renderer: renderer, icon:icon});
             marker_arr[i].on('click', onClick);
 
             if (points.length <= 35){
@@ -203,12 +223,22 @@
     };
 
     function onClick(e) {
-        var url = '/station/?id=' + this.options.win_url;
-        window.open(url, '_self'); 
+        change_stop(this.options.stop_id, this.getLatLng());
     };
 
+    function change_stop(stop_id, latlang){
+        curr_url = '/station/?id=' + stop_id;
+        $('#timetable').load(curr_url +  ' #timetable');
+        set_view_offset(latlang, 17);
+    };
+
+    function load_more_stations(stop_id, num){
+        curr_url= `/station/?id=${ stop_id }&num=${num + 10}`;
+        $('#timetable').load(curr_url +  ' #timetable');
+    }
+
     var refresh_interval = window.setInterval(function(){
-        $('#timetable').load(document.URL +  ' #timetable');
+        $('#timetable').load(curr_url +  ' #timetable');
     }, 20 * 1000);
 
 </script>

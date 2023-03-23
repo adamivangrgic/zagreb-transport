@@ -22,18 +22,20 @@
     <div class="list-group-item list-group-item-dark">
             <div class="row">
                 <div class="col">
+                    <a class="text-dark text-opacity-75 text-decoration-none" href="/station/?id={{ key }}">
                     {% if station.provider == 'zet' %}
                         {{ val.hs }}
                     {% elif station.provider == 'hzpp' %}
                         {{ station.stop_name }}
                     {% endif %}
+                    </a>
                 </div>
-                <div class="col-auto">
+                {% comment %} <div class="col-auto">
                     <a href="/station/?id={{ key }}" style="color: black;"><i
                             class="bi bi-box-arrow-up-right"></i></a>
-                </div>
+                </div> {% endcomment %}
                 <div class="col-auto">
-                    <a href="?id={{ key }}&td=0&ad=1" style="color: black;"><i class="bi bi-calendar-week"></i></a>
+                    <a href="?id={{ key }}" style="color: black;"><i class="bi bi-pin-map"></i></a>
                 </div>
                 <div class="col-auto">
                     <a onclick="save_stop('{{ key }}')" style="color: black;">
@@ -53,7 +55,7 @@
     <a href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action">
         <div class="row">
             {% if stime.provider == 'zet' %}
-            <div class="col-2">
+            <div class="d-inline" style="width: 50px">
                 {{ stime.trip.route.route_short_name }}
             </div>
             {% endif %}
