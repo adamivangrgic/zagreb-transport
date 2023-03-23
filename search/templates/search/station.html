@@ -3,16 +3,18 @@
 
 {% load custom_tags %}
 
+<div id="content" class="d-grid gap-4">
+
 <div class="btn-group btn-group-sm">
     {% for d in days %}
     {% if forloop.first %}
     <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
-       style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;" href="?id={{ request.GET.id }}&td={{ d.td }}&ad=1">{{ d.wd }}<br>{{ d.day }}</a>
+       style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
     {% elif forloop.last %}
     <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
-       style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;" href="?id={{ request.GET.id }}&td={{ d.td }}&ad=1">{{ d.wd }}<br>{{ d.day }}</a>
+       style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
     {% else %}
-    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}" href="?id={{ request.GET.id }}&td={{ d.td }}&ad=1">{{ d.wd }}<br>{{ d.day }}</a>
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
     {% endif %}
     {% endfor %}
 </div>
@@ -128,4 +130,13 @@
         prije 15 minuta</p>
     <p><span class="badge bg-light text-dark">3 min</span> - Planirano vrijeme</p>
 </div>
+
+</div>
+
+<script>
+    function change_day(td){
+        var url = `?id={{ request.GET.id }}&td=${ td }&ad=1`;
+        $('#content').load(url +  ' #content');
+    }
+</script>
 {% endblock %}

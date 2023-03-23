@@ -229,7 +229,7 @@
     function change_stop(stop_id, latlang){
         curr_url = '/station/?id=' + stop_id;
         $('#timetable').load(curr_url +  ' #timetable');
-        set_view_offset(latlang, 17);
+        set_view_offset(latlang, Math.max(17, map.getZoom()));
     };
 
     function load_more_stations(stop_id, num){

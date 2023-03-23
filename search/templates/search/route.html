@@ -3,16 +3,18 @@
 
 {% load custom_tags %}
 
+<div id="content" class="d-grid gap-4">
+
 <div class="btn-group btn-group-sm">
     {% for d in days %}
     {% if forloop.first %}
     <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
-       style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;" href="?id={{ route.route_id }}&td={{ d.td }}">{{ d.wd }}<br>{{ d.day }}</a>
+       style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
     {% elif forloop.last %}
     <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
-       style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;" href="?id={{ route.route_id }}&td={{ d.td }}">{{ d.wd }}<br>{{ d.day }}</a>
+       style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
     {% else %}
-    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}" href="?id={{ route.route_id }}&td={{ d.td }}">{{ d.wd }}<br>{{ d.day }}</a>
+    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
     {% endif %}
     {% endfor %}
 </div>
@@ -76,6 +78,8 @@
     {% endfor %}
 </div>
 
+</div>
+
 <p class="text-center text-muted">
     <small>
     {{ route.agency.agency_name }}
@@ -94,4 +98,10 @@
     </small>
 </p>
 
+<script>
+    function change_day(td){
+        var url = `?id={{ request.GET.id }}&td=${ td }`;
+        $('#content').load(url +  ' #content');
+    }
+</script>
 {% endblock %}
