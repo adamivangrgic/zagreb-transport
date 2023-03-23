@@ -108,12 +108,15 @@
         {% endif %}
     {% endif %}
 </div>
+
 {% endfor %}
 
-{% comment %} <button type="button" class="btn btn-secondary mx-auto" style="min-height: 51.2px; border-radius: 25.6px">
-    <i class="bi bi-star-fill"></i> Prikaži spremljene stanice
-</button> {% endcomment %}
-
+{% if station %}
+    <button type="button" class="btn btn-secondary mx-auto shadow rounded-pill"
+        onclick="show_favourites()">
+        <i class="bi bi-star-fill"></i> Spremljene stanice
+    </button>
+{% endif %}
 
 </div>
 
@@ -240,6 +243,13 @@
     var refresh_interval = window.setInterval(function(){
         $('#timetable').load(curr_url +  ' #timetable');
     }, 20 * 1000);
+
+    function show_favourites(){
+        curr_url = '/';
+        $('#timetable').load(curr_url +  ' #timetable');
+        {% comment %} navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options); {% endcomment %}
+        window.scrollTo(0, 0);
+    }
 
 </script>
 

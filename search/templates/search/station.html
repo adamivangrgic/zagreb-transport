@@ -24,13 +24,11 @@
     <div class="list-group-item list-group-item-dark">
             <div class="row">
                 <div class="col">
-                    <a class="text-dark text-opacity-75 text-decoration-none" href="/station/?id={{ key }}">
                     {% if station.provider == 'zet' %}
                         {{ val.hs }}
                     {% elif station.provider == 'hzpp' %}
                         {{ station.stop_name }}
                     {% endif %}
-                    </a>
                 </div>
                 {% comment %} <div class="col-auto">
                     <a href="/station/?id={{ key }}" style="color: black;"><i
