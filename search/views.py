@@ -11,9 +11,9 @@ def index(request):
     saved_stops = request.COOKIES.get('saved_stops')
 
     if not saved_stops:
-        saved_stops = []
+        stop_ids = []
     else:
-        saved_stops = saved_stops.split('|')
+        stop_ids = saved_stops.split('|')
 
     current_time = datetime.now()
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -21,9 +21,9 @@ def index(request):
         today_mid = today_mid - timedelta(days=1)
 
     data = {}
+    stops = Stop.objects.filter(stop_id__in=stop_ids)
 
-    for stop_id in saved_stops:
-        stop = Stop.objects.get(stop_id=stop_id)
+    for stop in stops:
         f_stimes = get_stop_times(stop, today_mid, 4, -0.5, current_time)
         headsigns = Trip.objects.filter(stop_times__in=f_stimes).distinct().values_list('trip_headsign', flat=True)
 
@@ -40,11 +40,10 @@ def map(request):
 def search_suggestions(request):
     query = request.GET.get('q')
 
-    output = [[], [], []]  # rail 0, tram 1, bus 2
+    output = [[], [], [], []]  # rail 0, tram 1, bus 2, routes 3
 
     if len(query) > 2:
         stations = Stop.objects.filter(Q(stop_name__icontains=query) & Q(location_type=1)) # stop_name__unaccent__lower__trigram_similar
-
         for station in stations:
             route_type = station.stop_route_type
 
@@ -56,6 +55,11 @@ def search_suggestions(request):
 
             elif route_type == 3:  # bus
                 output[2].append([station.stop_name, station.stop_id])
+
+
+    routes = Route.objects.filter(Q(route_short_name__icontains=query) | Q(route_long_name__icontains=query))[:10]
+    for route in routes:
+        output[3].append([route.route_short_name, route.route_long_name, route.route_id])
 
     return JsonResponse({'status': 200, 'data': output})
 
@@ -164,7 +168,8 @@ def station(request):
         f_stimes = get_stop_times(stop, day, num, -1, current_time, all_day=ad)
         headsigns = Trip.objects.filter(stop_times__in=f_stimes).distinct().values_list('trip_headsign', flat=True)
 
-        data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code}
+        data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
+                              'station_name': stop.stop_name, 'provider': stop.provider}
 
     if ad:
         return render(request, 'search/station.html', {'stops': data, 'station': station, 'days': days, 'td': td})

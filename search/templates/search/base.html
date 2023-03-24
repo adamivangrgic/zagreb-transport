@@ -122,7 +122,7 @@ input.addEventListener('keyup', (e) => {
 function search(){
     let q = input.value;
 
-    if (q.length > 2){
+    if (q.length > 0){
         const url = "/search_suggestions/?q=" + q;
         fetch(url)
           .then(
@@ -160,16 +160,14 @@ function populate(json){
         res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
     };
 
-};
+    if (json.data[3].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Linije</div>'; };
+    for (const st of json.data[3]){
+        let name = st[0] + ' - ' + st[1];
+        let id = st[2];
+        res.innerHTML += '<a href="/route/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
+    };
 
-{% comment %} window.addEventListener( "pageshow", function ( event ) {
-  var historyTraversal = event.persisted ||
-                         ( typeof window.performance != "undefined" &&
-                              window.performance.navigation.type === 2 );
-  if ( historyTraversal ) {
-    window.location.reload();
-  }
-}); {% endcomment %}
+};
 
 function save_stop(id){
     const url = "/save_stop/?id=" + id;

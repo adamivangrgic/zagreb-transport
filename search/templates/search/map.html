@@ -5,7 +5,8 @@
 {% load custom_tags %}
 
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:100%; width:100%; pointer-events:auto;"></div>
-<div style="width:100%; aspect-ratio:5/4; z-index: -1; pointer-events:none;"></div>
+<div class="d-lg-none" style="width:100%; aspect-ratio:5/6; z-index: -1; pointer-events:none;"></div>
+<div class="d-none d-lg-block" style="width:100%; aspect-ratio:5/4; z-index: -1; pointer-events:none;"></div>
 
 <div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
 
@@ -15,16 +16,8 @@
         <div class="row">
             <div class="col">
                 <a class="text-reset text-decoration-none" href="/station/?id={{ key }}">
-                {% if not station %}
                     <strong>{{ val.station_name }}</strong>
                     {% if val.hs %} &rarr; {{ val.hs }}{% endif %}
-                {% else %}
-                    {% if station.provider == 'zet' %}
-                        {{ val.hs }}
-                    {% elif station.provider == 'hzpp' %}
-                        {{ station.stop_name }}
-                    {% endif %}
-                {% endif %}
                 </a>
             </div>
             {% comment %} <div class="col-auto">
@@ -132,10 +125,10 @@
         navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options);
     {% endif %}
 
-    var map = L.map('map', {attributionControl: false, zoomControl: false});
+    var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
     var renderer = L.canvas({ padding: 0.5 });
 
-    var map_offset = new L.Point(0, map.getSize().y * 0.225)
+    var map_offset = new L.Point(0, map.getSize().y * 0.15)
     set_view_offset(center, init_zoom);
 
     function set_view_offset(latlang, targetZoom){
@@ -144,7 +137,7 @@
         map.setView(latlang, targetZoom)
     }
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 30, minZoom: 9}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 21, minZoom: 9}).addTo(map);
 
     var train_red = L.icon({
         iconUrl: '{% static '/icons/train_red.png' %}',
@@ -236,7 +229,7 @@
     };
 
     function load_more_stations(stop_id, num){
-        curr_url= `/station/?id=${ stop_id }&num=${num + 10}`;
+        curr_url= `/station/?id=${ stop_id }&num=${num + 20}`;
         $('#timetable').load(curr_url +  ' #timetable');
     }
 
