@@ -169,7 +169,7 @@ function populate(json){
     if (json.data[3].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Linije</div>'; };
     for (const st of json.data[3]){
         if (st[0].length > 0){
-            var name = st[0] + ' &#x2022; ' + st[1];
+            var name = st[0] + ' - ' + st[1];
         } else {
             var name = st[1];
         };

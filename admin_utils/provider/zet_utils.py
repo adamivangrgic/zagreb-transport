@@ -280,7 +280,7 @@ def update_calendar(file):
         Calendar.objects.bulk_create(bulk_list)
 
 
-def sync_realtime():  # no blocks
+def sync_realtime():
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(realtime_url)
     feed.ParseFromString(response.content)
@@ -305,6 +305,9 @@ def sync_realtime():  # no blocks
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
         .filter(departure_time_an__gt=current_time - timedelta(minutes=3))
     stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
+
+    # for st in stop_times:
+    #     print(st.departure_time_an, current_time, st.departure_time_an > current_time)
 
     stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
     stops_waiting.update(updated_at=current_time)
