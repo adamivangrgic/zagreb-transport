@@ -21,7 +21,7 @@ def index(request):
         today_mid = today_mid - timedelta(days=1)
 
     data = {}
-    stops = Stop.objects.filter(stop_id__in=stop_ids)
+    stops = Stop.objects.filter(stop_id__in=stop_ids).order_by(Case(*[When(stop_id=id_val, then=pos) for pos, id_val in enumerate(stop_ids)]))
 
     for stop in stops:
         f_stimes = get_stop_times(stop, today_mid, 4, -0.5, current_time)

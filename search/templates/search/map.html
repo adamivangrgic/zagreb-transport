@@ -4,9 +4,8 @@
 {% load static %}
 {% load custom_tags %}
 
-<div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:100%; width:100%; pointer-events:auto;"></div>
-<div class="d-lg-none" style="width:100%; aspect-ratio:5/6; z-index: -1; pointer-events:none;"></div>
-<div class="d-none d-lg-block" style="width:100%; aspect-ratio:5/4; z-index: -1; pointer-events:none;"></div>
+<div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
+<div style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
 <div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
 
@@ -48,15 +47,15 @@
     {% for stime in val.stimes %}
     <a href="/trip/?id={{ stime.trip.trip_id }}" class="list-group-item list-group-item-action">
         <div class="row">
-            {% if stime.provider == 'zet' %}
+            {% if stime.trip.route.route_short_name %}
             <div class="d-inline" style="width: 50px">
                 {{ stime.trip.route.route_short_name }}
             </div>
             {% endif %}
             <div class="col">
-                {% if stime.provider == 'zet' %}
+                {% if stime.trip.trip_headsign %}
                 <strong>{{ stime.trip.trip_headsign }}</strong>
-                {% elif stime.provider == 'hzpp' %}
+                {% elif stime.trip.route.route_long_name %}
                 <strong>{{ stime.trip.route.route_long_name }}</strong>
                 {% endif %}
             </div>
@@ -116,11 +115,13 @@
 <script>
     var curr_url = document.URL;
 
+    var init_center = [45.813038, 15.976928];
+
     {% if station %}
         const center = [{{ station.stop_loc.x }}, {{ station.stop_loc.y }}];
         const init_zoom = 17;
     {% else %}
-        const center = [45.81299864080138, 15.977298264650766];
+        const center = [45.813038, 15.976928];
         const init_zoom = 15;
         navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options);
     {% endif %}
@@ -128,8 +129,11 @@
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
     var renderer = L.canvas({ padding: 0.5 });
 
-    var map_offset = new L.Point(0, map.getSize().y * 0.15)
+    var map_offset = new L.Point(0, map.getSize().y * 0.225)
     set_view_offset(center, init_zoom);
+
+    {% comment %} const map_window = document.getElementById('map-window').getBoundingClientRect();
+    map.setView(center, init_zoom, {paddingBottomRight: [map_window.right, map_window.bottom]}) {% endcomment %}
 
     function set_view_offset(latlang, targetZoom){
         var targetPoint = map.project(latlang, targetZoom).add(map_offset),
@@ -165,8 +169,9 @@
     refresh_stops();
 
     function succes_get_location(position){
-        set_view_offset([position.coords.latitude, position.coords.longitude], map.getZoom());
-        L.circleMarker([position.coords.latitude, position.coords.longitude]).addTo(map);
+        init_center = [position.coords.latitude, position.coords.longitude];
+        set_view_offset(init_center, map.getZoom());
+        L.circleMarker(init_center).addTo(map);
     };
     
     function error_get_location(err) {
@@ -241,8 +246,18 @@
         curr_url = '/';
         $('#timetable').load(curr_url +  ' #timetable');
         {% comment %} navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options); {% endcomment %}
+        set_view_offset(init_center, 15);
         window.scrollTo(0, 0);
     }
+
+    window.addEventListener( "pageshow", function ( event ) {
+        var historyTraversal = event.persisted || 
+                               ( typeof window.performance != "undefined" && 
+                                    window.performance.navigation.type === 2 );
+        if ( historyTraversal ) {
+            $('#timetable').load(curr_url +  ' #timetable');
+        }
+    });
 
 </script>
 

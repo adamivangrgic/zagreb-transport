@@ -60,7 +60,7 @@ ROOT_URLCONF = 'zet_live.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -147,31 +147,41 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 PWA_APP_NAME = 'Zagreb Transport'
 PWA_APP_DESCRIPTION = "Uživo pratite tramvaje, autobuse i vlakove u Zagrebu!"
-PWA_APP_THEME_COLOR = '#ffffff' #'#5c6bc0'
+PWA_APP_THEME_COLOR = '#5c6bc0'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = '/'
 PWA_APP_ORIENTATION = 'portrait'
 PWA_APP_START_URL = '/'
-PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_STATUS_BAR_COLOR = 'black-translucent'
 PWA_APP_ICONS = [
     {
         'src': '/static/images/icon-160.png',
         'sizes': '160x160'
+    },
+    {
+        'src': '/static/images/icon-512.png',
+        'sizes': '512x512'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
         'src': '/static/images/icon-160.png',
         'sizes': '160x160'
-    }
-]
-PWA_APP_SPLASH_SCREEN = [
+    },
     {
-        'src': '/static/images/icons/iPhone_14_Pro_landscape.png',
-        # 'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+        'src': '/static/images/icon-512.png',
+        'sizes': '512x512'
     }
 ]
+# PWA_APP_SPLASH_SCREEN = [
+#     {
+#         'src': '/static/images/icons/iPhone_14_Pro_landscape.png',
+#         # 'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+#     }
+# ]
 PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'hr-HR'
 PWA_APP_DEBUG_MODE = True
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static', 'serviceworker.js')

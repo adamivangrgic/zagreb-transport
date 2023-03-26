@@ -4,7 +4,7 @@
 {% load custom_tags %}
 {% load static %}
 
-<div id="map" style="height: 320px"></div>
+<div id="map" style="height: 320px; z-index: 1"></div>
 <script>
     var map = L.map('map', {attributionControl: false}).setView([45,16], 18);
 
@@ -82,9 +82,9 @@
         <div class="row">
             <div class="col-auto">
                 <strong>
-                    {% if trip.provider == 'zet' %}
+                    {% if trip.route.route_short_name %}
                         {{ trip.route.route_short_name }}
-                    {% elif trip.provider == 'hzpp' %}
+                    {% elif trip.trip_short_name %}
                         {{ trip.trip_short_name }}
                     {% endif %}
                 </strong>
