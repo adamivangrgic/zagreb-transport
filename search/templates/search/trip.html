@@ -264,9 +264,20 @@
 </p>
 
 <script>
-    var refresh_interval = window.setInterval(function(){
+    var lastSync = 0;
+    var syncInterval = 20 * 1000; //sync every 20sec
+
+    function syncPage() {
+        lastSync = new Date().getTime(); //set last sync to be now
         $('#timetable').load(document.URL +  ' #timetable');
-    }, 20 * 1000);
+    }
+
+    setInterval(function() {
+        var now = new Date().getTime();
+        if ((now - lastSync) > syncInterval ) {
+            syncPage();
+        }
+    }, 2 * 1000); //check every 2 seconds
 </script>
 
 {% endblock %}

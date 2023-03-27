@@ -116,6 +116,7 @@
     var curr_url = document.URL;
 
     var init_center = [45.813038, 15.976928];
+    var panToLoc = false;
 
     {% if station %}
         const center = [{{ station.stop_loc.x }}, {{ station.stop_loc.y }}];
@@ -123,11 +124,11 @@
     {% else %}
         const center = [45.813038, 15.976928];
         const init_zoom = 15;
-        navigator.geolocation.getCurrentPosition(succes_get_location, error_get_location, get_location_options);
+        navigator.geolocation.watchPosition(succes_get_location, error_get_location, get_location_options);
     {% endif %}
 
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
-    var renderer = L.canvas({ padding: 0.5 });
+    var renderer = L.canvas();
 
     var map_offset = new L.Point(0, map.getSize().y * 0.225)
     set_view_offset(center, init_zoom);
@@ -165,13 +166,20 @@
     });
 
     var markers = L.layerGroup();
+    var location_layer = L.layerGroup();
 
     refresh_stops();
 
     function succes_get_location(position){
         init_center = [position.coords.latitude, position.coords.longitude];
-        set_view_offset(init_center, map.getZoom());
-        L.circleMarker(init_center).addTo(map);
+
+        location_layer.clearLayers();
+        location_layer = L.layerGroup([L.circleMarker(init_center)]).addTo(map);
+
+        if (panToLoc == false){
+            set_view_offset(init_center, map.getZoom());
+            panToLoc = true;
+        }
     };
     
     function error_get_location(err) {
@@ -238,9 +246,20 @@
         $('#timetable').load(curr_url +  ' #timetable');
     }
 
-    var refresh_interval = window.setInterval(function(){
+    var lastSync = 0;
+    var syncInterval = 20 * 1000; //sync every 20sec
+
+    function syncPage() {
+        lastSync = new Date().getTime(); //set last sync to be now
         $('#timetable').load(curr_url +  ' #timetable');
-    }, 20 * 1000);
+    }
+
+    setInterval(function() {
+        var now = new Date().getTime();
+        if ((now - lastSync) > syncInterval ) {
+            syncPage();
+        }
+    }, 2 * 1000); //check every 2 seconds
 
     function show_favourites(){
         curr_url = '/';
@@ -249,15 +268,6 @@
         set_view_offset(init_center, 15);
         window.scrollTo(0, 0);
     }
-
-    window.addEventListener( "pageshow", function ( event ) {
-        var historyTraversal = event.persisted || 
-                               ( typeof window.performance != "undefined" && 
-                                    window.performance.navigation.type === 2 );
-        if ( historyTraversal ) {
-            $('#timetable').load(curr_url +  ' #timetable');
-        }
-    });
 
 </script>
 
