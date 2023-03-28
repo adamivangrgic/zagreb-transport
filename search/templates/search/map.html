@@ -165,6 +165,13 @@
         popupAnchor:  [13, 13]
     });
 
+    var loc_icon = L.icon({
+        iconUrl: '{% static '/icons/loc_ping.png' %}',
+        iconSize:     [26, 26],
+        iconAnchor:   [13, 13],
+        popupAnchor:  [13, 13]
+    });
+
     var markers = L.layerGroup();
     var location_layer = L.layerGroup();
 
@@ -174,7 +181,7 @@
         init_center = [position.coords.latitude, position.coords.longitude];
 
         location_layer.clearLayers();
-        location_layer = L.layerGroup([L.circleMarker(init_center)]).addTo(map);
+        location_layer = L.layerGroup([L.circle(init_center, position.coords.accuracy), L.marker(init_center, {icon: loc_icon})]).addTo(map);
 
         if (panToLoc == false){
             set_view_offset(init_center, map.getZoom());
