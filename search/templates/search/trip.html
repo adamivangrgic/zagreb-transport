@@ -6,7 +6,7 @@
 
 <div id="map" style="height: 320px; z-index: 1"></div>
 <script>
-    var map = L.map('map', {attributionControl: false}).setView([45,16], 18);
+    var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 18,
