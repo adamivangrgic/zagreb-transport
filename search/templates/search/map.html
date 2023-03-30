@@ -20,17 +20,12 @@
                 </a>
             </div>
             {% comment %} <div class="col-auto">
-                <a href="/station/?id={{ key }}" style="color: black;"><i
-                        class="bi bi-box-arrow-up-right"></i></a>
+                <a href="/station/?id={{ key }}" style="color: black;"><i class="bi bi-box-arrow-up-right"></i></a>
             </div> {% endcomment %}
 
-            {% if station %}
-            <div class="col-auto">
+            <div class="col-auto d-flex gap-4">
                 <a href="/station/?id={{ key }}&td=0&ad=1" style="color: black;"><i class="bi bi-calendar-week"></i></a>
-            </div>
-            {% endif %}
-
-            <div class="col-auto">
+           
                 <a onclick="save_stop('{{ key }}')" style="color: black;">
                     {% if key in request.COOKIES.saved_stops %}
                     <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
@@ -112,6 +107,60 @@
 
 </div>
 
+<div style="display: none">
+    <div id="loading-div" class="shadow list-group" style="border-radius: 29.6px;">
+        <div class="list-group-item list-group-item-dark">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="placeholder col-6 rounded-2"></div>
+                <div class="placeholder col-1 ms-auto rounded-2"></div>
+                <div class="placeholder col-1 rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="d-inline placeholder rounded-2" style="width: 50px"></div>
+                <div class="placeholder col-3 rounded-2"></div>
+                <div class="placeholder col-2 ms-auto bg-success  rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="d-inline placeholder rounded-2" style="width: 50px"></div>
+                <div class="placeholder col-3 rounded-2"></div>
+                <div class="placeholder col-2 ms-auto bg-success  rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="d-inline placeholder rounded-2" style="width: 50px"></div>
+                <div class="placeholder col-3 rounded-2"></div>
+                <div class="placeholder col-2 ms-auto bg-success  rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="d-inline placeholder rounded-2" style="width: 50px"></div>
+                <div class="placeholder col-3 rounded-2"></div>
+                <div class="placeholder col-2 ms-auto bg-success  rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="d-inline placeholder rounded-2" style="width: 50px"></div>
+                <div class="placeholder col-3 rounded-2"></div>
+                <div class="placeholder col-2 ms-auto bg-success  rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="d-inline placeholder rounded-2" style="width: 50px"></div>
+                <div class="placeholder col-3 rounded-2"></div>
+                <div class="placeholder col-2 ms-auto bg-success  rounded-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     var curr_url = document.URL;
 
@@ -124,7 +173,7 @@
     {% else %}
         const center = [45.813038, 15.976928];
         const init_zoom = 15;
-        navigator.geolocation.watchPosition(succes_get_location, error_get_location, get_location_options);
+        navigator.geolocation.watchPosition(succes_get_location, error_get_location);
     {% endif %}
 
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
@@ -180,7 +229,8 @@
     function succes_get_location(position){
         init_center = [position.coords.latitude, position.coords.longitude];
         location_layer.clearLayers();
-        location_layer = L.layerGroup([L.circle(init_center, position.coords.accuracy), L.marker(init_center, {icon: loc_icon})]).addTo(map);
+        location_layer = L.layerGroup([L.marker(init_center, {icon: loc_icon})]).addTo(map);
+        //L.circle(init_center, position.coords.accuracy), 
 
         if (panToLoc == false){
             set_view_offset(init_center, map.getZoom());
@@ -245,6 +295,7 @@
         curr_url = '/station/?id=' + stop_id;
         $('#timetable').load(curr_url +  ' #timetable');
         set_view_offset(latlang, Math.max(17, map.getZoom()));
+        show_loading();
     };
 
     function load_more_stations(stop_id, num){
@@ -271,7 +322,15 @@
         curr_url = '/';
         $('#timetable').load(curr_url +  ' #timetable');
         set_view_offset(init_center, 15);
+        show_loading();
         window.scrollTo(0, 0);
+    }
+
+    function show_loading(){
+        const timetable = document.getElementById("timetable");
+        var loading = document.getElementById("loading-div").cloneNode(true);;
+        timetable.innerHTML = "";
+        timetable.appendChild(loading);
     }
 
 </script>

@@ -5,7 +5,7 @@
 
 <div id="content" class="d-grid gap-4">
 
-<div class="btn-group btn-group-sm">
+<div id="date-selector" class="btn-group btn-group-sm">
     {% for d in days %}
     {% if forloop.first %}
     <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
@@ -98,10 +98,73 @@
     </small>
 </p>
 
+<div style="display: none">
+    <div id="loading-div" class="list-group" style="border-radius: 29.6px;">
+        <div class="list-group-item list-group-item-dark">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="d-inline placeholder rounded-2" style="width: 50px"></div>
+                <div class="placeholder col-6 rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="placeholder col-2 rounded-2"></div>
+                <div class="placeholder col-3 mx-auto rounded-2"></div>
+                <div class="placeholder col-2 rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="placeholder col-2 rounded-2"></div>
+                <div class="placeholder col-3 mx-auto rounded-2"></div>
+                <div class="placeholder col-2 rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="placeholder col-2 rounded-2"></div>
+                <div class="placeholder col-3 mx-auto rounded-2"></div>
+                <div class="placeholder col-2 rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="placeholder col-2 rounded-2"></div>
+                <div class="placeholder col-3 mx-auto rounded-2"></div>
+                <div class="placeholder col-2 rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="placeholder col-2 rounded-2"></div>
+                <div class="placeholder col-3 mx-auto rounded-2"></div>
+                <div class="placeholder col-2 rounded-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item list-group-item-action">
+            <div class="row placeholder-glow d-felx gap-2 px-2 py-1">
+                <div class="placeholder col-2 rounded-2"></div>
+                <div class="placeholder col-3 mx-auto rounded-2"></div>
+                <div class="placeholder col-2 rounded-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function change_day(td){
         var url = `?id={{ request.GET.id }}&td=${ td }`;
         $('#content').load(url +  ' #content');
+        show_loading();
+    }
+
+    function show_loading(){
+        const timetable = document.getElementById("content");
+        var loading = document.getElementById("loading-div").cloneNode(true);
+        var date = document.getElementById("date-selector").cloneNode(true);
+        timetable.innerHTML = "";
+        timetable.appendChild(date);
+        timetable.appendChild(loading);
     }
 </script>
 {% endblock %}

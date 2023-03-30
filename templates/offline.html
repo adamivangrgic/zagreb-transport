@@ -15,7 +15,7 @@
     </div>
 </div>
 
-{% comment %} <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div> {% endcomment %}
+<div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
 
 <script type="text/javascript">
     $(window).on('load', function() {
@@ -26,7 +26,7 @@
         window.open("/", '_self'); 
     };
 
-    {% comment %} const center = [45.813038, 15.976928];
+    const center = [45.813038, 15.976928];
     const init_zoom = 15;
 
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
@@ -41,7 +41,7 @@
         map.setView(latlang, targetZoom)
     }
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 21, minZoom: 9}).addTo(map); {% endcomment %}
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 21, minZoom: 9}).addTo(map);
 </script>
 
 {% endblock %}
