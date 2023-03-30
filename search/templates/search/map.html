@@ -5,7 +5,7 @@
 {% load custom_tags %}
 
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
-<div style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
+<div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
 <div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
 
@@ -171,19 +171,17 @@
         const center = [{{ station.stop_loc.x }}, {{ station.stop_loc.y }}];
         const init_zoom = 17;
     {% else %}
-        const center = [45.813038, 15.976928];
+        const center = init_center;
         const init_zoom = 15;
         navigator.geolocation.watchPosition(succes_get_location, error_get_location);
     {% endif %}
 
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
     var renderer = L.canvas();
-
-    var map_offset = new L.Point(0, map.getSize().y * 0.225)
+    
+    var map_win_height = document.getElementById('map-window').offsetHeight;
+    var map_offset = new L.Point(0, map_win_height/2)
     set_view_offset(center, init_zoom);
-
-    {% comment %} const map_window = document.getElementById('map-window').getBoundingClientRect();
-    map.setView(center, init_zoom, {paddingBottomRight: [map_window.right, map_window.bottom]}) {% endcomment %}
 
     function set_view_offset(latlang, targetZoom){
         var targetPoint = map.project(latlang, targetZoom).add(map_offset),
