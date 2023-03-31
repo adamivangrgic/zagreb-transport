@@ -24,3 +24,25 @@ def min_convert(value):
     sec = value.timestamp() - datetime.now().timestamp()
     # if sec < 60: return sec
     return "{} min".format(int(sec // 60)) if 0 < sec < 600 else value.astimezone(pytz.timezone(TIME_ZONE)).strftime("%H:%M")
+
+
+@register.filter(name='delay_min')
+def delay_min(value):
+    return int(value.total_seconds() // 60)
+
+
+@register.filter(name='subtract')
+def subtract(value, arg):
+    return value - arg
+
+
+@register.filter(name='signed')
+def subtract(value):
+    if value >= 0:
+        return '+{}'.format(value)
+    else:
+        return '{}'.format(value)
+
+@register.filter(name='abs')
+def absolute(value):
+    return abs(value)

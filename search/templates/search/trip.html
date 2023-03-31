@@ -29,14 +29,13 @@
         </div>
     </div>
 
-    {% if past_stops %}
-    <div id="collapse"
+    <div id="collapse_past"
          {% if next_stop %}
          class="collapse"
          {% else %}
          class="collapse show"
-         {% endif %}
-    >
+         {% endif %}>
+
         {% for stime in past_stops %}
         <a {% if stime.stop.location_type == 0 %}
            href="/station/?id={{ stime.stop.parent_station.stop_id }}"
@@ -45,115 +44,152 @@
            {% endif %}
            class="list-group-item list-group-item-action"
            id="{{ stime.stop.stop_id }}">
+
+           <span class="data" data-x="{{ stime.stop.stop_loc.x }}" data-y="{{ stime.stop.stop_loc.y }}" data-id="#{{ stime.stop.stop_id }}" hidden></span>
+
             <div class="row">
                 <div class="col">
                     {{ stime.stop.stop_name }}
+                    {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                        <br><div class="fw-semibold text-danger-emphasis"><small>
+                            {{ stime.delay_departure|delay_min|abs }} min
+                            {% if stime.delay_departure|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                        </small></div>
+                    {% endif %}
                 </div>
+                <div class="col-auto d-flex align-items-center">
+                    <span class="badge bg-light text-dark position-relative" style="font-size: 13px;">
+                        Stigao u {{ stime.arrival_time_an|date:'H:i' }}
+                        {% comment %} {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 text-bg-secondary"
+                            style="font-size: 12px; z-index:99">{{ stime.delay_departure|delay_min|signed }}&prime;</span>
+                        {% endif %} {% endcomment %}
+                    </span>
+                </div>
+            </div>
+
+            {% if user.is_superuser %}
+            <div class="row font-monospace bg-dark text-white">
                 <div class="col-auto">
-                    <span class="badge bg-light text-dark" style="font-size: 13px;">Stigao u {{ stime.arrival_time_an|date:'H:i' }}</span>
+                    Departure time:<br>
+                    Stop sequence:<br>
+                    Trip id:<br>
+                    Delay:<br>
+                    Updated at:
+                </div>
+                <div class="col">
+                    {{ stime.departure_time }}<br>
+                    {{ stime.stop_sequence }}<br>
+                    {{ stime.trip.trip_id }}<br>
+                    {{ stime.delay_departure }}<br>
+                    {{ stime.updated_at|timesince }}
                 </div>
             </div>
+            {% endif %}
         </a>
-        {% if user.is_superuser %}
-        <div class="row font-monospace bg-dark text-white">
-            <div class="col-auto">
-                Departure time:<br>
-                Stop sequence:<br>
-                Trip id:<br>
-                Delay:<br>
-                Updated at:
-            </div>
-            <div class="col">
-                {{ stime.departure_time }}<br>
-                {{ stime.stop_sequence }}<br>
-                {{ stime.trip.trip_id }}<br>
-                {{ stime.delay_departure }}<br>
-                {{ stime.updated_at|timesince }}
-            </div>
-        </div>
-        {% endif %}
         {% endfor %}
     </div>
 
-    <a class="list-group-item list-group-item-dark text-center border-0" data-bs-toggle="collapse" href="#collapse"
+    {% if past_stops %}
+    <a class="list-group-item list-group-item-dark text-center border-0" data-bs-toggle="collapse" href="#collapse_past"
        role="button"
        aria-expanded="false" aria-controls="collapse" style="font-size: 11px">
         Prethodne stanice <i class="bi bi-arrows-collapse"></i>
     </a>
-
     {% endif %}
 
-    {% for stime in future_stops %}
-    <a {% if stime.stop.location_type == 0 %}
-           href="/station/?id={{ stime.stop.parent_station.stop_id }}"
-           {% elif stime.stop.location_type == 1 %}
-           href="/station/?id={{ stime.stop.stop_id }}"
-           {% endif %}
-       class="list-group-item list-group-item-action"
-       id="{{ stime.stop.stop_id }}">
-        <div class="row">
-            <div class="col">
-                {{ stime.stop.stop_name }}
-            </div>
-            <div class="col-auto">
-                {% if stime.updated_at|within_last:4 and stime == next_stop %}
-                <span class="badge bg-success" style="font-size: 15px;">
-                    {%if stime.arrival_time_an == stime.departure_time_an %}
-                    {{ stime.arrival_time_an|min_convert }}
-                    {% else %}
-                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+    <div id="future" style="border-bottom-left-radius: 29.6px; border-bottom-right-radius: 29.6px">
+        {% for stime in future_stops %}
+        <a {% if stime.stop.location_type == 0 %}
+            href="/station/?id={{ stime.stop.parent_station.stop_id }}"
+            {% elif stime.stop.location_type == 1 %}
+            href="/station/?id={{ stime.stop.stop_id }}"
+            {% endif %}
+        class="list-group-item list-group-item-action"
+        id="{{ stime.stop.stop_id }}">
+
+            <span class="data" data-x="{{ stime.stop.stop_loc.x }}" data-y="{{ stime.stop.stop_loc.y }}" data-id="#{{ stime.stop.stop_id }}" hidden></span>
+
+            <div class="row">
+                <div class="col">
+                    {{ stime.stop.stop_name }}
+                    {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                        <br><div class="fw-semibold text-danger-emphasis"><small>
+                            {{ stime.delay_departure|delay_min|abs }} min
+                            {% if stime.delay_departure|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                        </small></div>
                     {% endif %}
-                    <i class="bi bi-broadcast-pin"></i></span>
-                {% elif stime.updated_at|within_last:8 and stime == next_stop %}
-                <span class="badge bg-warning" style="font-size: 15px;">
-                    {%if stime.arrival_time_an == stime.departure_time_an %}
-                    {{ stime.arrival_time_an|min_convert }}
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    {% comment %} {% if stime.delay_arrival|delay_min > 1 or stime.delay_arrival|delay_min < -1 %}
+                        <small class="badge text-bg-light" >
+                            <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                            {{ stime.delay_arrival|delay_min|signed }}min
+                        </small>
+                    {% endif %} {% endcomment %}
+
+                    {% if stime.updated_at|within_last:4 and stime == next_stop %}
+                    <span class="badge bg-success" style="font-size: 15px;">
+                        {%if stime.arrival_time_an == stime.departure_time_an %}
+                        {{ stime.arrival_time_an|min_convert }}
+                        {% else %}
+                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                        {% endif %}
+                        <i class="bi bi-broadcast-pin"></i></span>
+                    {% elif stime.updated_at|within_last:8 and stime == next_stop %}
+                    <span class="badge bg-warning" style="font-size: 15px;">
+                        {%if stime.arrival_time_an == stime.departure_time_an %}
+                        {{ stime.arrival_time_an|min_convert }}
+                        {% else %}
+                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                        {% endif %}
+                        <i class="bi bi-broadcast-pin"></i>
+                    </span>
+                    {% elif stime.updated_at|within_last:15 and stime == next_stop %}
+                    <span class="badge bg-danger" style="font-size: 15px;">
+                        {%if stime.arrival_time_an == stime.departure_time_an %}
+                        {{ stime.arrival_time_an|min_convert }}
+                        {% else %}
+                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                        {% endif %}
+                        <i class="bi bi-broadcast-pin"></i>
+                    </span>
                     {% else %}
-                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                    <span class="badge bg-light text-dark" style="font-size: 15px;">
+                        {%if stime.arrival_time_an == stime.departure_time_an %}
+                        {{ stime.arrival_time_an|min_convert }}
+                        {% else %}
+                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                        {% endif %}
+                    </span>
                     {% endif %}
-                    <i class="bi bi-broadcast-pin"></i>
-                </span>
-                {% elif stime.updated_at|within_last:15 and stime == next_stop %}
-                <span class="badge bg-danger" style="font-size: 15px;">
-                    {%if stime.arrival_time_an == stime.departure_time_an %}
-                    {{ stime.arrival_time_an|min_convert }}
-                    {% else %}
-                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
-                    {% endif %}
-                    <i class="bi bi-broadcast-pin"></i>
-                </span>
-                {% else %}
-                <span class="badge bg-light text-dark" style="font-size: 15px;">
-                    {%if stime.arrival_time_an == stime.departure_time_an %}
-                    {{ stime.arrival_time_an|min_convert }}
-                    {% else %}
-                    {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
-                    {% endif %}
-                </span>
-                {% endif %}
+                </div>
+
             </div>
 
-        </div>
-    </a>
-    {% if user.is_superuser %}
-        <div class="row font-monospace bg-dark text-white">
-            <div class="col-auto">
-                Departure time:<br>
-                Stop sequence:<br>
-                Trip id:<br>
-                Delay:<br>
-                Updated at:
-            </div>
-            <div class="col">
-                {{ stime.departure_time }}<br>
-                {{ stime.stop_sequence }}<br>
-                {{ stime.trip.trip_id }}<br>
-                {{ stime.delay_departure }}<br>
-                {{ stime.updated_at|timesince }}
-            </div>
-        </div>
-        {% endif %}
-    {% endfor %}
+            {% if user.is_superuser %}
+                <div class="row font-monospace bg-dark text-white" style="z-index: 10">
+                    <div class="col-auto">
+                        Departure time:<br>
+                        Stop sequence:<br>
+                        Trip id:<br>
+                        Delay:<br>
+                        Updated at:
+                    </div>
+                    <div class="col">
+                        {{ stime.departure_time }}<br>
+                        {{ stime.stop_sequence }}<br>
+                        {{ stime.trip.trip_id }}<br>
+                        {{ stime.delay_departure }}<br>
+                        {{ stime.updated_at|timesince }}
+                    </div>
+                </div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
 </div>
 
 {% comment %} <div>
@@ -206,6 +242,9 @@
         paddingBottomRight: [mapDivRect.right - winDivRect.right, mapDivRect.bottom - winDivRect.bottom]
     };
 
+    var firstFit = false;
+    var layerGroup = L.layerGroup();
+
     ////
 
     var station_icon = L.icon({
@@ -227,44 +266,59 @@
         popupAnchor:  [30, 30]
     });
 
-    var past_stops = [
 
-    {% for stime in past_stops %}
-        [{{ stime.stop.stop_loc.x }}, {{ stime.stop.stop_loc.y }}, "#{{ stime.stop.stop_id }}"],
-    {% endfor %}
+    function refresh_map(){
 
-    ];
+        layerGroup.remove();
 
-    var future_stops = [
+        var markers = [];
+        
+        const past_elements = document.getElementById('collapse_past').getElementsByClassName('data');
+        var past_stops = [];
 
-    {% for stime in future_stops %}
-        [{{ stime.stop.stop_loc.x }}, {{ stime.stop.stop_loc.y }}, "#{{ stime.stop.stop_id }}"],
-    {% endfor %}
+        for (let i = 0; i < past_elements.length; i++) {
+            const el = past_elements[i];
+            past_stops[i] = [el.getAttribute('data-x'), el.getAttribute('data-y'), el.getAttribute('data-id')];
+        }
 
-    ];
+        const future_elements = document.getElementById('future').getElementsByClassName('data');
+        var future_stops = [];
 
-    var markers= [];
+        for (let i = 0; i < future_elements.length; i++) {
+            const el = future_elements[i];
+            future_stops[i] = [el.getAttribute('data-x'), el.getAttribute('data-y'), el.getAttribute('data-id')];
+        }
 
-    for (var i = 0; i < past_stops.length; i++) {
-        markers[i] = new L.marker([past_stops[i][0], past_stops[i][1]], {win_url: past_stops[i][2], icon: station_icon_grey});
-        markers[i].addTo(map);
-        markers[i].on('click', onClick);
-    };
+        ////
 
-    for (var j = 0; j < future_stops.length; j++) {
-        markers[j + i + 1] = new L.marker([future_stops[j][0], future_stops[j][1]], {win_url: future_stops[j][2], icon: station_icon});
-        markers[j + i + 1].addTo(map);
-        markers[j + i + 1].on('click', onClick);
-    };
+        for (var i = 0; i < past_stops.length; i++) {
+            markers.push(L.marker([past_stops[i][0], past_stops[i][1]], {win_url: past_stops[i][2], icon: station_icon_grey}).on('click', onClick));
+        };
 
-    if (future_stops.length > 0){
-        past_stops.push(future_stops[0]);
-        L.marker([future_stops[0][0], future_stops[0][1]], {icon: pulse_icon}).addTo(map);
-    };
+        for (var j = 0; j < future_stops.length; j++) {
+            markers.push(L.marker([future_stops[j][0], future_stops[j][1]], {win_url: future_stops[j][2], icon: station_icon}).on('click', onClick));
+        };
 
-    var line_past = L.polyline(past_stops, {color: 'gray', weight: 5}).addTo(map);
-    var line_future = L.polyline(future_stops, {color: 'red', weight: 5}).addTo(map);
-    map.fitBounds(past_stops.concat(future_stops), padding)
+        if (future_stops.length > 0){
+            past_stops.push(future_stops[0]);
+            markers.push(new L.marker([future_stops[0][0], future_stops[0][1]], {icon: pulse_icon}));
+        };
+
+        markers.push(L.polyline(past_stops, {color: 'gray', weight: 5}));
+        markers.push(L.polyline(future_stops, {color: 'red', weight: 5}));
+
+        layerGroup = L.layerGroup(markers);
+        layerGroup.addTo(map);
+
+        var all_stops = past_stops.concat(future_stops);
+
+        if (firstFit == false){
+            map.fitBounds(all_stops, padding);
+            firstFit = true;
+        }
+    }
+
+    refresh_map();
 
     ////
 
@@ -272,12 +326,14 @@
         window.location.replace(this.options.win_url, "_self");
     };
 
-    var lastSync = 0;
+    var lastSync = new Date().getTime();
     var syncInterval = 20 * 1000; //sync every 20sec
 
     function syncPage() {
         lastSync = new Date().getTime(); //set last sync to be now
-        $('#timetable').load(document.URL +  ' #timetable');
+        $('#timetable').load(document.URL +  ' #timetable', function(){
+            refresh_map();
+        });
     }
 
     setInterval(function() {

@@ -64,21 +64,52 @@
 
                 {% if stime.departure_time_an|arrived:2 %}
                 <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
-                {% elif stime.updated_at|within_last:4 %}
-                <span class="badge bg-success" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
-                        class="bi bi-broadcast-pin"></i></span>
-                {% elif stime.updated_at|within_last:8 %}
-                <span class="badge bg-warning" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
-                        class="bi bi-broadcast-pin"></i></span>
-                {% elif stime.updated_at|within_last:15 %}
-                <span class="badge bg-danger" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
-                        class="bi bi-broadcast-pin"></i></span>
-                {% elif stime.updated_at|within_last:30 %}
-                <span class="badge bg-secondary" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}</span>
                 {% else %}
-                <span class="badge bg-light text-dark" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}</span>
+
+                <span 
+                    {% if stime.updated_at|within_last:4 %}
+                    class="badge bg-success position-relative" 
+                    {% elif stime.updated_at|within_last:8 %}
+                    class="badge bg-warning position-relative"
+                    {% elif stime.updated_at|within_last:15 %}
+                    class="badge bg-danger position-relative"
+                    {% elif stime.updated_at|within_last:30 %}
+                    class="badge bg-secondary position-relative"
+                    {% else %}
+                    class="badge bg-light text-dark position-relative"
+                    {% endif %}
+                style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}
+
+                {% if stime.updated_at|within_last:30 %}
+                    <i class="bi bi-broadcast-pin"></i>
+                {% endif %}
+
+                {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1
+                    {% if stime.updated_at|within_last:30 %}
+                    bg-danger
+                    {% else %}
+                    text-bg-secondary
+                    {% endif %}"
+                    style="font-size: 12px; z-index:99">{{ stime.delay_departure|delay_min|signed }}&prime;</span>
+                {% endif %} 
+                </span>
+
                 {% endif %}
             </div>
+            {% comment %} {% if station %}
+                {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                    <small class="text-end">
+                        {{ stime.delay_departure|delay_min|abs }}
+                            {% if stime.delay_departure|delay_min < 0 %}
+                            min ranije
+                            {% elif stime.delay_departure|delay_min > 0 %}
+                            min kasnije
+                            {% endif %}
+                        &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                    </small>
+                {% endif %}
+            {% endif %} {% endcomment %}
         </div>
     </a>
     {% empty %}
@@ -301,7 +332,7 @@
         $('#timetable').load(curr_url +  ' #timetable');
     }
 
-    var lastSync = 0;
+    var lastSync = new Date().getTime();
     var syncInterval = 20 * 1000; //sync every 20sec
 
     function syncPage() {
