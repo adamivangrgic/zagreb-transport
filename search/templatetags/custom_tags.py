@@ -23,7 +23,7 @@ def min_convert(value):
     if None: return None
     sec = value.timestamp() - datetime.now().timestamp()
     # if sec < 60: return sec
-    return "{} min".format(int(sec // 60)) if 0 < sec < 600 else value.astimezone(pytz.timezone(TIME_ZONE)).strftime("%H:%M")
+    return "{} min".format(int(sec // 60)) if 0 < sec < 600 else value.strftime("%H:%M") #.astimezone(pytz.timezone(TIME_ZONE))
 
 
 @register.filter(name='delay_min')

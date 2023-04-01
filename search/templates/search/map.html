@@ -85,8 +85,8 @@
                 {% endif %}
 
                 {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1
-                    {% if stime.updated_at|within_last:30 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
+                    {% if stime.updated_at|within_last:8 %}
                     bg-danger
                     {% else %}
                     text-bg-secondary

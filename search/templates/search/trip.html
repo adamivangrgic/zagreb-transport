@@ -7,7 +7,9 @@
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
 <div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
-<div id="timetable" class="list-group" style="border-radius: 29.6px">
+<div id="timetable" class="shadow" style="z-index: 2; border-radius: 29.6px">
+
+<div class="list-group" style="z-index: 2; border-radius: 29.6px">
     <div class="list-group-item list-group-item-dark">
         <div class="row">
             <div class="col-auto">
@@ -29,12 +31,10 @@
         </div>
     </div>
 
-    <div id="collapse_past"
-         {% if next_stop %}
-         class="collapse"
-         {% else %}
-         class="collapse show"
-         {% endif %}>
+    <div id="collapse_past" class="list-group list-group-flush {% if next_stop %}collapse{% else %}collapse show{% endif %}"
+    {% if not future_stops %}
+    style="border-bottom-left-radius: 29.6px; border-bottom-right-radius: 29.6px"
+    {% endif %}>
 
         {% for stime in past_stops %}
         <a {% if stime.stop.location_type == 0 %}
@@ -51,8 +51,8 @@
                 <div class="col">
                     {{ stime.stop.stop_name }}
                     {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
-                        <br><div class="fw-semibold text-danger-emphasis"><small>
-                            {{ stime.delay_departure|delay_min|abs }} min
+                        <br><div class="text-muted"><small>
+                            Stigao {{ stime.delay_departure|delay_min|abs }} min
                             {% if stime.delay_departure|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
                             &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
                         </small></div>
@@ -91,7 +91,7 @@
         {% endfor %}
     </div>
 
-    {% if past_stops %}
+    {% if past_stops and future_stops %}
     <a class="list-group-item list-group-item-dark text-center border-0" data-bs-toggle="collapse" href="#collapse_past"
        role="button"
        aria-expanded="false" aria-controls="collapse" style="font-size: 11px">
@@ -99,7 +99,7 @@
     </a>
     {% endif %}
 
-    <div id="future" style="border-bottom-left-radius: 29.6px; border-bottom-right-radius: 29.6px">
+    <div id="future" class="list-group list-group-flush" style="border-bottom-left-radius: 29.6px; border-bottom-right-radius: 29.6px">
         {% for stime in future_stops %}
         <a {% if stime.stop.location_type == 0 %}
             href="/station/?id={{ stime.stop.parent_station.stop_id }}"
@@ -115,11 +115,22 @@
                 <div class="col">
                     {{ stime.stop.stop_name }}
                     {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                        {% if stime.updated_at|within_last:8 %}
                         <br><div class="fw-semibold text-danger-emphasis"><small>
-                            {{ stime.delay_departure|delay_min|abs }} min
+                            Stiže {{ stime.delay_departure|delay_min|abs }} min
                             {% if stime.delay_departure|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
                             &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
                         </small></div>
+                        {% else %}
+                        <br><div class="text-muted"><small>
+                            {% if stime.delay_departure|delay_min < 0 %}
+                            Moguć {{ stime.delay_departure|delay_min|abs }} min raniji dolazak 
+                            {% else %}
+                            Moguće kašnjenje od {{ stime.delay_departure|delay_min|abs }} min
+                            {% endif %}
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                        </small></div>
+                        {% endif %}
                     {% endif %}
                 </div>
                 <div class="col-auto d-flex align-items-center">
@@ -192,42 +203,49 @@
     </div>
 </div>
 
-{% comment %} <div>
-    {% if trip.bikes_allowed %}
-    <p><span class="d-flex align-items-center"><i class="icon-bike"></i> - Bicikli dozvoljeni</span></p>
-    {% endif %}
-    {% if trip.wheelchair_accessible %}
-    <p><span class="d-flex align-items-center"><i class="icon-wheelchair"></i> - Pristup invalidskim kolicima</span></p>
-    {% endif %}
-    <p><span class="badge bg-success">3 min <i class="bi bi-broadcast-pin"></i></span> - Uživo praćenje vozila</p>
-    <p><span class="badge bg-warning">3 min <i class="bi bi-broadcast-pin"></i></span> - Vozilo odaslalo lokaciju do
-        prije 8 minuta</p>
-    <p><span class="badge bg-danger">3 min <i class="bi bi-broadcast-pin"></i></span> - Vozilo odaslalo lokaciju do
-        prije 15 minuta</p>
-    <p><span class="badge bg-light text-dark">3 min</span> - Planirano vrijeme</p>
 </div>
 
-<p class="text-center text-muted">
-    <small>
-    {{ trip.route.agency.agency_name }}
-    {% if trip.route.agency.agency_phone %}
-    &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
-    {% endif %}
-    {% if trip.route.agency.agency_url %}
-    &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
-    {% endif %}
-    {% if trip.route.agency.agency_email %}
-    &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
-    {% endif %}
-    {% if trip.route.agency.agency_fare_url %}
-    &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
-    {% endif %}
-
-    <br><a href="https://leafletjs.com/">Leaflet</a>
-    &copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>
-    &copy;<a href="https://carto.com/attributions">CARTO</a><br>
-    </small>
-</p> {% endcomment %}
+<div class="card shadow" style="border-radius: 29.6px; z-index: 2">
+    <div class="card-body fs-6">
+        {% if trip.bikes_allowed %}
+        <p><span class="d-flex align-items-center"><i class="icon-bike"></i> - Bicikli dozvoljeni</span></p>
+        {% endif %}
+        {% if trip.wheelchair_accessible %}
+        <p><span class="d-flex align-items-center"><i class="icon-wheelchair"></i> - Pristup invalidskim kolicima</span></p>
+        {% endif %}
+        <p>
+            Zadnje ažuriranje prije
+            <span class="badge bg-success">4</span> <span class="badge bg-warning">8</span>
+            <span class="badge bg-danger">15</span> <span class="badge bg-secondary">30</span> min
+        </p>
+        <p>
+            <span class="badge bg-secondary position-relative">
+                &#8226; &#8226; &#8226;
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow bg-danger" style="font-size: 12px; z-index:99">+3&prime;</span>
+            </span>
+            &emsp;- Odstupanje od rasporeda
+        </p>
+        
+        <hr class="hr" />
+        <div class="text-center text-muted">
+            <small>
+            {{ trip.route.agency.agency_name }}
+            {% if trip.route.agency.agency_phone %}
+            &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
+            {% endif %}
+            {% if trip.route.agency.agency_url %}
+            &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
+            {% endif %}
+            {% if trip.route.agency.agency_email %}
+            &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
+            {% endif %}
+            {% if trip.route.agency.agency_fare_url %}
+            &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
+            {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
 
 <script>
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});

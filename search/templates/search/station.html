@@ -64,28 +64,39 @@
                 {% endif %}
             </div>
             <div class="col-auto d-flex align-items-center gap-1">
-                {% if stime.trip.bikes_allowed %}
-                <i class="icon-bike"></i>
-                {% endif %}
-                {% if stime.trip.wheelchair_accessible %}
-                <i class="icon-wheelchair"></i>
-                {% endif %}
-
                 {% if stime.departure_time_an|arrived:2 %}
                 <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
-                {% elif stime.updated_at|within_last:4 %}
-                <span class="badge bg-success" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
-                        class="bi bi-broadcast-pin"></i></span>
-                {% elif stime.updated_at|within_last:8 %}
-                <span class="badge bg-warning" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
-                        class="bi bi-broadcast-pin"></i></span>
-                {% elif stime.updated_at|within_last:15 %}
-                <span class="badge bg-danger" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }} <i
-                        class="bi bi-broadcast-pin"></i></span>
-                {% elif stime.updated_at|within_last:30 %}
-                <span class="badge bg-secondary" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}</span>
                 {% else %}
-                <span class="badge bg-light text-dark" style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}</span>
+
+                <span 
+                    {% if stime.updated_at|within_last:4 %}
+                    class="badge bg-success position-relative" 
+                    {% elif stime.updated_at|within_last:8 %}
+                    class="badge bg-warning position-relative"
+                    {% elif stime.updated_at|within_last:15 %}
+                    class="badge bg-danger position-relative"
+                    {% elif stime.updated_at|within_last:30 %}
+                    class="badge bg-secondary position-relative"
+                    {% else %}
+                    class="badge bg-light text-dark position-relative"
+                    {% endif %}
+                style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}
+
+                {% if stime.updated_at|within_last:30 %}
+                    <i class="bi bi-broadcast-pin"></i>
+                {% endif %}
+
+                {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
+                    {% if stime.updated_at|within_last:8 %}
+                    bg-danger
+                    {% else %}
+                    text-bg-secondary
+                    {% endif %}"
+                    style="font-size: 12px; z-index:99">{{ stime.delay_departure|delay_min|signed }}&prime;</span>
+                {% endif %} 
+                </span>
+
                 {% endif %}
             </div>
         </div>

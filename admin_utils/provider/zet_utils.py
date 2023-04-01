@@ -310,6 +310,6 @@ def sync_realtime():
     #     print(st.departure_time_an, current_time, st.departure_time_an > current_time)
 
     stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
-    stops_waiting.update(updated_at=current_time)
+    stops_waiting.update(updated_at=current_time, delay_departure=timedelta(), delay_arrival=timedelta())
 
     print(datetime.now() - current_time)
