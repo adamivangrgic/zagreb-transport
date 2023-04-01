@@ -7,9 +7,7 @@
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
 <div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
-<div id="timetable" class="shadow" style="z-index: 2; border-radius: 29.6px">
-
-<div class="list-group" style="z-index: 2; border-radius: 29.6px">
+<div class="list-group shadow" style="z-index: 2; border-radius: 29.6px">
     <div class="list-group-item list-group-item-dark">
         <div class="row">
             <div class="col-auto">
@@ -203,8 +201,6 @@
     </div>
 </div>
 
-</div>
-
 <div class="card shadow" style="border-radius: 29.6px; z-index: 2">
     <div class="card-body fs-6">
         {% if trip.bikes_allowed %}
@@ -349,7 +345,14 @@
 
     function syncPage() {
         lastSync = new Date().getTime(); //set last sync to be now
-        $('#timetable').load(document.URL +  ' #timetable', function(){
+
+        $.get(document.URL, function( page ) {
+            var collapse_past_elem = $(page).find('#collapse_past').html();
+            $('#collapse_past').html(collapse_past_elem);
+
+            var future_elem = $(page).find('#future').html();
+            $('#future').html(future_elem);
+
             refresh_map();
         });
     }
