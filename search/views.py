@@ -224,7 +224,11 @@ def trip(request):
         past_stops = stops
         next_stop = None
 
-    return render(request, 'search/trip.html', {'trip': trip, 'past_stops': past_stops, 'future_stops': future_stops, 'next_stop': next_stop})
+    first_stop = stops[0]
+    last_stop = stops[len(stops)-1]
+
+    return render(request, 'search/trip.html', {'trip': trip, 'past_stops': past_stops, 'future_stops': future_stops, 'next_stop': next_stop,
+        'first_stop': first_stop, 'last_stop': last_stop})
 
 
 def route(request):

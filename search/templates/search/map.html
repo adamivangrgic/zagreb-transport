@@ -67,20 +67,20 @@
                 {% else %}
 
                 <span 
-                    {% if stime.updated_at|within_last:4 %}
+                    {% if stime.updated_at|within_last:4 or stime.wait_updated_at|within_last:4 %}
                     class="badge bg-success position-relative" 
-                    {% elif stime.updated_at|within_last:8 %}
+                    {% elif stime.updated_at|within_last:8 or stime.wait_updated_at|within_last:8 %}
                     class="badge bg-warning position-relative"
-                    {% elif stime.updated_at|within_last:15 %}
+                    {% elif stime.updated_at|within_last:15 or stime.wait_updated_at|within_last:15 %}
                     class="badge bg-danger position-relative"
-                    {% elif stime.updated_at|within_last:30 %}
+                    {% elif stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
                     class="badge bg-secondary position-relative"
                     {% else %}
                     class="badge bg-light text-dark position-relative"
                     {% endif %}
                 style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}
 
-                {% if stime.updated_at|within_last:30 %}
+                {% if stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
                     <i class="bi bi-broadcast-pin"></i>
                 {% endif %}
 

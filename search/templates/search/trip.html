@@ -20,7 +20,8 @@
                 </strong>
             </div>
             <div class="col">
-                 {{ trip.route.route_long_name }}
+                 {% comment %} {{ trip.route.route_long_name }} {% endcomment %}
+                 {{ first_stop.stop.stop_name }} &rarr; {{ last_stop.stop.stop_name }}
             </div>
             <div class="col-auto">
                 <a href="/route/?id={{ trip.route.route_id }}" style="color: black;"><i
@@ -139,7 +140,7 @@
                         </small>
                     {% endif %} {% endcomment %}
 
-                    {% if stime.updated_at|within_last:4 and stime == next_stop %}
+                    {% if stime.updated_at|within_last:4 and stime == next_stop or stime.wait_updated_at|within_last:4 and stime == next_stop %}
                     <span class="badge bg-success" style="font-size: 15px;">
                         {%if stime.arrival_time_an == stime.departure_time_an %}
                         {{ stime.arrival_time_an|min_convert }}
@@ -147,7 +148,7 @@
                         {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
                         {% endif %}
                         <i class="bi bi-broadcast-pin"></i></span>
-                    {% elif stime.updated_at|within_last:8 and stime == next_stop %}
+                    {% elif stime.updated_at|within_last:8 and stime == next_stop or stime.wait_updated_at|within_last:8 and stime == next_stop %}
                     <span class="badge bg-warning" style="font-size: 15px;">
                         {%if stime.arrival_time_an == stime.departure_time_an %}
                         {{ stime.arrival_time_an|min_convert }}
@@ -156,7 +157,7 @@
                         {% endif %}
                         <i class="bi bi-broadcast-pin"></i>
                     </span>
-                    {% elif stime.updated_at|within_last:15 and stime == next_stop %}
+                    {% elif stime.updated_at|within_last:15 and stime == next_stop or stime.wait_updated_at|within_last:15 and stime == next_stop %}
                     <span class="badge bg-danger" style="font-size: 15px;">
                         {%if stime.arrival_time_an == stime.departure_time_an %}
                         {{ stime.arrival_time_an|min_convert }}

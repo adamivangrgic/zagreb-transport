@@ -70,6 +70,7 @@ class StopTime(models.Model):
     delay_arrival = models.DurationField(default=timedelta)
     delay_departure = models.DurationField(default=timedelta)
     updated_at = models.DateTimeField(null=True)
+    wait_updated_at = models.DateTimeField(null=True)
 
     provider = models.CharField(max_length=10)
 

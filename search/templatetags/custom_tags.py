@@ -28,7 +28,7 @@ def min_convert(value):
 
 @register.filter(name='delay_min')
 def delay_min(value):
-    return int(value.total_seconds() // 60)
+    return int(round(value.total_seconds() / 60))
 
 
 @register.filter(name='subtract')
