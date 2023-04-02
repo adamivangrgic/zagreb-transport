@@ -291,10 +291,15 @@ def sync_realtime():
         today_mid = today_mid - timedelta(days=1)
 
     delays = {}
+    abn_delays = {}
     awaiting_departure = []
+
     for entity in feed.entity:
-        if abs(entity.trip_update.stop_time_update[-1].arrival.delay) < 1800 and entity.trip_update.stop_time_update[-1].departure.time > 0:  # delay up to 30 min
+        if abs(entity.trip_update.stop_time_update[-1].arrival.delay) < 20 * 60 and entity.trip_update.stop_time_update[-1].departure.time > 0:  # delay up to 20 min
             delays[entity.trip_update.trip.trip_id] = timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay)
+
+        elif entity.trip_update.stop_time_update[-1].departure.time > 0:  # abnormal delay # abs(entity.trip_update.stop_time_update[-1].arrival.delay) < 30 * 60 and 
+            abn_delays[entity.trip_update.trip.trip_id] = timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay)
 
         elif entity.trip_update.stop_time_update[-1].stop_sequence == 1:  # waiting to depart
             awaiting_departure.append(entity.trip_update.trip.trip_id)
@@ -308,6 +313,11 @@ def sync_realtime():
             & ( Q(updated_at__lt=current_time - timedelta(hours=23)) | Q(delay_departure=timedelta(0)) ) ))
         # .filter(departure_time_an__gt=current_time - timedelta(minutes=3))
     stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
+
+    abn_stop_times = StopTime.objects \
+        .filter(trip__trip_id__in=abn_delays.keys()) \
+        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=abn_delays[t]) for t in abn_delays], output_field=fields.DurationField()))
+    abn_stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
     stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
     stops_waiting.update(wait_updated_at=current_time, delay_departure=timedelta(), delay_arrival=timedelta())
