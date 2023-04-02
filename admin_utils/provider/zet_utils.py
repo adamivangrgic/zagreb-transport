@@ -303,13 +303,14 @@ def sync_realtime():
         .filter(trip__trip_id__in=delays.keys()) \
         .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField())) \
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
-        .filter(Q(departure_time_an__gt=current_time - timedelta(seconds=30)) | ( Q(departure_time_an__lte=current_time - timedelta(seconds=30))
+        .filter(Q(departure_time_an__gt=current_time - timedelta(seconds=30)) |
+            ( Q(departure_time_an__lte=current_time - timedelta(seconds=30))
             & ( Q(updated_at__lt=current_time - timedelta(hours=23)) | Q(delay_departure=timedelta(0)) ) ))
         # .filter(departure_time_an__gt=current_time - timedelta(minutes=3))
     stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
     stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
-    # stops_waiting.update(updated_at=current_time, delay_departure=timedelta(), delay_arrival=timedelta())
-    stops_waiting.update(wait_updated_at=current_time)
+    stops_waiting.update(wait_updated_at=current_time, delay_departure=timedelta(), delay_arrival=timedelta())
+    # stops_waiting.update(wait_updated_at=current_time)
 
     print(datetime.now() - current_time)

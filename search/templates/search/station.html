@@ -86,7 +86,7 @@
                     <i class="bi bi-broadcast-pin"></i>
                 {% endif %}
 
-                {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                {% if stime.delay_departure|delay_min != 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
                     {% if stime.updated_at|within_last:8 %}
                     bg-danger

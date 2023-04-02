@@ -84,7 +84,7 @@
                     <i class="bi bi-broadcast-pin"></i>
                 {% endif %}
 
-                {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                {% if stime.delay_departure|delay_min != 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
                     {% if stime.updated_at|within_last:8 %}
                     bg-danger
@@ -97,19 +97,7 @@
 
                 {% endif %}
             </div>
-            {% comment %} {% if station %}
-                {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
-                    <small class="text-end">
-                        {{ stime.delay_departure|delay_min|abs }}
-                            {% if stime.delay_departure|delay_min < 0 %}
-                            min ranije
-                            {% elif stime.delay_departure|delay_min > 0 %}
-                            min kasnije
-                            {% endif %}
-                        &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
-                    </small>
-                {% endif %}
-            {% endif %} {% endcomment %}
+            
         </div>
     </a>
     {% empty %}

@@ -49,7 +49,7 @@
             <div class="row">
                 <div class="col">
                     {{ stime.stop.stop_name }}
-                    {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                    {% if stime.delay_departure|delay_min != 0 %}
                         <br><div class="text-muted"><small>
                             Stigao {{ stime.delay_departure|delay_min|abs }} min
                             {% if stime.delay_departure|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
@@ -60,10 +60,6 @@
                 <div class="col-auto d-flex align-items-center">
                     <span class="badge bg-light text-dark position-relative" style="font-size: 13px;">
                         Stigao u {{ stime.arrival_time_an|date:'H:i' }}
-                        {% comment %} {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 text-bg-secondary"
-                            style="font-size: 12px; z-index:99">{{ stime.delay_departure|delay_min|signed }}&prime;</span>
-                        {% endif %} {% endcomment %}
                     </span>
                 </div>
             </div>
@@ -90,13 +86,11 @@
         {% endfor %}
     </div>
 
-    {% if past_stops and future_stops %}
-    <a class="list-group-item list-group-item-dark text-center border-0" data-bs-toggle="collapse" href="#collapse_past"
-       role="button"
-       aria-expanded="false" aria-controls="collapse" style="font-size: 11px">
+    <a id="collapse_button" class="list-group-item list-group-item-dark text-center border-0" data-bs-toggle="collapse" href="#collapse_past"
+       role="button" aria-expanded="false" aria-controls="collapse"
+       style="font-size: 11px; display:{% if past_stops and future_stops %}initial{% else %}none{% endif %}">
         Prethodne stanice <i class="bi bi-arrows-collapse"></i>
     </a>
-    {% endif %}
 
     <div id="future" class="list-group list-group-flush" style="border-bottom-left-radius: 29.6px; border-bottom-right-radius: 29.6px">
         {% for stime in future_stops %}
@@ -113,7 +107,7 @@
             <div class="row">
                 <div class="col">
                     {{ stime.stop.stop_name }}
-                    {% if stime.delay_departure|delay_min > 1 or stime.delay_departure|delay_min < -1 %}
+                    {% if stime.delay_departure|delay_min != 0 %}
                         {% if stime.updated_at|within_last:8 %}
                         <br><div class="fw-semibold text-danger-emphasis"><small>
                             Stiže {{ stime.delay_departure|delay_min|abs }} min
@@ -353,6 +347,9 @@
 
             var future_elem = $(page).find('#future').html();
             $('#future').html(future_elem);
+
+            var collapse_button_display = $(page).find('#collapse_button').css("display");
+            $('#collapse_button').css("display", collapse_button_display);
 
             refresh_map();
         });
