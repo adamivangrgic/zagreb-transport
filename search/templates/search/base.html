@@ -57,6 +57,8 @@
     <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
     <script src="{% static 'a/a.js' %}"></script>
 
+    {% comment %} <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" /> {% endcomment %}
+
 </head>
 
 <body style="height: 120vh;">
@@ -204,8 +206,7 @@ function save_stop_response(action, id){
     }
 }
 
-// Detects if device is on iOS 
-const isIos = () => {
+{% comment %} const isIos = () => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     return /iphone|ipad|ipod/.test( userAgent );
   }
@@ -214,8 +215,8 @@ const isIos = () => {
   
   // Checks if should display install popup notification:
   if (isIos() && !isInStandaloneMode()) {
-    this.setState({ showInstallMessage: true });
-  }
+    $("#install-popup").modal({show: true});
+  } else {$("#install-popup").modal({show: true}); } {% endcomment %}
   
 </script>
 

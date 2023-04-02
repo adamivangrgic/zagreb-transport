@@ -1,6 +1,6 @@
 import os
 from celery import Celery
-# from celery.schedules import crontab
+from celery.schedules import crontab
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zet_live.settings")
 app = Celery("zet_live")
@@ -13,8 +13,8 @@ app.conf.beat_schedule = {
         'schedule': 20
     },
 
-    # 'update static files': {
-    #     'task': 'admin_utils.tasks.update_statict',
-    #     'schedule': crontab(hour=3, minute=0)
-    # },
+    'update static files': {
+        'task': 'admin_utils.tasks.update_statict',
+        'schedule': crontab(hour=3, minute=30)
+    },
 }

@@ -3,6 +3,8 @@ from .provider import hzpp_utils as hzpp
 from .models import *
 import requests
 import email.utils
+from .provider.parse_utils import get_date_from_gtfs_static
+from datetime import date
 
 from zet_live.celery import app
 
@@ -10,14 +12,17 @@ from zet_live.celery import app
 def update_static():
     zet_feed = StaticFeed.objects.get(provider='zet')
     hzpp_feed = StaticFeed.objects.get(provider='hzpp')
+    today = date.today()
 
     zet_last_update = zet_feed.last_update
     hzpp_last_update = hzpp_feed.last_update
 
-    zet_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', zet.static_url).headers['Last-Modified'])
-    hzpp_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', hzpp.static_url).headers['Last-Modified'])
+    zet_start_date = get_date_from_gtfs_static(zet.static_url, 3)
 
-    if zet_latest_version_time > zet_last_update:
+    zet_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', zet.static_url).headers['Last-Modified']).replace(tzinfo=None)
+    hzpp_latest_version_time = email.utils.parsedate_to_datetime(requests.request('HEAD', hzpp.static_url).headers['Last-Modified']).replace(tzinfo=None)
+
+    if zet_latest_version_time > zet_last_update and today >= zet_start_date:
         update_zet()
         zet_feed.last_update = zet_latest_version_time
         zet_feed.save()

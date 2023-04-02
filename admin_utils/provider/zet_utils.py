@@ -313,4 +313,4 @@ def sync_realtime():
     stops_waiting.update(wait_updated_at=current_time, delay_departure=timedelta(), delay_arrival=timedelta())
     # stops_waiting.update(wait_updated_at=current_time)
 
-    print(datetime.now() - current_time)
+    #  print(datetime.now() - current_time)
