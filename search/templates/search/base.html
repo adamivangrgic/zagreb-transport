@@ -64,9 +64,9 @@
 <body style="height: 120vh;">
 
 <div style="background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
-position: fixed; top: 0; left: 0; z-index: 10; height: calc(env(safe-area-inset-top)); width:100%;"></div>
+position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top); width:100%;"></div>
 
-<div class="mx-3" style="padding-bottom: max(env(safe-area-inset-bottom), 25px)">
+<div class="mx-3" style="padding-bottom: calc(env(safe-area-inset-bottom) + 30px)">
     <div class="row">
         <div class="col-lg-4"></div>
         <div class="col-lg-4 d-grid gap-4">
@@ -96,8 +96,6 @@ position: fixed; top: 0; left: 0; z-index: 10; height: calc(env(safe-area-inset-
             {% block content %}
             {% endblock %}
 
-            {% comment %} <p class="text-center text-muted"><small>&copy;Zagreb Transport 2023 - Ivan Adam Grgić</small></p> {% endcomment %}
-
         </div>
         <div class="col-lg-4"></div>
     </div>
@@ -108,6 +106,60 @@ position: fixed; top: 0; left: 0; z-index: 10; height: calc(env(safe-area-inset-
         <span class="visually-hidden">Loading...</span>
     </div>
 </div> {% endcomment %}
+
+<button type="button" class="btn btn-light rounded-circle shadow position-fixed bottom-0 end-0 m-3" data-bs-toggle="modal" data-bs-target="#info-modal"
+    style="z-index: 99; aspect-ratio: 1 / 1;"><i class="bi bi-info-circle"></i></button>
+
+<div id="info-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 29.6px">
+            <div class="modal-body">
+                {% if trip.bikes_allowed %}
+                <p><span class="d-flex align-items-center"><i class="icon-bike"></i> - Bicikli dozvoljeni</span></p>
+                {% endif %}
+                {% if trip.wheelchair_accessible %}
+                <p><span class="d-flex align-items-center"><i class="icon-wheelchair"></i> - Pristup invalidskim kolicima</span></p>
+                {% endif %}
+                <p>
+                    Zadnje ažuriranje prije <span class="badge bg-success">4</span> <span class="badge bg-warning">8</span>
+                    <span class="badge bg-danger">15</span> <span class="badge bg-secondary">30</span> min
+                </p>
+                <p>
+                    <span class="badge bg-secondary position-relative">
+                        &#8226; &#8226; &#8226;
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow bg-danger" style="font-size: 12px; z-index:99">+3&prime;</span>
+                    </span>
+                    &emsp;- Odstupanje od rasporeda
+                </p>
+                
+                <hr class="hr" />
+                <div class="text-center text-muted">
+                    <div class="vstack gap-3">
+                        <small>
+                            {{ trip.route.agency.agency_name }}
+                            {% if trip.route.agency.agency_phone %}
+                            &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
+                            {% endif %}
+                            {% if trip.route.agency.agency_url %}
+                            &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
+                            {% endif %}
+                            {% if trip.route.agency.agency_email %}
+                            &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
+                            {% endif %}
+                            {% if trip.route.agency.agency_fare_url %}
+                            &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
+                            {% endif %}
+                        </small>
+
+                        <small class="text-center text-muted">&copy;Zagreb Transport 2023</small>
+                        <small>&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a></small>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 let timer;

@@ -22,8 +22,8 @@ class Stop(models.Model):
     stop_loc = models.PointField(blank=True, null=True)
     parent_station = models.ForeignKey('self', on_delete=models.CASCADE, related_name='stops', blank=True, null=True)
     location_type = models.IntegerField(blank=True, null=True)
-    provider = models.CharField(max_length=10)
 
+    provider = models.CharField(max_length=10)
     stop_route_type = models.IntegerField(blank=True, null=True)
     has_trips = models.BooleanField(default=False)
 
@@ -55,6 +55,8 @@ class Trip(models.Model):
     bikes_allowed = models.IntegerField(blank=True, null=True)
     wheelchair_accessible = models.IntegerField(blank=True, null=True)
     provider = models.CharField(max_length=10)
+
+    checked_integrity_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return "{} - {}".format(self.trip_id, self.route.route_long_name)

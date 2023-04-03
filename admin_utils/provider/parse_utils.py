@@ -3,8 +3,40 @@ from io import BytesIO
 from django.utils.dateparse import parse_date
 import csv
 from io import TextIOWrapper
+import statistics
 
 from search.models import Stop
+
+
+def has_outliers(lst):
+    n = len(lst)
+    if n % 2 == 0:
+        Q1 = statistics.median(lst[:n//2])
+        Q3 = statistics.median(lst[n//2:])
+    else:
+        Q1 = statistics.median(lst[:n//2])
+        Q3 = statistics.median(lst[n//2+1:])
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    for val in lst:
+        if val < lower_bound or val > upper_bound:
+            return True
+    return False
+
+
+def has_outliers_neighbour(lst, threshold):
+    for i in range(1, len(lst)-1):
+        if abs(lst[i] - (lst[i-1] + lst[i+1])/2) > threshold:
+            return True
+    return False
+
+
+def is_strictly_climbing(lst):
+    for i in range(len(lst)-1):
+        if lst[i] >= lst[i+1]:
+            return False
+    return True
 
 
 def download_zip(url):

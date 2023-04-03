@@ -196,48 +196,6 @@
     </div>
 </div>
 
-<div class="card shadow border-0" style="border-radius: 29.6px; z-index: 2">
-    <div class="card-body fs-6">
-        {% if trip.bikes_allowed %}
-        <p><span class="d-flex align-items-center"><i class="icon-bike"></i> - Bicikli dozvoljeni</span></p>
-        {% endif %}
-        {% if trip.wheelchair_accessible %}
-        <p><span class="d-flex align-items-center"><i class="icon-wheelchair"></i> - Pristup invalidskim kolicima</span></p>
-        {% endif %}
-        <p>
-            Zadnje ažuriranje prije
-            <span class="badge bg-success">4</span> <span class="badge bg-warning">8</span>
-            <span class="badge bg-danger">15</span> <span class="badge bg-secondary">30</span> min
-        </p>
-        <p>
-            <span class="badge bg-secondary position-relative">
-                &#8226; &#8226; &#8226;
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow bg-danger" style="font-size: 12px; z-index:99">+3&prime;</span>
-            </span>
-            &emsp;- Odstupanje od rasporeda
-        </p>
-        
-        <hr class="hr" />
-        <div class="text-center text-muted">
-            <small>
-            {{ trip.route.agency.agency_name }}
-            {% if trip.route.agency.agency_phone %}
-            &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
-            {% endif %}
-            {% if trip.route.agency.agency_url %}
-            &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
-            {% endif %}
-            {% if trip.route.agency.agency_email %}
-            &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
-            {% endif %}
-            {% if trip.route.agency.agency_fare_url %}
-            &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
-            {% endif %}
-            </small>
-        </div>
-    </div>
-</div>
-
 <script>
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
 
