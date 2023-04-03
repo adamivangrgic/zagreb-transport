@@ -14,7 +14,7 @@ app.conf.beat_schedule = {
     },
 
     'update static files': {
-        'task': 'admin_utils.tasks.update_statict',
+        'task': 'admin_utils.tasks.update_static',
         'schedule': crontab(hour=3, minute=30)
     },
 }

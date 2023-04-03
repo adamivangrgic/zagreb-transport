@@ -73,6 +73,9 @@ def update_stops(file):
                 stop_name=data[1],
                 stop_loc=Point(float(data[2]), float(data[3])),
                 location_type=1,
+
+                stop_route_type = 2,
+                has_trips = True,
                 provider=provider
             )
 
@@ -188,7 +191,7 @@ def update_stops_times(file):
 
         StopTime.objects.bulk_create(bulk_list)
 
-    set_stop_route_type(provider)
+    #set_stop_route_type(provider)
 
 
 def update_calendar(file):
