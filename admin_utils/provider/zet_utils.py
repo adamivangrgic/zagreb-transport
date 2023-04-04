@@ -6,7 +6,7 @@ from google.transit import gtfs_realtime_pb2  # protobuf==3.20.1, requests
 import requests
 from datetime import datetime, timedelta
 from django.db.models import Case, When, fields, F, Q, ExpressionWrapper
-from .parse_utils import set_stop_route_type, is_strictly_climbing, has_outliers, has_outliers_neighbour
+from .parse_utils import set_stop_route_type, is_strictly_climbing, has_outliers_neighbour, max_outliers_neighbour #has_outliers
 from io import TextIOWrapper
 from django.contrib.gis.geos import Point
 from itertools import groupby
@@ -343,8 +343,10 @@ def sync_realtime():
             delay_list.append((val['delay_departure']).total_seconds())
             departure_time_list.append((val['delay_departure'] + val['departure_time']).total_seconds())
 
-        if (not is_strictly_climbing(departure_time_list)) or has_outliers_neighbour(delay_list, 6 * 60):# or has_outliers(delay_list)
+        if (not is_strictly_climbing(departure_time_list)) or has_outliers_neighbour(delay_list, 102):# or has_outliers(delay_list)
             detected_trips_ids.append(trip_id)
+
+            #print('{} / {}'.format(trip_id, max_outliers_neighbour(delay_list)))
 
     trips_ch.update(checked_integrity_at=current_time)
 
@@ -356,4 +358,4 @@ def sync_realtime():
     detected_stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
 
-    #print(detected_trips_ids) #datetime.now() - current_time, 
+    #print(detected_trips_ids) #datetime.now() - current_time

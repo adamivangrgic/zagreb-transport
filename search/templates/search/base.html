@@ -124,7 +124,7 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
                 {% if trip.bikes_allowed or trip.wheelchair_accessible %}
                 <hr class="hr" />
                 {% endif %}
-                
+
                 <p>
                     Zadnje ažuriranje prije <span class="badge bg-success">4</span> <span class="badge bg-warning">8</span>
                     <span class="badge bg-danger">15</span> <span class="badge bg-secondary">30</span> min
@@ -155,6 +155,7 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
                                     {% if trip.route.agency.agency_fare_url %}
                                     &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
                                     {% endif %}
+                                    &#8199<span>({{ trip.route.agency.static_feed.last_update|date:'d.m.Y' }})</span>
                                 </small>
                             {% elif route %}
                                 <small>

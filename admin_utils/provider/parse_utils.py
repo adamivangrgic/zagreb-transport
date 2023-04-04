@@ -31,6 +31,13 @@ def has_outliers_neighbour(lst, threshold):
             return True
     return False
 
+def max_outliers_neighbour(lst):
+    m = 0
+    for i in range(1, len(lst)-1):
+        if abs(lst[i] - (lst[i-1] + lst[i+1])/2) > m:
+            m = abs(lst[i] - (lst[i-1] + lst[i+1])/2)
+    return m
+
 
 def is_strictly_climbing(lst):
     for i in range(len(lst)-1):
