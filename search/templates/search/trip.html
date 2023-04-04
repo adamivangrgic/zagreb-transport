@@ -262,7 +262,7 @@
 
         if (future_stops.length > 0){
             past_stops.push(future_stops[0]);
-            markers.push(new L.marker([future_stops[0][0], future_stops[0][1]], {icon: pulse_icon}));
+            markers.push(new L.marker([future_stops[0][0], future_stops[0][1]], {icon: pulse_icon, interactive: false,}));
         };
 
         markers.push(L.polyline(past_stops, {color: 'gray', weight: 5}));

@@ -247,7 +247,7 @@
     function succes_get_location(position){
         init_center = [position.coords.latitude, position.coords.longitude];
         location_layer.clearLayers();
-        location_layer = L.layerGroup([L.marker(init_center, {icon: loc_icon})]).addTo(map);
+        location_layer = L.layerGroup([L.marker(init_center, {icon: loc_icon, interactive: false,})]).addTo(map);
         //L.circle(init_center, position.coords.accuracy), 
 
         if (panToLoc == false){
@@ -297,7 +297,8 @@
                     icon: L.divIcon({
                         html: points[i].name,
                         className: 'marker-label',
-                    })
+                    }),
+                    interactive: false,
                 });
             };
         };
