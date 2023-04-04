@@ -127,12 +127,6 @@
                     {% endif %}
                 </div>
                 <div class="col-auto d-flex align-items-center">
-                    {% comment %} {% if stime.delay_arrival|delay_min > 1 or stime.delay_arrival|delay_min < -1 %}
-                        <small class="badge text-bg-light" >
-                            <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
-                            {{ stime.delay_arrival|delay_min|signed }}min
-                        </small>
-                    {% endif %} {% endcomment %}
 
                     {% if stime.updated_at|within_last:4 and stime == next_stop or stime.wait_updated_at|within_last:4 and stime == next_stop %}
                     <span class="badge bg-success" style="font-size: 15px;">

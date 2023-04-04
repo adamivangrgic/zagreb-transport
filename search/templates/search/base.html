@@ -141,39 +141,35 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
                 <div class="text-center text-muted">
                     <div class="vstack gap-3">
                             {% if trip %}
-                                <small>
-                                    {{ trip.route.agency.agency_name }}
-                                    {% if trip.route.agency.agency_phone %}
-                                    &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
-                                    {% endif %}
-                                    {% if trip.route.agency.agency_url %}
-                                    &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
-                                    {% endif %}
-                                    {% if trip.route.agency.agency_email %}
-                                    &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
-                                    {% endif %}
-                                    {% if trip.route.agency.agency_fare_url %}
-                                    &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
-                                    {% endif %}
-                                    &#8199<span>({{ trip.route.agency.static_feed.last_update|date:'d.m.Y' }})</span>
-                                </small>
-                            {% elif route %}
-                                <small>
-                                    {{ route.agency.agency_name }}
-                                    {% if route.agency.agency_phone %}
-                                    &#8199<a href="tel:{{ route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
-                                    {% endif %}
-                                    {% if route.agency.agency_url %}
-                                    &#8199<a href="{{ route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
-                                    {% endif %}
-                                    {% if route.agency.agency_email %}
-                                    &#8199<a href="mailto: {{ route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
-                                    {% endif %}
-                                    {% if route.agency.agency_fare_url %}
-                                    &#8199<a href="{{ route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
-                                    {% endif %}
-                                </small>
+                                {{ trip.route.agency.agency_name }}
+                                {% if trip.route.agency.agency_phone %}
+                                &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
                                 {% endif %}
+                                {% if trip.route.agency.agency_url %}
+                                &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
+                                {% endif %}
+                                {% if trip.route.agency.agency_email %}
+                                &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
+                                {% endif %}
+                                {% if trip.route.agency.agency_fare_url %}
+                                &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
+                                {% endif %}
+                                &#8199<span>({{ trip.route.agency.static_feed.last_update|date:'d.m.Y' }})</span>
+                            {% elif route %}
+                                {{ route.agency.agency_name }}
+                                {% if route.agency.agency_phone %}
+                                &#8199<a href="tel:{{ route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
+                                {% endif %}
+                                {% if route.agency.agency_url %}
+                                &#8199<a href="{{ route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
+                                {% endif %}
+                                {% if route.agency.agency_email %}
+                                &#8199<a href="mailto: {{ route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
+                                {% endif %}
+                                {% if route.agency.agency_fare_url %}
+                                &#8199<a href="{{ route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
+                                {% endif %}
+                            {% endif %}
                                 
                         <small class="text-center text-muted">&copy;Zagreb Transport {% now "Y" %}</small>
                         <small><a href="https://leafletjs.com/">Leaflet</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a></small>
