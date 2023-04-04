@@ -326,7 +326,7 @@ def sync_realtime():
 
     detected_trips_ids = []
 
-    trips_ch = Trip.objects.filter(Q(checked_integrity_at__lte=current_time - timedelta(minutes=3)) & Q(trip_id__in=delays.keys())) #
+    trips_ch = Trip.objects.filter(Q(trip_id__in=delays.keys())) #Q(checked_integrity_at__lte=current_time - timedelta(minutes=3)) & 
     stop_times_ch = StopTime.objects.filter(trip__in=trips_ch).values('delay_departure', 'departure_time', 'trip__trip_id', 'stop_sequence')
 
     stoptime_timelines = {}
@@ -346,7 +346,7 @@ def sync_realtime():
         if (not is_strictly_climbing(departure_time_list)) or has_outliers_neighbour(delay_list, 102):# or has_outliers(delay_list)
             detected_trips_ids.append(trip_id)
 
-            #print('{} / {}'.format(trip_id, max_outliers_neighbour(delay_list)))
+            # print('{} / {}'.format(trip_id, max_outliers_neighbour(delay_list)))
 
     trips_ch.update(checked_integrity_at=current_time)
 
