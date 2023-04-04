@@ -1,8 +1,8 @@
 {% extends 'search/base.html' %}
 {% block content %}
 
-{% load custom_tags %}
 {% load static %}
+{% load custom_tags %}
 
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
 <div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
@@ -24,7 +24,7 @@
                  {{ first_stop.stop.stop_name }} &rarr; {{ last_stop.stop.stop_name }}
             </div>
             <div class="col-auto">
-                <a href="/route/?id={{ trip.route.route_id }}" style="color: black;"><i
+                <a href="/route/?id={{ trip.route.route_id }}&td={{ td }}" style="color: black;"><i
                         class="bi bi-calendar-week"></i></a>
             </div>
         </div>

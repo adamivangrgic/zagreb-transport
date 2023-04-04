@@ -26,6 +26,11 @@ def min_convert(value):
     return "{} min".format(int(round(sec / 60))) if 0 < sec < 600 else value.strftime("%H:%M") #.astimezone(pytz.timezone(TIME_ZONE))
 
 
+@register.filter(name='split_return')
+def split_by_dash(value, arg):
+    return value.split(' - ')[arg]
+
+
 @register.filter(name='delay_min')
 def delay_min(value):
     return int(round(value.total_seconds() / 60))

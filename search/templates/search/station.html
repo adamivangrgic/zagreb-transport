@@ -60,7 +60,8 @@
                 {% if stime.trip.trip_headsign %}
                 <strong>{{ stime.trip.trip_headsign }}</strong>
                 {% elif stime.trip.route.route_long_name %}
-                <strong>{{ stime.trip.route.route_long_name }}</strong>
+                <small>{{ stime.trip.route.route_long_name|split_return:0 }}</small><br>
+                &rarr; <strong>{{ stime.trip.route.route_long_name|split_return:1 }}</strong>
                 {% endif %}
             </div>
             <div class="col-auto d-flex align-items-center gap-1">

@@ -80,24 +80,6 @@
 
 </div>
 
-<p class="text-center text-muted">
-    <small>
-    {{ route.agency.agency_name }}
-    {% if route.agency.agency_phone %}
-    &#8199<a href="tel:{{ route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
-    {% endif %}
-    {% if route.agency.agency_url %}
-    &#8199<a href="{{ route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
-    {% endif %}
-    {% if route.agency.agency_email %}
-    &#8199<a href="mailto: {{ route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
-    {% endif %}
-    {% if route.agency.agency_fare_url %}
-    &#8199<a href="{{ route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
-    {% endif %}
-    </small>
-</p>
-
 <div style="display: none">
     <div id="loading-div" class="list-group" style="border-radius: 29.6px;">
         <div class="list-group-item list-group-item-dark">

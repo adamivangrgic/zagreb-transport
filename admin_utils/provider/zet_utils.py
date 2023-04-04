@@ -326,7 +326,7 @@ def sync_realtime():
 
     detected_trips_ids = []
 
-    trips_ch = Trip.objects.filter(Q(trip_id__in=delays.keys())) #Q(checked_integrity_at__lte=current_time - timedelta(minutes=0)) & 
+    trips_ch = Trip.objects.filter(Q(checked_integrity_at__lte=current_time - timedelta(minutes=3)) & Q(trip_id__in=delays.keys())) #
     stop_times_ch = StopTime.objects.filter(trip__in=trips_ch).values('delay_departure', 'departure_time', 'trip__trip_id', 'stop_sequence')
 
     stoptime_timelines = {}
@@ -343,7 +343,7 @@ def sync_realtime():
             delay_list.append((val['delay_departure']).total_seconds())
             departure_time_list.append((val['delay_departure'] + val['departure_time']).total_seconds())
 
-        if (not is_strictly_climbing(departure_time_list)) or has_outliers_neighbour(delay_list, 3 * 60):# or has_outliers(delay_list)
+        if (not is_strictly_climbing(departure_time_list)) or has_outliers_neighbour(delay_list, 6 * 60):# or has_outliers(delay_list)
             detected_trips_ids.append(trip_id)
 
     trips_ch.update(checked_integrity_at=current_time)
@@ -356,4 +356,4 @@ def sync_realtime():
     detected_stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
 
-    # print(datetime.now() - current_time, detected_trips_ids)
+    #print(detected_trips_ids) #datetime.now() - current_time, 

@@ -78,7 +78,8 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
                             <span class="input-group-text border-0 bg-transparent bold" style="font-size: 1.3rem; color: white;"
                             id="search-addon"><i class="bi bi-search"></i></span>
                         {% else %}
-                            <button type="button" class="btn btn-primary bg-transparent border-0" style="font-size: 1.3rem; color: white;" onclick="window.history.back(); "><i class="bi bi-arrow-left"></i></button>
+                            <button type="button" class="btn btn-primary bg-transparent border-0" style="font-size: 1.3rem; color: white;" onclick="window.history.back();">
+                                <i class="bi bi-arrow-left"></i></button>
                         {% endif %}
                         <input id="search" type="search" class="form-control border-0 rounded-pill"
                             {% if station %}
@@ -120,6 +121,10 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
                 {% if trip.wheelchair_accessible %}
                 <p><span class="d-flex align-items-center"><i class="icon-wheelchair"></i> - Pristup invalidskim kolicima</span></p>
                 {% endif %}
+                {% if trip.bikes_allowed or trip.wheelchair_accessible %}
+                <hr class="hr" />
+                {% endif %}
+                
                 <p>
                     Zadnje ažuriranje prije <span class="badge bg-success">4</span> <span class="badge bg-warning">8</span>
                     <span class="badge bg-danger">15</span> <span class="badge bg-secondary">30</span> min
@@ -135,24 +140,42 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
                 <hr class="hr" />
                 <div class="text-center text-muted">
                     <div class="vstack gap-3">
-                        <small>
-                            {{ trip.route.agency.agency_name }}
-                            {% if trip.route.agency.agency_phone %}
-                            &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
-                            {% endif %}
-                            {% if trip.route.agency.agency_url %}
-                            &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
-                            {% endif %}
-                            {% if trip.route.agency.agency_email %}
-                            &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
-                            {% endif %}
-                            {% if trip.route.agency.agency_fare_url %}
-                            &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
-                            {% endif %}
-                        </small>
-
-                        <small class="text-center text-muted">&copy;Zagreb Transport 2023</small>
-                        <small>&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a></small>
+                            {% if trip %}
+                                <small>
+                                    {{ trip.route.agency.agency_name }}
+                                    {% if trip.route.agency.agency_phone %}
+                                    &#8199<a href="tel:{{ trip.route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
+                                    {% endif %}
+                                    {% if trip.route.agency.agency_url %}
+                                    &#8199<a href="{{ trip.route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
+                                    {% endif %}
+                                    {% if trip.route.agency.agency_email %}
+                                    &#8199<a href="mailto: {{ trip.route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
+                                    {% endif %}
+                                    {% if trip.route.agency.agency_fare_url %}
+                                    &#8199<a href="{{ trip.route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
+                                    {% endif %}
+                                </small>
+                            {% elif route %}
+                                <small>
+                                    {{ route.agency.agency_name }}
+                                    {% if route.agency.agency_phone %}
+                                    &#8199<a href="tel:{{ route.agency.agency_phone }}"><i class="bi bi-telephone"></i></a>
+                                    {% endif %}
+                                    {% if route.agency.agency_url %}
+                                    &#8199<a href="{{ route.agency.agency_url }}"><i class="bi bi-globe"></i></a>
+                                    {% endif %}
+                                    {% if route.agency.agency_email %}
+                                    &#8199<a href="mailto: {{ route.agency.agency_email }}"><i class="bi bi-envelope"></i></a>
+                                    {% endif %}
+                                    {% if route.agency.agency_fare_url %}
+                                    &#8199<a href="{{ route.agency.agency_fare_url }}"><i class="bi bi-cash-coin"></i></a>
+                                    {% endif %}
+                                </small>
+                                {% endif %}
+                                
+                        <small class="text-center text-muted">&copy;Zagreb Transport {% now "Y" %}</small>
+                        <small><a href="https://leafletjs.com/">Leaflet</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a></small>
                     </div>
                 </div>
                 
