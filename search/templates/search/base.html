@@ -118,10 +118,10 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
         <div class="modal-content" style="border-radius: 29.6px">
             <div class="modal-body">
                 {% if trip.bikes_allowed %}
-                <p><span class="d-flex align-items-center"><i class="icon-bike"></i> - Bicikli dozvoljeni</span></p>
+                <p><span class="d-flex align-items-center"><i class="icon-bike c_icon"></i> - Bicikli dozvoljeni</span></p>
                 {% endif %}
                 {% if trip.wheelchair_accessible %}
-                <p><span class="d-flex align-items-center"><i class="icon-wheelchair"></i> - Pristup invalidskim kolicima</span></p>
+                <p><span class="d-flex align-items-center"><i class="icon-wheelchair c_icon"></i> - Pristup invalidskim kolicima</span></p>
                 {% endif %}
                 {% if trip.bikes_allowed or trip.wheelchair_accessible %}
                 <hr class="hr" />
@@ -285,10 +285,6 @@ function save_stop_response(action, id){
 
 ////
 
-{% comment %} $("a.nav-load").click(function(){
-    $("#loading").modal("show");
-});
-
 window.addEventListener( "pageshow", function ( event ) {
     var historyTraversal = event.persisted ||
                            ( typeof window.performance != "undefined" &&
@@ -308,14 +304,84 @@ $(function () {
         }
     });
 
-    $("a.nav-load").click(function(){
+    $(".nav-load").click(function(){
         $("#loading").modal("show");
     });
 });
 
-$("#loading.modal").on('shown.bs.modal', function() {
-    $('.modal-backdrop').css('background', '#ffffff');
-});
+////
+
+(() => {
+    'use strict'
+  
+    const storedTheme = localStorage.getItem('theme')
+  
+    const getPreferredTheme = () => {
+      if (storedTheme) {
+        return storedTheme
+      }
+  
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+  
+    const setTheme = function (theme) {
+      if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-bs-theme', 'dark')
+      } else {
+        document.documentElement.setAttribute('data-bs-theme', theme)
+      }
+    }
+  
+    setTheme(getPreferredTheme())
+  
+    const showActiveTheme = (theme, focus = false) => {
+      const themeSwitcher = document.querySelector('#bd-theme')
+  
+      if (!themeSwitcher) {
+        return
+      }
+  
+      const themeSwitcherText = document.querySelector('#bd-theme-text')
+      const activeThemeIcon = document.querySelector('.theme-icon-active use')
+      const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+      const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
+  
+      document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+        element.classList.remove('active')
+        element.setAttribute('aria-pressed', 'false')
+      })
+  
+      btnToActive.classList.add('active')
+      btnToActive.setAttribute('aria-pressed', 'true')
+      activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+      const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
+      themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+  
+      if (focus) {
+        themeSwitcher.focus()
+      }
+    }
+  
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (storedTheme !== 'light' || storedTheme !== 'dark') {
+        setTheme(getPreferredTheme())
+      }
+    })
+  
+    window.addEventListener('DOMContentLoaded', () => {
+      showActiveTheme(getPreferredTheme())
+  
+      document.querySelectorAll('[data-bs-theme-value]')
+        .forEach(toggle => {
+          toggle.addEventListener('click', () => {
+            const theme = toggle.getAttribute('data-bs-theme-value')
+            localStorage.setItem('theme', theme)
+            setTheme(theme)
+            showActiveTheme(theme, true)
+          })
+        })
+    })
+  })()
 
 {% comment %} const isIos = () => {
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -341,6 +407,30 @@ $("#loading.modal").on('shown.bs.modal', function() {
         font-size: 9px;
         min-height: 1.2em;
     }
+
+    [data-bs-theme=dark] .leaflet-tile {
+        filter: grayscale(100%) brightness(70%) contrast(150%) invert(100%);
+        -webkit-filter: grayscale(100%) brightness(70%) contrast(150%) invert(100%);
+        -moz-filter: grayscale(100%) brightness(70%) contrast(150%) invert(100%);
+    }
+
+    [data-bs-theme=dark] .leaflet-container {
+        background: #494949;
+        outline: 0;
+    }
+
+    [data-bs-theme=dark] .c_icon {
+        filter: invert(100%);
+        -webkit-filter: invert(100%);
+        -moz-filter: invert(100%);
+    }
+
+    [data-bs-theme=light] .modal-backdrop{
+        background-color: white !important;
+    }
+      
+
+    
 </style>
 
 </body>

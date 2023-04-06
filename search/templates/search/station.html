@@ -29,10 +29,10 @@
                 </div>
                 
                 <div class="col-auto">
-                    <a class="nav-load" href="?id={{ key }}" style="color: black;"><i class="bi bi-pin-map"></i></a>
+                    <a class="icon-link icon-link-hover link-secondary nav-load" href="?id={{ key }}"><i class="bi bi-pin-map"></i></a>
                 </div>
                 <div class="col-auto">
-                    <a onclick="save_stop('{{ key }}')" style="color: black;">
+                    <a class="icon-link icon-link-hover link-secondary" onclick="save_stop('{{ key }}')">
                         {% if key in request.COOKIES.saved_stops %}
                         <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
                         <i id="save-nfill-{{ key }}" class="bi bi-star" style="display:none;"></i>
@@ -62,6 +62,13 @@
                 {% endif %}
             </div>
             <div class="col-auto d-flex align-items-center gap-1">
+                {% if stime.trip.bikes_allowed %}
+                <i class="icon-bike c_icon"></i>
+                {% endif %}
+                {% if stime.trip.wheelchair_accessible %}
+                <i class="icon-wheelchair c_icon"></i>
+                {% endif %}
+                
                 {% if stime.departure_time_an|arrived:2 %}
                 <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
                 {% else %}

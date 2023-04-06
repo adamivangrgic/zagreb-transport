@@ -21,9 +21,9 @@
             </div>
 
             <div class="col-auto d-flex gap-4">
-                <a class="nav-load" href="/station/?id={{ key }}&td=0&ad=1" style="color: black;"><i class="bi bi-calendar-week"></i></a>
+                <a class="icon-link icon-link-hover link-secondary nav-load" href="/station/?id={{ key }}&td=0&ad=1"><i class="bi bi-calendar-week"></i></a>
            
-                <a onclick="save_stop('{{ key }}')" style="color: black;">
+                <a class="icon-link icon-link-hover link-secondary" onclick="save_stop('{{ key }}')">
                     {% if key in request.COOKIES.saved_stops %}
                     <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
                     <i id="save-nfill-{{ key }}" class="bi bi-star" style="display:none;"></i>
@@ -54,10 +54,10 @@
             </div>
             <div class="col-auto d-flex align-items-center gap-1">
                 {% if stime.trip.bikes_allowed %}
-                <i class="icon-bike"></i>
+                <i class="icon-bike c_icon"></i>
                 {% endif %}
                 {% if stime.trip.wheelchair_accessible %}
-                <i class="icon-wheelchair"></i>
+                <i class="icon-wheelchair c_icon"></i>
                 {% endif %}
 
                 {% if stime.departure_time_an|arrived:2 %}
