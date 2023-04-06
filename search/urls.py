@@ -11,5 +11,4 @@ urlpatterns = [
     path('route/', views.route, name='route'),
 
     path('location_search/', views.location_search, name='location_search'),
-    path('map/', views.map, name='map'),
 ]

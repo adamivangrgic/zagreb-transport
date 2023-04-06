@@ -33,10 +33,6 @@ def index(request):
     return render(request, 'search/map.html', {'stops': data})
 
 
-def map(request):
-    return render(request, 'search/map.html')
-
-
 def search_suggestions(request):
     query = request.GET.get('q')
 

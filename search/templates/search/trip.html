@@ -4,7 +4,8 @@
 {% load static %}
 {% load custom_tags %}
 
-<div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
+<div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; po
+inter-events:auto;"></div>
 <div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
 <div class="list-group shadow" style="z-index: 2; border-radius: 29.6px">
@@ -253,11 +254,11 @@
         ////
 
         for (var i = 0; i < past_stops.length; i++) {
-            markers.push(L.marker([past_stops[i][0], past_stops[i][1]], {win_url: past_stops[i][2], icon: station_icon_grey}).on('click', onClick));
+            markers.push(L.marker([past_stops[i][0], past_stops[i][1]], {id: past_stops[i][2], icon: station_icon_grey}).on('click', onClick));
         };
 
         for (var j = 0; j < future_stops.length; j++) {
-            markers.push(L.marker([future_stops[j][0], future_stops[j][1]], {win_url: future_stops[j][2], icon: station_icon}).on('click', onClick));
+            markers.push(L.marker([future_stops[j][0], future_stops[j][1]], {id: future_stops[j][2], icon: station_icon}).on('click', onClick));
         };
 
         if (future_stops.length > 0){
@@ -283,8 +284,9 @@
 
     ////
 
-    function onClick(e) {
-        window.location.replace(this.options.win_url, "_self");
+    function onClick(el) {
+        window.scrollTo(0, $(this.options.id).offset().top - window.innerHeight / 2); 
+        $(this.options.id).focus();
     };
 
     var lastSync = new Date().getTime();

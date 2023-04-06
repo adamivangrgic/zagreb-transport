@@ -102,10 +102,17 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
     </div>
 </div>
 
-{% comment %} <div id="loading" style="position: fixed; top: 0; left: 0; z-index: 100; height:100%; width:100%; pointer-events:auto;">
-    <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
+{% comment %} <div id="loading" class="modal">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
+</div> {% endcomment %}
+  
+
+{% comment %} <div id="loading" style="position: fixed; top: 0; left: 0; z-index: 100; height:100%; width:100%; pointer-events:auto;">
+    
 </div> {% endcomment %}
 
 <button type="button" class="btn btn-light rounded-circle shadow position-fixed bottom-0 end-0 m-3" data-bs-toggle="modal" data-bs-target="#info-modal"
@@ -279,7 +286,11 @@ function save_stop_response(action, id){
         fill.style.display = 'none';
         nfill.style.display = 'initial';
     }
-}
+};
+
+{% comment %} window.addEventListener("beforeunload", function (event) {
+    $("#loading").modal("show");
+}); {% endcomment %}
 
 {% comment %} const isIos = () => {
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -294,6 +305,18 @@ function save_stop_response(action, id){
   } else {$("#install-popup").modal({show: true}); } {% endcomment %}
   
 </script>
+
+<style>
+    .marker-label {
+        min-width: 104px;
+        left: -46px;
+        top: 18px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 9px;
+        min-height: 1.2em;
+      }
+</style>
 
 </body>
 </html>
