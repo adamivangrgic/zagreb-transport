@@ -57,7 +57,7 @@
     <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
     <script src="{% static 'a/a.js' %}"></script>
 
-    {% comment %} <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" /> {% endcomment %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,300,0,0" />
 
 </head>
 
@@ -186,6 +186,24 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
     </div>
 </div>
 
+<div id="install-ios" class="modal fade" tabindex="-1" data-bs-backdrop="false">
+    <div class="modal-dialog" style="position:fixed; top:auto; right:auto; left:auto; bottom:0;">
+        <div class="modal-content" style="border-radius: 29.6px">
+            <div class="modal-header gap-3">
+                <img src="{% static 'images/icon-160.png' %}" class="rounded" style="height: 30px;">
+                <h5>Instaliraj</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>        
+            <div class="modal-body">
+                <p>
+                    Kako biste instalirali aplikaciju pritisnite <span class="material-symbols-outlined">ios_share</span>
+                    i odaberite <i class="bi bi-plus-square"></i> <strong>Dodaj na početni zaslon</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 let timer;
 const waitTime = 400;
@@ -285,15 +303,6 @@ function save_stop_response(action, id){
 
 ////
 
-window.addEventListener( "pageshow", function ( event ) {
-    var historyTraversal = event.persisted ||
-                           ( typeof window.performance != "undefined" &&
-                                window.performance.navigation.type === 2 );
-    if ( historyTraversal ) {
-        $("#loading").modal("hide");
-    }
-}); {% endcomment %}
-
 $(function () {
     window.addEventListener( "pageshow", function ( event ) {
         var historyTraversal = event.persisted ||
@@ -382,18 +391,6 @@ $(function () {
         })
     })
   })()
-
-{% comment %} const isIos = () => {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod/.test( userAgent );
-  }
-  // Detects if device is in standalone mode
-  const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-  
-  // Checks if should display install popup notification:
-  if (isIos() && !isInStandaloneMode()) {
-    $("#install-popup").modal({show: true});
-  } else {$("#install-popup").modal({show: true}); } {% endcomment %}
   
 </script>
 
@@ -425,8 +422,14 @@ $(function () {
         -moz-filter: invert(100%);
     }
 
-    [data-bs-theme=light] .modal-backdrop{
+    [data-bs-theme=light] .modal-backdrop {
         background-color: white !important;
+    }
+
+    .pulse-icon {
+        filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
+        -webkit-filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
+        -moz-filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
     }
       
 

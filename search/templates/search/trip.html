@@ -43,7 +43,8 @@ inter-events:auto;"></div>
            href="/station/?id={{ stime.stop.stop_id }}"
            {% endif %}
            class="list-group-item list-group-item-action nav-load"
-           id="{{ stime.stop.stop_id }}">
+           id="{{ stime.stop.stop_id }}"
+           style="pointer-events: none;">
 
            <span class="data" data-x="{{ stime.stop.stop_loc.x }}" data-y="{{ stime.stop.stop_loc.y }}" data-id="#{{ stime.stop.stop_id }}" hidden></span>
 
@@ -225,7 +226,8 @@ inter-events:auto;"></div>
         iconUrl: '{% static '/icons/pulse.svg' %}',
         iconSize:     [60, 60],
         iconAnchor:   [30, 30],
-        popupAnchor:  [30, 30]
+        popupAnchor:  [30, 30],
+        className: 'pulse-icon'
     });
 
 

@@ -38,11 +38,6 @@
        id="{{ stime.stop.stop_id }}"
        href="/trip/?id={{ trip.trip_id }}&td={{ td }}">
         <div class="row">
-<!--            {% if trip.provider == 'hzpp' %}-->
-<!--            <div class="col-2">-->
-<!--                {{ trip.trip_short_name }}-->
-<!--            </div>-->
-<!--            {% endif %}-->
             <div class="col-4 d-flex align-items-center">
                 {{ trip.first_stop }}
             </div>
@@ -52,21 +47,6 @@
             <div class="col-4 text-end d-flex justify-content-end align-items-center">
                 {{ trip.last_stop }}
             </div>
-<!--            <div class="col-auto">-->
-<!--                {% if next_stop.updated_at|within_last:4 %}-->
-<!--                <span class="badge rounded-pill bg-success" style="font-size: 15px;"><i-->
-<!--                        class="bi bi-broadcast-pin"></i></span>-->
-<!--                {% elif next_stop.updated_at|within_last:8 %}-->
-<!--                <span class="badge rounded-pill bg-warning" style="font-size: 15px;"><i-->
-<!--                        class="bi bi-broadcast-pin"></i></span>-->
-<!--                {% elif next_stop.updated_at|within_last:15 %}-->
-<!--                <span class="badge rounded-pill bg-danger" style="font-size: 15px;"><i-->
-<!--                        class="bi bi-broadcast-pin"></i></span>-->
-<!--                {% elif next_stop.updated_at|within_last:30 %}-->
-<!--                <span class="badge rounded-pill bg-secondary" style="font-size: 15px;"><i-->
-<!--                        class="bi bi-broadcast-pin"></i></span>-->
-<!--                {% endif %}-->
-<!--            </div>-->
         </div>
     </a>
     {% if user.is_superuser %}
