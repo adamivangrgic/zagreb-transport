@@ -102,18 +102,13 @@ position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top);
     </div>
 </div>
 
-{% comment %} <div id="loading" class="modal">
-    <div class="modal-dialog modal-fullscreen-sm-down">
+<div id="loading" class="modal">
+    <div class="modal-dialog h-100 w-100" style="display: flex; justify-content: center; align-items: center; text-align: center; min-height: 100vh;">
         <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-</div> {% endcomment %}
-  
-
-{% comment %} <div id="loading" style="position: fixed; top: 0; left: 0; z-index: 100; height:100%; width:100%; pointer-events:auto;">
-    
-</div> {% endcomment %}
+</div>
 
 <button type="button" class="btn btn-light rounded-circle shadow position-fixed bottom-0 end-0 m-3" data-bs-toggle="modal" data-bs-target="#info-modal"
     style="z-index: 99; aspect-ratio: 1 / 1;"><i class="bi bi-info-circle"></i></button>
@@ -233,21 +228,21 @@ function populate(json){
     for (const st of json.data[0]){
         let name = st[0];
         let id = st[1];
-        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2 nav-load">&emsp;' + name + '</a>';
     };
 
     if (json.data[1].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Tramvaji</div>'; };
     for (const st of json.data[1]){
         let name = st[0];
         let id = st[1];
-        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2 nav-load">&emsp;' + name + '</a>';
     };
 
     if (json.data[2].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Autobusi</div>'; };
     for (const st of json.data[2]){
         let name = st[0];
         let id = st[1];
-        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
+        res.innerHTML += '<a href="/station/?id=' + id + '" class="list-group-item bg-transparent text-white p-2 nav-load">&emsp;' + name + '</a>';
     };
 
     if (json.data[3].length != 0){ res.innerHTML += '<div class="list-group-item bg-transparent text-white-50 p-2" aria-current="true">Linije</div>'; };
@@ -259,7 +254,7 @@ function populate(json){
         };
         
         let id = st[2];
-        res.innerHTML += '<a href="/route/?id=' + id + '" class="list-group-item bg-transparent text-white p-2">&emsp;' + name + '</a>';
+        res.innerHTML += '<a href="/route/?id=' + id + '" class="list-group-item bg-transparent text-white p-2 nav-load">&emsp;' + name + '</a>';
     };
 
 };
@@ -288,9 +283,39 @@ function save_stop_response(action, id){
     }
 };
 
-{% comment %} window.addEventListener("beforeunload", function (event) {
+////
+
+{% comment %} $("a.nav-load").click(function(){
     $("#loading").modal("show");
+});
+
+window.addEventListener( "pageshow", function ( event ) {
+    var historyTraversal = event.persisted ||
+                           ( typeof window.performance != "undefined" &&
+                                window.performance.navigation.type === 2 );
+    if ( historyTraversal ) {
+        $("#loading").modal("hide");
+    }
 }); {% endcomment %}
+
+$(function () {
+    window.addEventListener( "pageshow", function ( event ) {
+        var historyTraversal = event.persisted ||
+                               ( typeof window.performance != "undefined" &&
+                                    window.performance.navigation.type === 2 );
+        if ( historyTraversal ) {
+            $("#loading").modal("hide");
+        }
+    });
+
+    $("a.nav-load").click(function(){
+        $("#loading").modal("show");
+    });
+});
+
+$("#loading.modal").on('shown.bs.modal', function() {
+    $('.modal-backdrop').css('background', '#ffffff');
+});
 
 {% comment %} const isIos = () => {
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -315,7 +340,7 @@ function save_stop_response(action, id){
         font-weight: bold;
         font-size: 9px;
         min-height: 1.2em;
-      }
+    }
 </style>
 
 </body>

@@ -27,12 +27,9 @@
                     <strong>{{ val.station_name }}</strong>
                     {% if val.hs %} &rarr; {{ val.hs }}{% endif %}
                 </div>
-                {% comment %} <div class="col-auto">
-                    <a href="/station/?id={{ key }}" style="color: black;"><i
-                            class="bi bi-box-arrow-up-right"></i></a>
-                </div> {% endcomment %}
+                
                 <div class="col-auto">
-                    <a href="?id={{ key }}" style="color: black;"><i class="bi bi-pin-map"></i></a>
+                    <a class="nav-load" href="?id={{ key }}" style="color: black;"><i class="bi bi-pin-map"></i></a>
                 </div>
                 <div class="col-auto">
                     <a onclick="save_stop('{{ key }}')" style="color: black;">
@@ -49,7 +46,7 @@
     </div>
 
     {% for stime in val.stimes %}
-    <a href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action">
+    <a href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action nav-load">
         <div class="row">
             {% if stime.trip.route.route_short_name %}
             <div class="d-inline" style="width: 50px">
@@ -124,7 +121,7 @@
     <div class="list-group-item">Nema polazaka.</div>
     {% endfor %}
     {% if val.stimes|length < 25 and 'td' not in request.GET %}
-    <a href="?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center" style="font-size: 11px">Sljedeći dan <i class="bi bi-calendar-plus"></i></a>
+    <a href="?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center nav-load" style="font-size: 11px">Sljedeći dan <i class="bi bi-calendar-plus"></i></a>
     {% endif %}
 </div>
 {% endfor %}
