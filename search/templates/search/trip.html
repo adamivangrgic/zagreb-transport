@@ -306,6 +306,10 @@ inter-events:auto;"></div>
             var collapse_button_display = $(page).find('#collapse_button').css("display");
             $('#collapse_button').css("display", collapse_button_display);
 
+            if ($('#future').children().length <= 0){
+                $('#collapse_past').collapse('show');
+            }
+
             refresh_map();
         });
     }
