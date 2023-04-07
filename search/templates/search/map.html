@@ -349,7 +349,7 @@
         timetable.appendChild(loading);
     }
 
-    $(function () { 
+    {% comment %} $(function () { 
         const isIos = () => {
         const userAgent = window.navigator.userAgent.toLowerCase();
             return /iphone|ipad|ipod/.test( userAgent );
@@ -359,7 +359,7 @@
         if (isIos() && !isInStandaloneMode()) {
             $("#install-ios").modal("show");
         };
-    });
+    }); {% endcomment %}
 </script>
 
 {% endblock %}

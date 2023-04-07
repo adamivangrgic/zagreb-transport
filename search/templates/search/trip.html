@@ -43,8 +43,7 @@ inter-events:auto;"></div>
            href="/station/?id={{ stime.stop.stop_id }}"
            {% endif %}
            class="list-group-item list-group-item-action nav-load"
-           id="{{ stime.stop.stop_id }}"
-           style="pointer-events: none;">
+           id="{{ stime.stop.stop_id }}">
 
            <span class="data" data-x="{{ stime.stop.stop_loc.x }}" data-y="{{ stime.stop.stop_loc.y }}" data-id="#{{ stime.stop.stop_id }}" hidden></span>
 
@@ -195,7 +194,7 @@ inter-events:auto;"></div>
 <script>
     var map = L.map('map', {attributionControl: false, zoomControl: false, zoomSnap: 0.25});
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 18, }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 17}).addTo(map);
 
     var winDivRect = document.getElementById('map-window').getBoundingClientRect();
     var mapDivRect = document.getElementById('map').getBoundingClientRect();

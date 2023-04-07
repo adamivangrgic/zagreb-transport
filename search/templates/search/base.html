@@ -61,7 +61,7 @@
 
 </head>
 
-<body style="height: 120vh;">
+<body class="user-select-none" style="height: 120vh;">
 
 <div style="background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
 position: fixed; top: 0; left: 0; z-index: 10; height: env(safe-area-inset-top); width:100%;"></div>
@@ -303,20 +303,20 @@ function save_stop_response(action, id){
 
 ////
 
-$(function () {
-    window.addEventListener( "pageshow", function ( event ) {
-        var historyTraversal = event.persisted ||
-                               ( typeof window.performance != "undefined" &&
-                                    window.performance.navigation.type === 2 );
-        if ( historyTraversal ) {
-            $("#loading").modal("hide");
-        }
-    });
-
-    $(".nav-load").click(function(){
-        $("#loading").modal("show");
-    });
+window.addEventListener( "pageshow", function ( event ) {
+    var historyTraversal = event.persisted ||
+                           ( typeof window.performance != "undefined" &&
+                                window.performance.navigation.type === 2 );
+    if ( historyTraversal ) {
+        $("#loading").modal("hide");
+    }
 });
+
+document.addEventListener('click', function(event) {
+    if (event.target.closest('.nav-load')) {
+      $("#loading").modal("show");
+    }
+  });
 
 ////
 
@@ -431,9 +431,6 @@ $(function () {
         -webkit-filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
         -moz-filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
     }
-      
-
-    
 </style>
 
 </body>
