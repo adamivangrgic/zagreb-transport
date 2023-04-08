@@ -303,14 +303,15 @@ inter-events:auto;"></div>
             var future_elem = $(page).find('#future').html();
             $('#future').html(future_elem);
 
+            var collapse_button_display = $(page).find('#collapse_button').css("display");
+            $('#collapse_button').css("display", collapse_button_display);
+
             if ($('#future').children().length <= 0){
                 $('#collapse_past').collapse('show');
                 
                 const r = $('#future').css("border-bottom-left-radius");
                 $('#collapse_past').css("border-bottom-left-radius", r);
                 $('#collapse_past').css("border-bottom-right-radius", r);
-
-                $('#collapse_button').css("display", 'none');
             }
 
             refresh_map();
