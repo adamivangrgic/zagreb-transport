@@ -7,7 +7,7 @@
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
 <div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
-<div id="alerts">
+<div id="alerts" class="d-grid gap-4">
 {% for news in news_entries %}
 <div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0" onclick="$('#alert-{{ forloop.counter }}').modal('show');">
     <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
