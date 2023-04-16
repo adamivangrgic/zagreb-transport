@@ -52,6 +52,7 @@ def sync_zet():
 
 ### news
 
+@app.task
 def sync_news():
     parse_rss(zet.rss_url)
 

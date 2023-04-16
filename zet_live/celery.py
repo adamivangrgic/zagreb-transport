@@ -17,4 +17,9 @@ app.conf.beat_schedule = {
         'task': 'admin_utils.tasks.update_static',
         'schedule': crontab(hour=3, minute=30)
     },
+
+    'update news': {
+        'task': 'admin_utils.tasks.sync_news',
+        'schedule': crontab(minute='0,30', hour='8-20')
+    }
 }
