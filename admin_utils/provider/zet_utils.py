@@ -16,6 +16,8 @@ static_url = "https://zet.hr/gtfs-scheduled/latest"
 realtime_url = "https://zet.hr/gtfs-rt-protobuf"
 provider = 'zet'
 
+rss_url = "https://www.zet.hr/rss_promet.aspx"
+
 
 def run_static_update(url):
     file = download_zip(url)

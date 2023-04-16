@@ -1,10 +1,12 @@
 from .provider import zet_utils as zet
 from .provider import hzpp_utils as hzpp
 from .models import *
+from search.models import NewsEntry
 import requests
 import email.utils
 from .provider.parse_utils import get_date_from_gtfs_static
-from datetime import date
+from datetime import date, datetime
+import feedparser
 
 from zet_live.celery import app
 
@@ -41,7 +43,32 @@ def update_hzpp(url=hzpp.static_url):
     hzpp.run_static_update(url)
 
 
+### realtime
+
 @app.task
 def sync_zet():
     zet.sync_realtime()
+
+
+### news
+
+def sync_news():
+    parse_rss(zet.rss_url)
+
+
+def parse_rss(url, provider=None):
+    feed = feedparser.parse(url)
+    date_format = '%a, %d %b %Y %H:%M:%S %z'
+
+    NewsEntry.objects.delete()
     
+    for e in feed.entries:
+        new = NewsEntry(
+            guid=e.id,
+            link=e.link,
+            title=e.title,
+            description=e.description,
+            date=datetime.strptime(e.published, date_format)
+        )
+
+        new.save()

@@ -3,6 +3,29 @@
 
 {% load custom_tags %}
 
+{% for news in news_entries %}
+<div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0" onclick="$('#alert-{{ forloop.counter }}').modal('show');">
+    <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
+</div>
+
+<div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ news.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body initial-css">
+                {{ news.description|safe }}
+            </div>
+            <div class="modal-footer">
+                {{ news.date|date:'d.m.Y H:i' }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 <div id="content" class="d-grid gap-4">
 
 <div id="date-selector" class="btn-group btn-group-sm">

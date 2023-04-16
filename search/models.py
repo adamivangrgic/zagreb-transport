@@ -102,3 +102,10 @@ class CalendarDate(models.Model):
 
     def __str__(self):
         return "{} - {} - {}".format(self.service_id, self.date, self.exception_type)
+
+class NewsEntry(models.Model):
+    guid = models.URLField(primary_key=True, max_length=200)
+    link = models.URLField(max_length=200)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    date = models.DateTimeField()

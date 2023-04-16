@@ -167,10 +167,13 @@ def station(request):
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
                               'station_name': stop.stop_name, 'provider': stop.provider}
 
+    ### news entries banner
+    news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description__icontains=station.stop_name))
+
     if ad:
-        return render(request, 'search/station.html', {'stops': data, 'station': station, 'days': days, 'td': td})
+        return render(request, 'search/station.html', {'stops': data, 'station': station, 'news_entries': news_entries, 'days': days, 'td': td})
     else:
-        return render(request, 'search/map.html', {'stops': data, 'station': station, 'num': num})
+        return render(request, 'search/map.html', {'stops': data, 'station': station, 'news_entries': news_entries, 'num': num})
 
 
 def save_stop(request):
@@ -223,8 +226,12 @@ def trip(request):
     first_stop = stops[0]
     last_stop = stops[len(stops)-1]
 
+    ### news entries banner
+    regex_filter = "linij[aeiu]\s?{}(?!\d).*".format(trip.route.route_short_name)
+    news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_filter) | Q(description__regex=regex_filter))
+
     return render(request, 'search/trip.html', {'trip': trip, 'past_stops': past_stops, 'future_stops': future_stops, 'next_stop': next_stop,
-        'first_stop': first_stop, 'last_stop': last_stop, 'td': td})
+        'first_stop': first_stop, 'last_stop': last_stop, 'td': td, 'news_entries': news_entries})
 
 
 def route(request):
@@ -256,4 +263,8 @@ def route(request):
 
     route = Route.objects.get(route_id=route_id)
 
-    return render(request, 'search/route.html', {'route': route, 'trips': trips, 'days': days, 'td': td})
+    ### news entries banner
+    regex_filter = "linij[aeiu]\s?{}(?!\d).*".format(route.route_short_name)
+    news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_filter) | Q(description__regex=regex_filter))
+
+    return render(request, 'search/route.html', {'route': route, 'trips': trips, 'days': days, 'td': td, 'news_entries': news_entries})

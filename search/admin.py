@@ -8,6 +8,8 @@ admin.site.register(CalendarDate)
 admin.site.register(Agency)
 admin.site.register(Calendar)
 
+admin.site.register(NewsEntry)
+
 ###
 
 class StopTimeAdmin(admin.ModelAdmin):
