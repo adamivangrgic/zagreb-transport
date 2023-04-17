@@ -65,6 +65,7 @@ def parse_rss(url, provider=None):
     
     for e in feed.entries:
         new = NewsEntry(
+            guid=e.id,
             link=e.link,
             title=e.title,
             description=e.description,
