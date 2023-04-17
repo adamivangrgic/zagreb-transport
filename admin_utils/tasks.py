@@ -54,18 +54,17 @@ def sync_zet():
 
 @app.task
 def sync_news():
+    NewsEntry.objects.all().delete()
+
     parse_rss(zet.rss_url)
 
 
 def parse_rss(url, provider=None):
     feed = feedparser.parse(url)
     date_format = '%a, %d %b %Y %H:%M:%S %z'
-
-    NewsEntry.objects.delete()
     
     for e in feed.entries:
         new = NewsEntry(
-            guid=e.id,
             link=e.link,
             title=e.title,
             description=e.description,
