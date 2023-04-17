@@ -19,7 +19,8 @@
                 {{ news.description|safe }}
             </div>
             <div class="modal-footer">
-                {{ news.date|date:'d.m.Y H:i' }}
+                {{ news.date|date:'d.m.Y H:i' }} &#x2022;
+                <a href="{{ news.link }}">Link</a>
             </div>
         </div>
     </div>
