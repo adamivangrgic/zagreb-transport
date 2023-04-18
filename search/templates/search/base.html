@@ -323,10 +323,12 @@ const currentHostname = window.location.hostname;
 const links = document.querySelectorAll("a");
 
 links.forEach(link => {
-  const linkHostname = link.hostname;
-  if (linkHostname !== currentHostname) {
-    link.setAttribute("target", "_blank");
-  }
+    const linkHostname = link.hostname;
+    const linkHref = link.getAttribute("href");
+
+    if (linkHref && linkHostname !== currentHostname && !linkHref.startsWith("javascript:")) {
+        link.setAttribute("target", "_blank");
+    }
 });
 
 ////
