@@ -7,6 +7,7 @@ import email.utils
 from .provider.parse_utils import get_date_from_gtfs_static
 from datetime import date, datetime
 import feedparser
+import re
 
 from zet_live.celery import app
 
@@ -64,11 +65,17 @@ def parse_rss(url, provider=None):
     date_format = '%a, %d %b %Y %H:%M:%S %z'
     
     for e in feed.entries:
+        description = e.description
+
+        pattern = re.compile('<.*?>')
+        description_text = re.sub(pattern, '', description)
+
         new = NewsEntry(
             guid=e.id,
             link=e.link,
             title=e.title,
-            description=e.description,
+            description=description,
+            description_text=description_text,
             date=datetime.strptime(e.published, date_format)
         )
 

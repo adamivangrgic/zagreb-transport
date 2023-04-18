@@ -108,4 +108,5 @@ class NewsEntry(models.Model):
     link = models.URLField(max_length=200)
     title = models.CharField(max_length=200)
     description = models.TextField()
+    description_text = models.TextField()
     date = models.DateTimeField()

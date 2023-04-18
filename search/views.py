@@ -132,6 +132,10 @@ def get_stop_times(stop, date, num_of_stations, time_offset, current_time, all_d
 
     future_filter = Q(departure_time_an__gt=current_time + timedelta(minutes=time_offset))
 
+    # .annotate(up_to_date=Case(When(updated_at__gte=current_time - timedelta(minutes=60), then=True), default=False, output_field=fields.BooleanField())) \
+    #     .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(0), output_field=fields.DurationField())) \
+    #     .annotate(delay_arrival_an=Case(When(up_to_date=True, then=F('delay_arrival')), default=timedelta(0), output_field=fields.DurationField())) \
+
     stimes = stop.stop_times \
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure') + date, output_field=fields.DateTimeField())) \
         .annotate(arrival_time_an=ExpressionWrapper(F('arrival_time') + F('delay_arrival') + date, output_field=fields.DateTimeField())) \
@@ -168,7 +172,7 @@ def station(request):
                               'station_name': stop.stop_name, 'provider': stop.provider}
 
     ### news entries banner
-    news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description__icontains=station.stop_name))
+    news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description_text__icontains=station.stop_name))
 
     if ad:
         return render(request, 'search/station.html', {'stops': data, 'station': station, 'news_entries': news_entries, 'days': days, 'td': td})
@@ -231,7 +235,7 @@ def trip(request):
     news_entries = []
     if news_keyword:
         regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword)
-        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description__regex=regex_pattern))
+        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__regex=regex_pattern))
 
     return render(request, 'search/trip.html', {'trip': trip, 'past_stops': past_stops, 'future_stops': future_stops, 'next_stop': next_stop,
         'first_stop': first_stop, 'last_stop': last_stop, 'td': td, 'news_entries': news_entries})
@@ -271,6 +275,6 @@ def route(request):
     news_entries = []
     if news_keyword:
         regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword)
-        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description__regex=regex_pattern))
+        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__regex=regex_pattern))
 
     return render(request, 'search/route.html', {'route': route, 'trips': trips, 'days': days, 'td': td, 'news_entries': news_entries})
