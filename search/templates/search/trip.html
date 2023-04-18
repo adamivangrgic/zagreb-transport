@@ -9,7 +9,7 @@
 
 <div id="alerts" class="d-grid gap-4">
 {% if news_entries %}
-<div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
+<div class="alert alert-warning shadow" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
     {% for news in news_entries %}
     <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
         <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
