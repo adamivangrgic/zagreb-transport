@@ -318,6 +318,17 @@ document.addEventListener('click', function(event) {
     }
   });
 
+
+const currentHostname = window.location.hostname;
+const links = document.querySelectorAll("a");
+
+links.forEach(link => {
+  const linkHostname = link.hostname;
+  if (linkHostname !== currentHostname) {
+    link.setAttribute("target", "_blank");
+  }
+});
+
 ////
 
 (() => {
