@@ -235,7 +235,7 @@ def trip(request):
     news_entries = []
     if news_keyword:
         regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword)
-        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__regex=regex_pattern))
+        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
 
     return render(request, 'search/trip.html', {'trip': trip, 'past_stops': past_stops, 'future_stops': future_stops, 'next_stop': next_stop,
         'first_stop': first_stop, 'last_stop': last_stop, 'td': td, 'news_entries': news_entries})
@@ -275,6 +275,6 @@ def route(request):
     news_entries = []
     if news_keyword:
         regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword)
-        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__regex=regex_pattern))
+        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
 
     return render(request, 'search/route.html', {'route': route, 'trips': trips, 'days': days, 'td': td, 'news_entries': news_entries})
