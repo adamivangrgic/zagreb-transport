@@ -82,11 +82,11 @@
             <div class="row">
                 <div class="col">
                     {{ stime.stop.stop_name }}
-                    {% if stime.delay_departure|delay_min != 0 %}
+                    {% if stime.delay_departure_an|delay_min != 0 %}
                         <br><div class="text-muted"><small>
-                            Stigao {{ stime.delay_departure|delay_min|abs }} min
-                            {% if stime.delay_departure|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
-                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                            Stigao {{ stime.delay_departure_an|delay_min|abs }} min
+                            {% if stime.delay_departure_an|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'H:i' }}</span>
                         </small></div>
                     {% endif %}
                 </div>
@@ -110,7 +110,7 @@
                     {{ stime.departure_time }}<br>
                     {{ stime.stop_sequence }}<br>
                     {{ stime.trip.trip_id }}<br>
-                    {{ stime.delay_departure }}<br>
+                    {{ stime.delay_departure_an }}<br>
                     {{ stime.updated_at|timesince }}
                 </div>
             </div>
@@ -140,21 +140,21 @@
             <div class="row">
                 <div class="col">
                     {{ stime.stop.stop_name }}
-                    {% if stime.delay_departure|delay_min != 0 %}
+                    {% if stime.delay_departure_an|delay_min != 0 %}
                         {% if stime.updated_at|within_last:8 %}
                         <br><div class="fw-semibold text-danger-emphasis"><small>
-                            Stiže {{ stime.delay_departure|delay_min|abs }} min
-                            {% if stime.delay_departure|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
-                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                            Stiže {{ stime.delay_departure_an|delay_min|abs }} min
+                            {% if stime.delay_departure_an|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'H:i' }}</span>
                         </small></div>
                         {% else %}
                         <br><div class="text-muted"><small>
-                            {% if stime.delay_departure|delay_min < 0 %}
-                            Moguć {{ stime.delay_departure|delay_min|abs }} min raniji dolazak 
+                            {% if stime.delay_departure_an|delay_min < 0 %}
+                            Moguć {{ stime.delay_departure_an|delay_min|abs }} min raniji dolazak 
                             {% else %}
-                            Moguće kašnjenje od {{ stime.delay_departure|delay_min|abs }} min
+                            Moguće kašnjenje od {{ stime.delay_departure_an|delay_min|abs }} min
                             {% endif %}
-                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival|date:'H:i' }}</span>
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'H:i' }}</span>
                         </small></div>
                         {% endif %}
                     {% endif %}
@@ -213,7 +213,7 @@
                         {{ stime.departure_time }}<br>
                         {{ stime.stop_sequence }}<br>
                         {{ stime.trip.trip_id }}<br>
-                        {{ stime.delay_departure }}<br>
+                        {{ stime.delay_departure_an }}<br>
                         {{ stime.updated_at|timesince }}
                     </div>
                 </div>

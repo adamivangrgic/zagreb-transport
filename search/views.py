@@ -132,13 +132,13 @@ def get_stop_times(stop, date, num_of_stations, time_offset, current_time, all_d
 
     future_filter = Q(departure_time_an__gt=current_time + timedelta(minutes=time_offset))
 
-    # .annotate(up_to_date=Case(When(updated_at__gte=current_time - timedelta(minutes=60), then=True), default=False, output_field=fields.BooleanField())) \
-    #     .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(0), output_field=fields.DurationField())) \
-    #     .annotate(delay_arrival_an=Case(When(up_to_date=True, then=F('delay_arrival')), default=timedelta(0), output_field=fields.DurationField())) \
+    # .annotate(delay_arrival_an=Case(When(up_to_date=True, then=F('delay_arrival')), default=timedelta(), output_field=fields.DurationField())) \
+    # .annotate(arrival_time_an=ExpressionWrapper(F('arrival_time') + F('delay_arrival_an') + date, output_field=fields.DateTimeField())) \
 
     stimes = stop.stop_times \
-        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure') + date, output_field=fields.DateTimeField())) \
-        .annotate(arrival_time_an=ExpressionWrapper(F('arrival_time') + F('delay_arrival') + date, output_field=fields.DateTimeField())) \
+        .annotate(up_to_date=Case(When(updated_at__gte=current_time - timedelta(minutes=60), then=True), default=False, output_field=fields.BooleanField())) \
+        .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(), output_field=fields.DurationField())) \
+        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure_an') + date, output_field=fields.DateTimeField())) \
         .filter(Q(trip__service_id__in=service_ids)).order_by('departure_time_an')
 
     return stimes.filter(future_filter)[:num_of_stations] if not all_day else stimes
@@ -214,8 +214,11 @@ def trip(request):
         today_mid = today_mid - timedelta(days=1)
 
     stops = trip.stop_times\
-        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure') + today_mid + timedelta(days=td), output_field=fields.DateTimeField())) \
-        .annotate(arrival_time_an=ExpressionWrapper(F('arrival_time') + F('delay_arrival') + today_mid + timedelta(days=td), output_field=fields.DateTimeField())) \
+        .annotate(up_to_date=Case(When(updated_at__gte=current_time - timedelta(minutes=60), then=True), default=False, output_field=fields.BooleanField())) \
+        .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(), output_field=fields.DurationField())) \
+        .annotate(delay_arrival_an=Case(When(up_to_date=True, then=F('delay_arrival')), default=timedelta(), output_field=fields.DurationField())) \
+        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure_an') + today_mid + timedelta(days=td), output_field=fields.DateTimeField())) \
+        .annotate(arrival_time_an=ExpressionWrapper(F('arrival_time') + F('delay_arrival_an') + today_mid + timedelta(days=td), output_field=fields.DateTimeField())) \
         .order_by('stop_sequence')
 
     future_stops = stops.filter(departure_time_an__gte=current_time)

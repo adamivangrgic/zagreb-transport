@@ -115,14 +115,14 @@
                     <i class="bi bi-broadcast-pin"></i>
                 {% endif %}
 
-                {% if stime.delay_departure|delay_min != 0 %}
+                {% if stime.delay_departure_an|delay_min != 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
                     {% if stime.updated_at|within_last:8 %}
                         bg-danger
                     {% else %}
                         text-bg-secondary
                     {% endif %}"
-                    style="font-size: 12px; z-index:99">{{ stime.delay_departure|delay_min|signed }}&prime;</span>
+                    style="font-size: 12px; z-index:99">{{ stime.delay_departure_an|delay_min|signed }}&prime;</span>
                 {% endif %} 
                 </span>
 
