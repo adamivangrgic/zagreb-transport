@@ -6,6 +6,8 @@ from django.db.models import Q, F, ExpressionWrapper, fields, Subquery, OuterRef
 from django.contrib.gis.geos import Point, Polygon
 from django.contrib.gis.db.models.functions import Distance
 
+up_to_date_threshold = timedelta(minutes=90)
+
 
 def index(request):
     saved_stops = request.COOKIES.get('saved_stops')
@@ -136,7 +138,7 @@ def get_stop_times(stop, date, num_of_stations, time_offset, current_time, all_d
     # .annotate(arrival_time_an=ExpressionWrapper(F('arrival_time') + F('delay_arrival_an') + date, output_field=fields.DateTimeField())) \
 
     stimes = stop.stop_times \
-        .annotate(up_to_date=Case(When(updated_at__gte=current_time - timedelta(minutes=60), then=True), default=False, output_field=fields.BooleanField())) \
+        .annotate(up_to_date=Case(When(updated_at__gte=current_time - up_to_date_threshold, then=True), default=False, output_field=fields.BooleanField())) \
         .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(), output_field=fields.DurationField())) \
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure_an') + date, output_field=fields.DateTimeField())) \
         .filter(Q(trip__service_id__in=service_ids)).order_by('departure_time_an')
@@ -214,7 +216,7 @@ def trip(request):
         today_mid = today_mid - timedelta(days=1)
 
     stops = trip.stop_times\
-        .annotate(up_to_date=Case(When(updated_at__gte=current_time - timedelta(minutes=60), then=True), default=False, output_field=fields.BooleanField())) \
+        .annotate(up_to_date=Case(When(updated_at__gte=current_time - up_to_date_threshold, then=True), default=False, output_field=fields.BooleanField())) \
         .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(), output_field=fields.DurationField())) \
         .annotate(delay_arrival_an=Case(When(up_to_date=True, then=F('delay_arrival')), default=timedelta(), output_field=fields.DurationField())) \
         .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure_an') + today_mid + timedelta(days=td), output_field=fields.DateTimeField())) \
