@@ -10,29 +10,7 @@ up_to_date_threshold = timedelta(minutes=90)
 
 
 def index(request):
-    saved_stops = request.COOKIES.get('saved_stops')
-
-    if not saved_stops:
-        stop_ids = []
-    else:
-        stop_ids = saved_stops.split('|')
-
-    current_time = datetime.now()
-    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    if current_time.time().hour < 5:
-        today_mid = today_mid - timedelta(days=1)
-
-    data = {}
-    stops = Stop.objects.filter(stop_id__in=stop_ids).order_by(Case(*[When(stop_id=id_val, then=pos) for pos, id_val in enumerate(stop_ids)]))
-
-    for stop in stops:
-        f_stimes = get_stop_times(stop, today_mid, 4, -0.5, current_time)
-        headsigns = Trip.objects.filter(stop_times__in=f_stimes).distinct().values_list('trip_headsign', flat=True)
-
-        data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
-                              'station_name': stop.stop_name, 'provider': stop.provider}
-
-    return render(request, 'search/map.html', {'stops': data})
+    return render(request, 'search/map.html', {'id': 'index'})
 
 
 def search_suggestions(request):
@@ -153,33 +131,69 @@ def station(request):
     num = int(request.GET.get('num', 25)) # number of stations
 
     station = Stop.objects.get(stop_id=station_id)
-    stops = station.stops.all() if station.stops.all() else [station]
+
+    ### news entries banner
+    news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description_text__icontains=station.stop_name))
+
+    if ad:
+        current_time = datetime.now()
+        weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
+        today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        weekday = today_mid if not current_time.time().hour < 5 else today_mid - timedelta(days=1)
+        days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
+
+        return render(request, 'search/station.html', {'id': station_id, 'station': station, 'news_entries': news_entries, 'days': days, 'td': td})
+        
+    else:
+        return render(request, 'search/map.html', {'id': station_id, 'station': station, 'news_entries': news_entries, 'num': num })
+
+
+def timetable(request):
+    station_id = request.GET.get('id')
+    td = int(request.GET.get('td', 0)) # time delay (days)
+    ad = bool(request.GET.get('ad', 0)) # all day
+    num = int(request.GET.get('num', 25)) # number of stations
+    to = float(request.GET.get('to', -1)) # time offset (first station cutoff in minutes from now)
+
+    station = None
+    stops = None
+
+    if station_id == 'index':
+        saved_stops = request.COOKIES.get('saved_stops')
+
+        if not saved_stops:
+            stop_ids = []
+        else:
+            stop_ids = saved_stops.split('|')
+
+        data = {}
+        stops = Stop.objects.filter(stop_id__in=stop_ids).order_by(Case(*[When(stop_id=id_val, then=pos) for pos, id_val in enumerate(stop_ids)]))
+
+    else:
+        station = Stop.objects.get(stop_id=station_id)
+        stops = station.stops.all() if station.stops.all() else [station]
 
     current_time = datetime.now()
-    weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
     today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-
-    weekday = today_mid if not current_time.time().hour < 5 else today_mid - timedelta(days=1)
-    days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
 
     day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
 
     data = {}
 
     for stop in stops:
-        f_stimes = get_stop_times(stop, day, num, -1, current_time, all_day=ad)
+        f_stimes = get_stop_times(stop, day, num, to, current_time, all_day=ad)
         headsigns = Trip.objects.filter(stop_times__in=f_stimes).distinct().values_list('trip_headsign', flat=True)
 
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
                               'station_name': stop.stop_name, 'provider': stop.provider}
-
+                              
     ### news entries banner
-    news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description_text__icontains=station.stop_name))
+    news_entries = []
+    if station:
+        news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description_text__icontains=station.stop_name))
 
-    if ad:
-        return render(request, 'search/station.html', {'stops': data, 'station': station, 'news_entries': news_entries, 'days': days, 'td': td})
-    else:
-        return render(request, 'search/map.html', {'stops': data, 'station': station, 'news_entries': news_entries, 'num': num})
+    return render(request, 'search/timetable.html', {'stops': data, 'td': td, 'num': num, 'news_entries': news_entries})
 
 
 def save_stop(request):

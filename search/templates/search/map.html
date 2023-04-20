@@ -7,153 +7,15 @@
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
 <div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
-<div id="alerts" class="d-grid gap-4">
-{% if news_entries %}
-<div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
-    {% for news in news_entries %}
-    <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
-        <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
-    </a>
-    {% if not forloop.last %}<hr>{% endif %}
-    {% endfor %}
-</div>
-{% endif %}
-
-{% for news in news_entries %}
-<div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ news.title }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                {{ news.description|safe }}
-            </div>
-            <div class="modal-footer">
-                {{ news.date|date:'d.m.Y H:i' }} &#x2022;
-                <a href="{{ news.link }}">Link</a>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
-</div>
-
+<div id="alerts" class="d-grid gap-4"></div>
 <div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
 
-{% for key, val in stops.items %}
-<div class="shadow list-group" style="border-radius: 29.6px;">
-    <div class="list-group-item list-group-item-dark">
-        <div class="row">
-            <div class="col">
-                <a class="text-reset text-decoration-none nav-load" href="/station/?id={{ key }}">
-                    <strong>{{ val.station_name }}</strong>
-                    {% if val.hs %} &rarr; {{ val.hs }}{% endif %}
-                </a>
-            </div>
-
-            <div class="col-auto d-flex gap-4">
-                <a class="icon-link icon-link-hover link-secondary nav-load" href="/station/?id={{ key }}&td=0&ad=1"><i class="bi bi-calendar-week"></i></a>
-           
-                <a class="icon-link icon-link-hover link-secondary" onclick="save_stop('{{ key }}')">
-                    {% if key in request.COOKIES.saved_stops %}
-                    <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
-                    <i id="save-nfill-{{ key }}" class="bi bi-star" style="display:none;"></i>
-                    {% else %}
-                    <i id="save-fill-{{ key }}" class="bi bi-star-fill" style="display:none;"></i>
-                    <i id="save-nfill-{{ key }}" class="bi bi-star"></i>
-                    {% endif %}
-                </a>
-            </div>
-        </div>
-    </div>
-
-    {% for stime in val.stimes %}
-    <a href="/trip/?id={{ stime.trip.trip_id }}" class="list-group-item list-group-item-action nav-load">
-        <div class="row">
-            {% if stime.trip.route.route_short_name %}
-            <div class="d-inline" style="width: 50px">
-                {{ stime.trip.route.route_short_name }}
-            </div>
-            {% endif %}
-            <div class="col">
-                {% if stime.trip.trip_headsign %}
-                <strong>{{ stime.trip.trip_headsign }}</strong>
-                {% elif stime.trip.route.route_long_name %}
-                <small>{{ stime.trip.route.route_long_name|split_return:0 }}</small><br>
-                &rarr; <strong>{{ stime.trip.route.route_long_name|split_return:1 }}</strong>
-                {% endif %}
-            </div>
-            <div class="col-auto d-flex align-items-center gap-1">
-                {% if stime.trip.bikes_allowed %}
-                <i class="icon-bike c_icon"></i>
-                {% endif %}
-                {% if stime.trip.wheelchair_accessible %}
-                <i class="icon-wheelchair c_icon"></i>
-                {% endif %}
-
-                {% if stime.departure_time_an|arrived:2 %}
-                <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
-                {% else %}
-
-                <span 
-                    {% if stime.updated_at|within_last:4 or stime.wait_updated_at|within_last:4 %}
-                    class="badge bg-success position-relative" 
-                    {% elif stime.updated_at|within_last:8 or stime.wait_updated_at|within_last:8 %}
-                    class="badge bg-warning position-relative"
-                    {% elif stime.updated_at|within_last:15 or stime.wait_updated_at|within_last:15 %}
-                    class="badge bg-danger position-relative"
-                    {% elif stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
-                    class="badge bg-secondary position-relative"
-                    {% else %}
-                    class="badge bg-light text-dark position-relative"
-                    {% endif %}
-                style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}
-
-                {% if stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
-                    <i class="bi bi-broadcast-pin"></i>
-                {% endif %}
-
-                {% if stime.delay_departure_an|delay_min != 0 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
-                    {% if stime.updated_at|within_last:8 %}
-                        bg-danger
-                    {% else %}
-                        text-bg-secondary
-                    {% endif %}"
-                    style="font-size: 12px; z-index:99">{{ stime.delay_departure_an|delay_min|signed }}&prime;</span>
-                {% endif %} 
-                </span>
-
-                {% endif %}
-            </div>
-            
-        </div>
-    </a>
-    {% empty %}
-    <div class="list-group-item">Nema polazaka.</div>
-    {% endfor %}
-
-    {% if station %}
-        {% if val.stimes|length < num and 'td' not in request.GET %}
-        <a href="/station/?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center nav-load" style="font-size: 11px">Sljedeći dan
-            <i class="bi bi-calendar-plus"></i></a>
-        {% elif num %}
-        <a href="javascript: load_more_stations('{{ key }}', {{ num }});" class="list-group-item list-group-item-action text-center" style="font-size: 11px">Učitaj još
-            <i class="bi bi-arrow-clockwise"></i></a>
-        {% endif %}
-    {% endif %}
-</div>
-
-{% endfor %}
-
-{% if station and request.COOKIES.saved_stops %}
+{% comment %} {% if station and request.COOKIES.saved_stops %}
     <button type="button" class="btn btn-secondary mx-auto shadow rounded-pill"
         onclick="show_favourites()">
         <i class="bi bi-star-fill"></i> Spremljene stanice
     </button>
-{% endif %}
+{% endif %} {% endcomment %}
 
 </div>
 
@@ -212,7 +74,15 @@
 </div>
 
 <script>
-    var curr_url = document.URL;
+    const url_template = '/timetable/?hs=1&rc=1&tb=1&sh=1';
+    const index_url = url_template + '&to=-0.5&num=4&id=index';
+    const stop_url = url_template + '&to=-1&fb=1&adb=1&mn=1';
+
+    {% if station %}
+        var curr_url = stop_url + '&id={{ id }}';
+    {% else %}
+        var curr_url = index_url;
+    {% endif %}
 
     var init_center = [45.813038, 15.976928];
     var panToLoc = false;
@@ -341,34 +211,35 @@
     };
 
     function change_stop(stop_id, latlang){
-        curr_url = '/station/?id=' + stop_id;
-        {% comment %} $('#timetable').load(curr_url +  ' #timetable');
-        $('#alerts').load(curr_url +  ' #alerts'); {% endcomment %}
-        
+        curr_url = stop_url + `&id=${ stop_id }`;
+        show_loading();
 
-        $.get(curr_url, function( page ) {
-            var timetable_elem = $(page).find('#timetable').html();
-            $('#timetable').html(timetable_elem);
-
-            var alerts_elem = $(page).find('#alerts').html();
-            $('#alerts').html(alerts_elem);
+        $.get(curr_url).done(function(page) {
+            var r = $(page);
+            $('#timetable').replaceWith(r);
+            $('#alerts').replaceWith(r);
         });
 
         set_view_offset(latlang, Math.max(17, map.getZoom()));
-        show_loading();
     };
 
     function load_more_stations(stop_id, num){
-        curr_url= `/station/?id=${ stop_id }&num=${num + 20}`;
+        curr_url = stop_url + `&num=${num + 20}&id=${ stop_id }`;
         $('#timetable').load(curr_url +  ' #timetable');
     }
 
-    var lastSync = new Date().getTime();
     var syncInterval = 20 * 1000; //sync every 20sec
+    show_loading();
+    syncPage();
 
     function syncPage() {
         lastSync = new Date().getTime(); //set last sync to be now
-        $('#timetable').load(curr_url +  ' #timetable');
+        
+        $.get(curr_url).done(function(page) {
+            var r = $(page);
+            $('#timetable').replaceWith(r);
+            $('#alerts').replaceWith(r);
+        });
     }
 
     setInterval(function() {

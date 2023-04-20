@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+{% load custom_tags %}
+{% load static %}
+
+{% if request.GET.wh == '1' %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Zagreb Transport</title>
+    <meta name="description" content="Uživo pratite tramvaje, autobuse i vlakove u Zagrebu!">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+
+    <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" async>
+    <link rel="stylesheet" href="{% static 'icons/icons.css' %}"/>
+    <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}"/>
+    <script src="{% static 'leaflet/leaflet.js' %}"></script>
+    <script src="{% static 'a/a.js' %}"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,300,0,0" />
+</head>
+<body>
+{% endif %}
+
+    <div id="alerts" class="d-grid gap-4">
+        {% if news_entries %}
+        <div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
+            {% for news in news_entries %}
+            <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
+                <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
+            </a>
+            {% if not forloop.last %}<hr>{% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% for news in news_entries %}
+        <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ news.title }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ news.description|safe }}
+                    </div>
+                    <div class="modal-footer">
+                        {{ news.date|date:'d.m.Y H:i' }} &#x2022;
+                        <a href="{{ news.link }}">Link</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
+
+        {% for key, val in stops.items %}
+        <div class="{% if request.GET.sh == '1' %}shadow{% endif %} list-group" {% if request.GET.rc == '1' %}style="border-radius: 29.6px;"{% endif %}>
+
+            {% if request.GET.tb == '1' %}
+            <div class="list-group-item list-group-item-dark">
+                <div class="row">
+                    <div class="col">
+                        <a class="text-reset text-decoration-none nav-load" href="/station/?id={{ key }}">
+                            <strong>{{ val.station_name }}</strong>
+                            {% if request.GET.hs == '1' %}
+                                {% if val.hs %} &rarr; {{ val.hs }}{% endif %}
+                            {% endif %}
+                        </a>
+                    </div>
+        
+                    <div class="col-auto d-flex gap-4">
+                        {% if request.GET.adb == '1' %}
+                            <a class="icon-link icon-link-hover link-secondary nav-load" href="/station/?id={{ key }}&td=0&ad=1"><i class="bi bi-calendar-week"></i></a>
+                        {% endif %}
+
+                        {% if request.GET.mb == '1' %}
+                            <a class="icon-link icon-link-hover link-secondary nav-load" href="?id={{ key }}"><i class="bi bi-pin-map"></i></a>
+                        {% endif %}
+
+                        {% if request.GET.fb == '1' %}
+                            <a class="icon-link icon-link-hover link-secondary" onclick="save_stop('{{ key }}')">
+                                {% if key in request.COOKIES.saved_stops %}
+                                <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
+                                <i id="save-nfill-{{ key }}" class="bi bi-star" style="display:none;"></i>
+                                {% else %}
+                                <i id="save-fill-{{ key }}" class="bi bi-star-fill" style="display:none;"></i>
+                                <i id="save-nfill-{{ key }}" class="bi bi-star"></i>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+
+                        
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        
+            {% for stime in val.stimes %}
+            <a href="/trip/?id={{ stime.trip.trip_id }}" class="list-group-item list-group-item-action nav-load">
+                <div class="row">
+                    {% if stime.trip.route.route_short_name %}
+                    <div class="d-inline" style="width: 50px">
+                        {{ stime.trip.route.route_short_name }}
+                    </div>
+                    {% endif %}
+                    <div class="col">
+                        {% if stime.trip.trip_headsign %}
+                        <strong>{{ stime.trip.trip_headsign }}</strong>
+                        {% elif stime.trip.route.route_long_name %}
+                        <small>{{ stime.trip.route.route_long_name|split_return:0 }}</small><br>
+                        &rarr; <strong>{{ stime.trip.route.route_long_name|split_return:1 }}</strong>
+                        {% endif %}
+                    </div>
+                    <div class="col-auto d-flex align-items-center gap-1">
+                        {% if stime.trip.bikes_allowed %}
+                        <i class="icon-bike c_icon"></i>
+                        {% endif %}
+                        {% if stime.trip.wheelchair_accessible %}
+                        <i class="icon-wheelchair c_icon"></i>
+                        {% endif %}
+        
+                        {% if stime.departure_time_an|arrived:2 %}
+                        <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
+                        {% else %}
+        
+                        <span 
+                            {% if stime.updated_at|within_last:4 or stime.wait_updated_at|within_last:4 %}
+                            class="badge bg-success position-relative" 
+                            {% elif stime.updated_at|within_last:8 or stime.wait_updated_at|within_last:8 %}
+                            class="badge bg-warning position-relative"
+                            {% elif stime.updated_at|within_last:15 or stime.wait_updated_at|within_last:15 %}
+                            class="badge bg-danger position-relative"
+                            {% elif stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
+                            class="badge bg-secondary position-relative"
+                            {% else %}
+                            class="badge bg-light text-dark position-relative"
+                            {% endif %}
+                        style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}
+        
+                        {% if stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
+                            <i class="bi bi-broadcast-pin"></i>
+                        {% endif %}
+        
+                        {% if stime.delay_departure_an|delay_min != 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
+                            {% if stime.updated_at|within_last:8 %}
+                                bg-danger
+                            {% else %}
+                                text-bg-secondary
+                            {% endif %}"
+                            style="font-size: 12px; z-index:99">{{ stime.delay_departure_an|delay_min|signed }}&prime;</span>
+                        {% endif %} 
+                        </span>
+        
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            </a>
+            {% empty %}
+            <div class="list-group-item">Nema polazaka.</div>
+            {% endfor %}
+        
+            {% if request.GET.mn == '1' %}
+                {% if val.stimes|length < num and 'td' not in request.GET %}
+                <a href="/station/?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center nav-load" style="font-size: 11px">Sljedeći dan
+                    <i class="bi bi-calendar-plus"></i></a>
+                {% elif num %}
+                <a href="javascript: load_more_stations('{{ key }}', {{ num }});" class="list-group-item list-group-item-action text-center" style="font-size: 11px">Učitaj još
+                    <i class="bi bi-arrow-clockwise"></i></a>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+
+    </div>
+
+{% if request.GET.wh == '1' %}
+</body>
+</html>
+{% endif %}

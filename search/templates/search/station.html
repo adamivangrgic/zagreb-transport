@@ -17,7 +17,7 @@
 {% for news in news_entries %}
 <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
+        <div class="modal-timetable" style="border-radius: 29.6px; height: 75vh">
             <div class="modal-header">
                 <h5 class="modal-title">{{ news.title }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -34,8 +34,6 @@
 </div>
 {% endfor %}
 
-<div id="content" class="d-grid gap-4">
-
 <div id="date-selector" class="btn-group btn-group-sm">
 {% for d in days %}
     {% if forloop.first %}
@@ -50,121 +48,7 @@
 {% endfor %}
 </div>
 
-{% for key, val in stops.items %}
-<div id="{{ key }}" class="list-group" style="border-radius: 29.6px">
-    <div class="list-group-item list-group-item-dark">
-            <div class="row">
-                <div class="col">
-                    <strong>{{ val.station_name }}</strong>
-                    {% if val.hs %} &rarr; {{ val.hs }}{% endif %}
-                </div>
-                
-                <div class="col-auto">
-                    <a class="icon-link icon-link-hover link-secondary nav-load" href="?id={{ key }}"><i class="bi bi-pin-map"></i></a>
-                </div>
-                <div class="col-auto">
-                    <a class="icon-link icon-link-hover link-secondary" onclick="save_stop('{{ key }}')">
-                        {% if key in request.COOKIES.saved_stops %}
-                        <i id="save-fill-{{ key }}" class="bi bi-star-fill"></i>
-                        <i id="save-nfill-{{ key }}" class="bi bi-star" style="display:none;"></i>
-                        {% else %}
-                        <i id="save-fill-{{ key }}" class="bi bi-star-fill" style="display:none;"></i>
-                        <i id="save-nfill-{{ key }}" class="bi bi-star"></i>
-                        {% endif %}
-                    </a>
-                </div>
-            </div>
-    </div>
-
-    {% for stime in val.stimes %}
-    <a href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action nav-load">
-        <div class="row">
-            {% if stime.trip.route.route_short_name %}
-            <div class="d-inline" style="width: 50px">
-                {{ stime.trip.route.route_short_name }}
-            </div>
-            {% endif %}
-            <div class="col">
-                {% if stime.trip.trip_headsign %}
-                <strong>{{ stime.trip.trip_headsign }}</strong>
-                {% elif stime.trip.route.route_long_name %}
-                <small>{{ stime.trip.route.route_long_name|split_return:0 }}</small><br>
-                &rarr; <strong>{{ stime.trip.route.route_long_name|split_return:1 }}</strong>
-                {% endif %}
-            </div>
-            <div class="col-auto d-flex align-items-center gap-1">
-                {% if stime.trip.bikes_allowed %}
-                <i class="icon-bike c_icon"></i>
-                {% endif %}
-                {% if stime.trip.wheelchair_accessible %}
-                <i class="icon-wheelchair c_icon"></i>
-                {% endif %}
-                
-                {% if stime.departure_time_an|arrived:2 %}
-                <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
-                {% else %}
-
-                <span 
-                    {% if stime.updated_at|within_last:4 or stime.wait_updated_at|within_last:4 %}
-                    class="badge bg-success position-relative" 
-                    {% elif stime.updated_at|within_last:8 or stime.wait_updated_at|within_last:8 %}
-                    class="badge bg-warning position-relative"
-                    {% elif stime.updated_at|within_last:15 or stime.wait_updated_at|within_last:15 %}
-                    class="badge bg-danger position-relative"
-                    {% elif stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
-                    class="badge bg-secondary position-relative"
-                    {% else %}
-                    class="badge bg-light text-dark position-relative"
-                    {% endif %}
-                style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}
-
-                {% if stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
-                    <i class="bi bi-broadcast-pin"></i>
-                {% endif %}
-
-                {% if stime.delay_departure_an|delay_min != 0 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
-                    {% if stime.updated_at|within_last:8 %}
-                    bg-danger
-                    {% else %}
-                    text-bg-secondary
-                    {% endif %}"
-                    style="font-size: 12px; z-index:99">{{ stime.delay_departure_an|delay_min|signed }}&prime;</span>
-                {% endif %} 
-                </span>
-
-                {% endif %}
-            </div>
-        </div>
-        {% if user.is_superuser %}
-        <div class="row font-monospace bg-dark text-white">
-            <div class="col-auto">
-                Departure time:<br>
-                Stop sequence:<br>
-                Trip id:<br>
-                Delay:<br>
-                Updated at:
-            </div>
-            <div class="col">
-                {{ stime.departure_time }}<br>
-                {{ stime.stop_sequence }}<br>
-                {{ stime.trip.trip_id }}<br>
-                {{ stime.delay_departure_an }}<br>
-                {{ stime.updated_at|timesince }}
-            </div>
-        </div>
-        {% endif %}
-    </a>
-    {% empty %}
-    <div class="list-group-item">Nema polazaka.</div>
-    {% endfor %}
-    {% if val.stimes|length < 25 and 'td' not in request.GET %}
-    <a href="?id={{ key }}&td=1&ad=1" class="list-group-item list-group-item-action text-center nav-load" style="font-size: 11px">Sljedeći dan <i class="bi bi-calendar-plus"></i></a>
-    {% endif %}
-</div>
-{% endfor %}
-
-</div>
+<div id="timetable" class="d-grid gap-4"></div>
 
 <div style="display: none">
     <div id="loading-div" class="list-group" style="border-radius: 29.6px;">
@@ -221,19 +105,22 @@
 </div>
 
 <script>
+    const url_template = '/timetable/?hs=1&rc=1&tb=1&ad=1&fb=1&mb=1';
+
     function change_day(td){
-        var url = `?id={{ request.GET.id }}&td=${ td }&ad=1`;
-        $('#content').load(url +  ' #content');
+        var url = url_template + `&td=${ td }&id={{ request.GET.id }}`;
+        $('#timetable').load(url +  ' #timetable');
         show_loading();
     }
 
     function show_loading(){
-        const timetable = document.getElementById("content");
+        const timetable = document.getElementById("timetable");
         var loading = document.getElementById("loading-div").cloneNode(true);
-        var date = document.getElementById("date-selector").cloneNode(true);
+
         timetable.innerHTML = "";
-        timetable.appendChild(date);
         timetable.appendChild(loading);
     }
+
+    change_day({{ td }});
 </script>
 {% endblock %}
