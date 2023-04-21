@@ -37,13 +37,14 @@
 <div id="date-selector" class="btn-group btn-group-sm">
 {% for d in days %}
     {% if forloop.first %}
-    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
-    style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
+    <input type="radio" class="btn-check" name="dates" id="date{{ forloop.counter }}" autocomplete="off" onclick="change_day({{ d.td }});" {% if td == d.td %}checked{% endif %}/>
+    <label class="btn btn-secondary" for="date{{ forloop.counter }}" style="border-top-left-radius: 9999px; border-bottom-left-radius: 9999px;">{{ d.wd }}<br>{{ d.day }}</label>
     {% elif forloop.last %}
-    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}"
-    style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
+    <input type="radio" class="btn-check" name="dates" id="date{{ forloop.counter }}" autocomplete="off" onclick="change_day({{ d.td }});" {% if td == d.td %}checked{% endif %}/>
+    <label class="btn btn-secondary" for="date{{ forloop.counter }}" style="border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;">{{ d.wd }}<br>{{ d.day }}</label>
     {% else %}
-    <a class="btn btn-secondary {% if td == d.td %}active{% endif %}" href="javascript: change_day({{ d.td }});">{{ d.wd }}<br>{{ d.day }}</a>
+    <input type="radio" class="btn-check" name="dates" id="date{{ forloop.counter }}" autocomplete="off" onclick="change_day({{ d.td }});" {% if td == d.td %}checked{% endif %}/>
+    <label class="btn btn-secondary" for="date{{ forloop.counter }}">{{ d.wd }}<br>{{ d.day }}</label>
     {% endif %}
 {% endfor %}
 </div>
