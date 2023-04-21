@@ -58,8 +58,9 @@ def sync_zet():
 def sync_news():
     NewsEntry.objects.all().delete()
 
+    parse_html('https://holdingcentar.zgh.hr/', 'div.alert-item.grupa_5631 > div.alert-text > p', guid='zet_stanje')
     parse_rss(zet.rss_url)
-    parse_html('https://holdingcentar.zgh.hr/', 'div.alert-item.grupa_5631 > div.alert-text > p')
+    parse_html('https://www.hzpp.hr/stanje-u-prometu-2', 'div.article-item.full', guid='hzpp_stanje', title='HŽPP izmjene u prometu')
 
 
 def parse_rss(url, provider=None):
@@ -83,7 +84,7 @@ def parse_rss(url, provider=None):
 
         new.save()
 
-def parse_html(url, bs4_instruction, provider=None):
+def parse_html(url, bs4_instruction, provider=None, title=None, guid=None):
     response = requests.get(url)
     html_content = response.content
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -93,9 +94,9 @@ def parse_html(url, bs4_instruction, provider=None):
     html_content = elements[0].prettify()
 
     new = NewsEntry(
-        guid=url,
+        guid=guid if guid else url,
         link=url,
-        title=text_content[:50],
+        title=title if title else text_content[:50],
         description=html_content,
         description_text=text_content,
         date=datetime.now()
