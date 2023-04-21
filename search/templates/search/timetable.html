@@ -145,9 +145,16 @@
                             {% else %}
                             class="badge bg-light text-dark position-relative"
                             {% endif %}
-                        style="font-size: 15px;">{{ stime.departure_time_an|min_convert }}
+                        style="font-size: 15px;">
+
+                        {% if request.GET.hm == '1' %}
+                            {{ stime.departure_time_an|min_convert }}
+                        {% else %}
+                            {{ stime.departure_time_an|date:'H:i' }}
+                        {% endif %}
         
-                        {% if stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
+                        {% if stime.updated_at|within_last:30 %}
+                        {% comment %} or stime.wait_updated_at|within_last:30 {% endcomment %}
                             <i class="bi bi-broadcast-pin"></i>
                         {% endif %}
         
