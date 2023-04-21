@@ -79,7 +79,8 @@
         
                     <div class="col-auto d-flex gap-4">
                         {% if request.GET.adb == '1' %}
-                            <a class="icon-link icon-link-hover link-secondary nav-load" href="/station/?id={{ key }}&td=0&ad=1"><i class="bi bi-calendar-week"></i></a>
+                            <a class="icon-link icon-link-hover link-secondary nav-load" href="/station/?id={{ key }}&td=0&ad=1#stime-{{ val.stimes.0.id }}">
+                                <i class="bi bi-calendar-week"></i></a>
                         {% endif %}
 
                         {% if request.GET.mb == '1' %}
@@ -105,7 +106,7 @@
             {% endif %}
         
             {% for stime in val.stimes %}
-            <a href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action nav-load">
+            <a id="stime-{{ stime.id }}" href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action nav-load">
                 <div class="row">
                     {% if stime.trip.route.route_short_name %}
                     <div class="d-inline" style="width: 50px">

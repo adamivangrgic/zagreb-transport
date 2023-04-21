@@ -107,9 +107,20 @@
 <script>
     const url_template = '/timetable/?hs=1&rc=1&tb=1&ad=1&fb=1&mb=1';
 
+    var first_pan = true;
+
     function change_day(td){
         var url = url_template + `&td=${ td }&id={{ request.GET.id }}`;
-        $('#timetable').load(url +  ' #timetable');
+
+        $('#timetable').load(url +  ' #timetable', function() {
+            if (first_pan){
+                window.scrollTo(0, $(window.location.hash).offset().top - window.innerHeight / 2); 
+                $(window.location.hash).focus();
+
+                first_pan = false;
+            }
+        });
+
         show_loading();
     }
 
