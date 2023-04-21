@@ -59,7 +59,7 @@ def sync_news():
     NewsEntry.objects.all().delete()
 
     parse_rss(zet.rss_url)
-    parse_html('https://holdingcentar.zgh.hr/', 'div.alert-item.grupa_5631 > div.alert-text > div')
+    parse_html('https://holdingcentar.zgh.hr/', 'div.alert-item.grupa_5631 > div.alert-text > p')
 
 
 def parse_rss(url, provider=None):
@@ -87,7 +87,7 @@ def parse_html(url, bs4_instruction, provider=None):
     response = requests.get(url)
     html_content = response.content
     soup = BeautifulSoup(html_content, 'html.parser')
-    elements = soup.select()
+    elements = soup.select(bs4_instruction)
 
     text_content = elements[0].get_text()
     html_content = elements[0].prettify()
