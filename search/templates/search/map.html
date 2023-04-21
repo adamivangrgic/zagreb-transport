@@ -231,9 +231,9 @@
 
     var syncInterval = 20 * 1000; //sync every 20sec
     show_loading();
-    syncPage();
+    first_load();
 
-    function syncPage() {
+    function first_load() {
         lastSync = new Date().getTime(); //set last sync to be now
         
         $.get(curr_url).done(function(page) {
@@ -241,6 +241,12 @@
             $('#timetable').replaceWith(r);
             $('#alerts').replaceWith(r);
         });
+    }
+
+    function syncPage() {
+        lastSync = new Date().getTime(); //set last sync to be now
+        
+        $('#timetable').load(curr_url +  ' #timetable');
     }
 
     setInterval(function() {
