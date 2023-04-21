@@ -12,7 +12,6 @@
     {% if not forloop.last %}<hr>{% endif %}
     {% endfor %}
 </div>
-{% endif %}
 
 {% for news in news_entries %}
 <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
@@ -33,6 +32,7 @@
     </div>
 </div>
 {% endfor %}
+{% endif %}
 
 <div id="content" class="d-grid gap-4">
 

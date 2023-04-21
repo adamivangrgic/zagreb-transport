@@ -12,12 +12,11 @@
     {% if not forloop.last %}<hr>{% endif %}
     {% endfor %}
 </div>
-{% endif %}
 
 {% for news in news_entries %}
 <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-timetable" style="border-radius: 29.6px; height: 75vh">
+        <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
             <div class="modal-header">
                 <h5 class="modal-title">{{ news.title }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -33,6 +32,7 @@
     </div>
 </div>
 {% endfor %}
+{% endif %}
 
 <div id="date-selector" class="btn-group btn-group-sm">
 {% for d in days %}

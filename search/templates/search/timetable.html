@@ -25,38 +25,40 @@
 <body>
 {% endif %}
 
-    <div id="alerts" class="d-grid gap-4">
-        {% if news_entries %}
-        <div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
+    {% if request.GET.al == '1' %}
+        <div id="alerts" class="d-grid gap-4">
+            {% if news_entries %}
+            <div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
+                {% for news in news_entries %}
+                <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
+                    <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
+                </a>
+                {% if not forloop.last %}<hr>{% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             {% for news in news_entries %}
-            <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
-                <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
-            </a>
-            {% if not forloop.last %}<hr>{% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
-        
-        {% for news in news_entries %}
-        <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-                <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{ news.title }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        {{ news.description|safe }}
-                    </div>
-                    <div class="modal-footer">
-                        {{ news.date|date:'d.m.Y H:i' }} &#x2022;
-                        <a href="{{ news.link }}">Link</a>
+            <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+                    <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ news.title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{ news.description|safe }}
+                        </div>
+                        <div class="modal-footer">
+                            {{ news.date|date:'d.m.Y H:i' }} &#x2022;
+                            <a href="{{ news.link }}">Link</a>
+                        </div>
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
+    {% endif %}
 
     <div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
 
@@ -103,7 +105,7 @@
             {% endif %}
         
             {% for stime in val.stimes %}
-            <a href="/trip/?id={{ stime.trip.trip_id }}" class="list-group-item list-group-item-action nav-load">
+            <a href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action nav-load">
                 <div class="row">
                     {% if stime.trip.route.route_short_name %}
                     <div class="d-inline" style="width: 50px">
