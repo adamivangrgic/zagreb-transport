@@ -74,9 +74,9 @@
 </div>
 
 <script>
-    const url_template = '/timetable/?hs=1&rc=1&tb=1&sh=1&al=1';
+    const url_template = '/timetable/?hs=1&rc=1&tb=1&sh=1&al=1&fb=1&adb=1';
     const index_url = url_template + '&to=-0.5&num=4&id=index';
-    const stop_url = url_template + '&to=-1&fb=1&adb=1&mn=1';
+    const stop_url = url_template + '&to=-1.9&mn=1';
 
     {% if station %}
         var curr_url = stop_url + '&id={{ id }}';

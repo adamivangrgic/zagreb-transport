@@ -8,6 +8,7 @@ from .provider.parse_utils import get_date_from_gtfs_static
 from datetime import date, datetime
 import feedparser
 import re
+from bs4 import BeautifulSoup
 
 from zet_live.celery import app
 
@@ -58,6 +59,7 @@ def sync_news():
     NewsEntry.objects.all().delete()
 
     parse_rss(zet.rss_url)
+    parse_html('https://holdingcentar.zgh.hr/', 'div.alert-item.grupa_5631 > div.alert-text > div')
 
 
 def parse_rss(url, provider=None):
@@ -80,3 +82,23 @@ def parse_rss(url, provider=None):
         )
 
         new.save()
+
+def parse_html(url, bs4_instruction, provider=None):
+    response = requests.get(url)
+    html_content = response.content
+    soup = BeautifulSoup(html_content, 'html.parser')
+    elements = soup.select()
+
+    text_content = elements[0].get_text()
+    html_content = elements[0].prettify()
+
+    new = NewsEntry(
+        guid=url,
+        link=url,
+        title=text_content[:50],
+        description=html_content,
+        description_text=text_content,
+        date=datetime.now()
+    )
+
+    new.save()
