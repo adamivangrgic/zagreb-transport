@@ -96,7 +96,7 @@ def parse_html(url, bs4_instruction, provider=None, title=None, guid=None):
     new = NewsEntry(
         guid=guid if guid else url,
         link=url,
-        title=title if title else text_content[:50],
+        title=title if title else ' '.join(text_content.split(' ')[:8]),
         description=html_content,
         description_text=text_content,
         date=datetime.now()
