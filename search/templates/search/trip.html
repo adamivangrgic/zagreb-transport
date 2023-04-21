@@ -161,41 +161,27 @@
                 </div>
                 <div class="col-auto d-flex align-items-center">
 
+                    <span style="font-size: 15px;" 
                     {% if stime.updated_at|within_last:4 and stime == next_stop or stime.wait_updated_at|within_last:4 and stime == next_stop %}
-                    <span class="badge bg-success" style="font-size: 15px;">
-                        {%if stime.arrival_time_an == stime.departure_time_an %}
-                        {{ stime.arrival_time_an|min_convert }}
-                        {% else %}
-                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
-                        {% endif %}
-                        <i class="bi bi-broadcast-pin"></i></span>
+                        class="badge bg-success"
                     {% elif stime.updated_at|within_last:8 and stime == next_stop or stime.wait_updated_at|within_last:8 and stime == next_stop %}
-                    <span class="badge bg-warning" style="font-size: 15px;">
-                        {%if stime.arrival_time_an == stime.departure_time_an %}
-                        {{ stime.arrival_time_an|min_convert }}
-                        {% else %}
-                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
-                        {% endif %}
-                        <i class="bi bi-broadcast-pin"></i>
-                    </span>
+                        class="badge bg-warning"
                     {% elif stime.updated_at|within_last:15 and stime == next_stop or stime.wait_updated_at|within_last:15 and stime == next_stop %}
-                    <span class="badge bg-danger" style="font-size: 15px;">
-                        {%if stime.arrival_time_an == stime.departure_time_an %}
-                        {{ stime.arrival_time_an|min_convert }}
-                        {% else %}
-                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
-                        {% endif %}
-                        <i class="bi bi-broadcast-pin"></i>
-                    </span>
+                        class="badge bg-danger"
                     {% else %}
-                    <span class="badge bg-light text-dark" style="font-size: 15px;">
-                        {%if stime.arrival_time_an == stime.departure_time_an %}
+                        class="badge bg-light text-dark"
+                    {% endif %}>
+
+                    {%if stime.arrival_time_an == stime.departure_time_an %}
                         {{ stime.arrival_time_an|min_convert }}
-                        {% else %}
+                    {% else %}
                         {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
-                        {% endif %}
-                    </span>
                     {% endif %}
+
+                    {% if stime.updated_at|within_last:30 and stime == next_stop %}
+                        <i class="bi bi-broadcast-pin"></i>
+                    {% endif %}
+                    </span>
                 </div>
 
             </div>
