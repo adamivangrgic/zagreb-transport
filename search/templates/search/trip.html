@@ -175,7 +175,7 @@
                     {%if stime.arrival_time_an == stime.departure_time_an %}
                         {{ stime.arrival_time_an|min_convert }}
                     {% else %}
-                        {{ stime.arrival_time_an|min_convert }} &#8226 {{ stime.departure_time_an|min_convert }}
+                        {{ stime.arrival_time_an|min_convert }} &#8226; {{ stime.departure_time_an|min_convert }}
                     {% endif %}
 
                     {% if stime.updated_at|within_last:30 and stime == next_stop %}
