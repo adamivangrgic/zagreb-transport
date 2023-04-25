@@ -133,7 +133,7 @@
                         <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
                         {% else %}
         
-                        <span 
+                        <span style="font-size: 15px;"
                             {% if stime.updated_at|within_last:4 or stime.wait_updated_at|within_last:4 %}
                             class="badge bg-success position-relative" 
                             {% elif stime.updated_at|within_last:8 or stime.wait_updated_at|within_last:8 %}
@@ -145,7 +145,7 @@
                             {% else %}
                             class="badge bg-light text-dark position-relative"
                             {% endif %}
-                        style="font-size: 15px;">
+                        >
 
                         {% if request.GET.hm == '1' %}
                             {{ stime.departure_time_an|min_convert }}
