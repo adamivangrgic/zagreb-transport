@@ -344,6 +344,11 @@
             syncPage();
         }
     }, 2 * 1000); //check every 2 seconds
+
+    $(window).focus(function() {
+        syncPage();
+    });
+    
 </script>
 
 {% endblock %}

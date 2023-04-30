@@ -256,6 +256,10 @@
         }
     }, 2 * 1000); //check every 2 seconds
 
+    $(window).focus(function() {
+        syncPage();
+    });     
+
     function show_favourites(){
         curr_url = index_url;
         $('#timetable').load(curr_url +  ' #timetable');

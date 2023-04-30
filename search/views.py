@@ -5,8 +5,26 @@ from datetime import datetime
 from django.db.models import Q, F, ExpressionWrapper, fields, Subquery, OuterRef, Case, When, IntegerField
 from django.contrib.gis.geos import Point, Polygon
 from django.contrib.gis.db.models.functions import Distance
+from itertools import groupby
+
 
 up_to_date_threshold = timedelta(minutes=90)
+
+
+def calculate_median(input_list):
+    n = len(input_list)
+    if n == 0:
+        return 0
+    sorted_list = sorted(input_list)
+    mid = n // 2
+    if n % 2 == 0:
+        return (sorted_list[mid-1] + sorted_list[mid]) / 2
+    else:
+        return sorted_list[mid]
+
+def cal_median_delay(input_list):
+    res = calculate_median(input_list)
+    return res if res < 20 * 60 else 0
 
 
 def index(request):
@@ -109,17 +127,38 @@ def get_service_ids(date):
 
 def get_stop_times(stop, date, num_of_stations, time_offset, current_time, all_day=False):
     service_ids = get_service_ids(date)
-
     future_filter = Q(departure_time_an__gt=current_time + timedelta(minutes=time_offset))
 
-    # .annotate(delay_arrival_an=Case(When(up_to_date=True, then=F('delay_arrival')), default=timedelta(), output_field=fields.DurationField())) \
-    # .annotate(arrival_time_an=ExpressionWrapper(F('arrival_time') + F('delay_arrival_an') + date, output_field=fields.DateTimeField())) \
-
-    stimes = stop.stop_times \
+    stimes = stop.stop_times.filter(trip__service_id__in=service_ids) \
         .annotate(up_to_date=Case(When(updated_at__gte=current_time - up_to_date_threshold, then=True), default=False, output_field=fields.BooleanField())) \
-        .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(), output_field=fields.DurationField())) \
-        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure_an') + date, output_field=fields.DateTimeField())) \
-        .filter(Q(trip__service_id__in=service_ids)).order_by('departure_time_an')
+        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + date, output_field=fields.DateTimeField()))
+        
+    # ### delay estimates
+    # past_stimes = stimes.exclude(future_filter).filter(departure_time_an__gt=current_time - timedelta(hours=2))
+    # past_delays = past_stimes.values('delay_departure', 'trip__route__route_id')
+
+    # median_delays = {}
+
+    # for delay in past_delays:
+    #     if not delay['trip__route__route_id'] in median_delays.keys():
+    #         median_delays[delay['trip__route__route_id']] = []
+    #     median_delays[delay['trip__route__route_id']].append(delay['delay_departure'].total_seconds())
+
+    # # raise Exception(median_delays)
+
+    # stimes = stimes.annotate(median_delay=Case(
+    #     *[When(trip__route__route_id=t, then=timedelta(seconds=cal_median_delay(median_delays.get(t, [])))) for t in median_delays],
+    #     output_field=fields.DurationField()))
+
+    delay_cases = Case(
+        When(updated_at__gte=current_time - timedelta(minutes=8), delay_departure__gte=timedelta(minutes=30), then=F('delay_departure')), 
+        When(up_to_date=True, then=F('delay_departure')), 
+        # When(departure_time_an__gt=current_time, departure_time_an__lt=current_time + timedelta(hours=1), trip__route__route_id__in=median_delays.keys(), then=F('median_delay')), 
+        default=timedelta(), output_field=fields.DurationField())
+
+    stimes = stimes.annotate(delay_departure_an=delay_cases) \
+        .annotate(departure_time_an=ExpressionWrapper(F('departure_time_an') + F('delay_departure_an'), output_field=fields.DateTimeField())) \
+        .order_by('departure_time_an')
 
     return stimes.filter(future_filter)[:num_of_stations] if not all_day else stimes
 
