@@ -3,9 +3,9 @@
 
 {% load custom_tags %}
 
-{% if news_entries %}
+{% if route.news_entries %}
 <div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
-    {% for news in news_entries %}
+    {% for news in route.news_entries %}
     <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
         <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
     </a>
@@ -13,7 +13,7 @@
     {% endfor %}
 </div>
 
-{% for news in news_entries %}
+{% for news in route.news_entries %}
 <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
@@ -72,7 +72,12 @@
             <div class="col-4 d-flex align-items-center">
                 {{ trip.first_stop }}
             </div>
-            <div class="col-4 d-flex justify-content-center align-items-center">
+            <div class="col-4 d-flex gap-1 justify-content-center align-items-center">
+                {% if trip.news_entries %}
+                <span class="text-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </span>
+                {% endif %}
                 <span class="h-auto badge bg-light text-dark" style="font-size: 15px;">{{ trip.first_stop_time|date:'H:i' }} &#x2022; {{ trip.last_stop_time|date:'H:i' }}</span>
             </div>
             <div class="col-4 text-end d-flex justify-content-end align-items-center">

@@ -171,9 +171,6 @@ def station(request):
 
     station = Stop.objects.get(stop_id=station_id)
 
-    ### news entries banner
-    news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description_text__icontains=station.stop_name))
-
     if ad:
         current_time = datetime.now()
         weekday_enum = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
@@ -182,10 +179,10 @@ def station(request):
         weekday = today_mid if not current_time.time().hour < 5 else today_mid - timedelta(days=1)
         days = [{'td': d, 'wd': weekday_enum[(weekday + timedelta(days=d)).weekday()], 'day': (weekday + timedelta(days=d)).day} for d in range(-1, 7)]
 
-        return render(request, 'search/station.html', {'id': station_id, 'station': station, 'news_entries': news_entries, 'days': days, 'td': td})
+        return render(request, 'search/station.html', {'id': station_id, 'station': station, 'days': days, 'td': td})
         
     else:
-        return render(request, 'search/map.html', {'id': station_id, 'station': station, 'news_entries': news_entries, 'num': num })
+        return render(request, 'search/map.html', {'id': station_id, 'station': station, 'num': num })
 
 
 def timetable(request):
@@ -226,13 +223,8 @@ def timetable(request):
 
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
                               'station_name': stop.stop_name, 'provider': stop.provider}
-                              
-    ### news entries banner
-    news_entries = []
-    if station:
-        news_entries = NewsEntry.objects.filter(Q(title__icontains=station.stop_name) | Q(description_text__icontains=station.stop_name))
 
-    return render(request, 'search/timetable.html', {'stops': data, 'td': td, 'num': num, 'news_entries': news_entries})
+    return render(request, 'search/timetable.html', {'station': station, 'stops': data, 'td': td, 'num': num})
 
 
 def save_stop(request):
@@ -288,15 +280,8 @@ def trip(request):
     first_stop = stops[0]
     last_stop = stops[len(stops)-1]
 
-    ### news entries banner
-    news_keyword = trip.route.route_short_name if trip.route.route_short_name else trip.trip_short_name
-    news_entries = []
-    if news_keyword:
-        regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
-        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
-
-    return render(request, 'search/trip.html', {'trip': trip, 'past_stops': past_stops, 'future_stops': future_stops, 'next_stop': next_stop,
-        'first_stop': first_stop, 'last_stop': last_stop, 'td': td, 'news_entries': news_entries})
+    return render(request, 'search/trip.html', {'trip': trip, 'past_stops': past_stops, 'future_stops': future_stops,
+        'next_stop': next_stop, 'first_stop': first_stop, 'last_stop': last_stop, 'td': td})
 
 
 def route(request):
@@ -328,11 +313,4 @@ def route(request):
 
     route = Route.objects.get(route_id=route_id)
 
-    ### news entries banner
-    news_keyword = route.route_short_name
-    news_entries = []
-    if news_keyword:
-        regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
-        news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
-
-    return render(request, 'search/route.html', {'route': route, 'trips': trips, 'days': days, 'td': td, 'news_entries': news_entries})
+    return render(request, 'search/route.html', {'route': route, 'trips': trips, 'days': days, 'td': td})

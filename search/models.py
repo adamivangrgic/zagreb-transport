@@ -1,8 +1,17 @@
 from django.db import models
 from django.contrib.gis.db import models
 from datetime import timedelta
+from django.db.models import Q
+# from django.utils.functional import cached_property
 
-from django.utils.functional import cached_property
+
+class NewsEntry(models.Model):
+    guid = models.URLField(primary_key=True, max_length=200)
+    link = models.URLField(max_length=200)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    description_text = models.TextField()
+    date = models.DateTimeField()
 
 
 class Agency(models.Model):
@@ -27,6 +36,10 @@ class Stop(models.Model):
     stop_route_type = models.IntegerField(blank=True, null=True)
     has_trips = models.BooleanField(default=False)
 
+    @property
+    def news_entries(self):
+        return NewsEntry.objects.filter(Q(title__icontains=self.stop_name) | Q(description_text__icontains=self.stop_name))
+
     def __str__(self):
         return "{} - {}".format(self.stop_id, self.stop_name)
 
@@ -40,6 +53,16 @@ class Route(models.Model):
     route_text_color = models.CharField(max_length=6, blank=True, null=True)
     agency = models.ForeignKey(Agency, on_delete=models.CASCADE, related_name='routes', blank=True, null=True)
     provider = models.CharField(max_length=10)
+
+    @property
+    def news_entries(self):
+        news_keyword = self.route_short_name
+        news_entries = []
+        if news_keyword:
+            regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
+            news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
+
+        return news_entries
 
     def __str__(self):
         return "{} - {}".format(self.route_short_name, self.route_long_name)
@@ -57,6 +80,16 @@ class Trip(models.Model):
     provider = models.CharField(max_length=10)
 
     checked_integrity_at = models.DateTimeField(null=True)
+
+    @property
+    def news_entries(self):
+        news_keyword = self.route.route_short_name if self.route.route_short_name else self.trip_short_name
+        news_entries = []
+        if news_keyword:
+            regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
+            news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
+
+        return news_entries
 
     def __str__(self):
         return "{} - {}".format(self.trip_id, self.route.route_long_name)
@@ -102,11 +135,3 @@ class CalendarDate(models.Model):
 
     def __str__(self):
         return "{} - {} - {}".format(self.service_id, self.date, self.exception_type)
-
-class NewsEntry(models.Model):
-    guid = models.URLField(primary_key=True, max_length=200)
-    link = models.URLField(max_length=200)
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    description_text = models.TextField()
-    date = models.DateTimeField()

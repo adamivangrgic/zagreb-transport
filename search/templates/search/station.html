@@ -3,9 +3,9 @@
 
 {% load custom_tags %}
 
-{% if news_entries %}
+{% if station.news_entries %}
 <div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
-    {% for news in news_entries %}
+    {% for news in station.news_entries %}
     <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
         <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
     </a>
@@ -13,7 +13,7 @@
     {% endfor %}
 </div>
 
-{% for news in news_entries %}
+{% for news in station.news_entries %}
 <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content" style="border-radius: 29.6px; height: 75vh">

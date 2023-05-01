@@ -8,9 +8,9 @@
 <div id="map-window" style="width:100%; height: 50vh; z-index: -1; pointer-events:none;"></div>
 
 <div id="alerts" class="d-grid gap-4">
-{% if news_entries %}
+{% if trip.news_entries %}
 <div class="alert alert-warning" role="alert" style="border-radius: 29.6px; margin-bottom: 0">
-    {% for news in news_entries %}
+    {% for news in trip.news_entries %}
     <a href="#alert-{{ forloop.counter }}" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#alert-{{ forloop.counter }}" style="color: inherit;">
         <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ news.title }}</strong> ...više
     </a>
@@ -19,7 +19,7 @@
 </div>
 {% endif %}
 
-{% for news in news_entries %}
+{% for news in trip.news_entries %}
 <div id="alert-{{ forloop.counter }}" class="modal fade" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content" style="border-radius: 29.6px; height: 75vh">
@@ -81,6 +81,12 @@
 
             <div class="row">
                 <div class="col">
+                    {% if stime.stop.news_entries %}
+                    <span class="text-warning">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </span>
+                    {% endif %}
+
                     {{ stime.stop.stop_name }}
                     {% if stime.delay_departure_an|delay_min != 0 %}
                         <br><div class="text-muted"><small>
@@ -139,6 +145,12 @@
 
             <div class="row">
                 <div class="col">
+                    {% if stime.stop.news_entries %}
+                    <span class="text-warning">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </span>
+                    {% endif %}
+                    
                     {{ stime.stop.stop_name }}
                     {% if stime.delay_departure_an|delay_min != 0 %}
                         {% if stime.updated_at|within_last:8 %}
