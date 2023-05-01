@@ -151,8 +151,8 @@ def get_stop_times(stop, date, num_of_stations, time_offset, current_time, all_d
     #     output_field=fields.DurationField()))
 
     delay_cases = Case(
-        When(updated_at__gte=current_time - timedelta(minutes=8), delay_departure__gte=timedelta(minutes=30), then=F('delay_departure')), 
-        When(up_to_date=True, then=F('delay_departure')), 
+        When(updated_at__gte=current_time - timedelta(minutes=4), delay_departure__gte=timedelta(minutes=30), then=F('delay_departure')), ## for likely wrong trips (extreme delay)
+        When(up_to_date=True, delay_departure__lt=timedelta(minutes=30), then=F('delay_departure')), 
         # When(departure_time_an__gt=current_time, departure_time_an__lt=current_time + timedelta(hours=1), trip__route__route_id__in=median_delays.keys(), then=F('median_delay')), 
         default=timedelta(), output_field=fields.DurationField())
 
