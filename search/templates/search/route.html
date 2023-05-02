@@ -78,7 +78,7 @@
                     <i class="bi bi-exclamation-triangle-fill"></i>
                 </span>
                 {% endif %}
-                <span class="h-auto badge bg-light text-dark" style="font-size: 15px;">{{ trip.first_stop_time|date:'H:i' }} &#x2022; {{ trip.last_stop_time|date:'H:i' }}</span>
+                <span class="h-auto badge contrasted-text" style="font-size: 15px;">{{ trip.first_stop_time|date:'H:i' }} &#x2022; {{ trip.last_stop_time|date:'H:i' }}</span>
             </div>
             <div class="col-4 text-end d-flex justify-content-end align-items-center">
                 {{ trip.last_stop }}

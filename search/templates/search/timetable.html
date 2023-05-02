@@ -136,7 +136,7 @@
                         {% endif %}
         
                         {% if stime.departure_time_an|arrived:2 %}
-                        <span class="badge bg-light text-dark" style="font-size: 15px;">Stigao</span>
+                        <span class="badge contrasted-text" style="font-size: 15px;">Stigao</span>
                         {% else %}
         
                         <span style="font-size: 15px;"
@@ -149,7 +149,7 @@
                             {% elif stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
                             class="badge bg-secondary position-relative"
                             {% else %}
-                            class="badge bg-light text-dark position-relative"
+                            class="badge contrasted-text position-relative"
                             {% endif %}
                         >
 

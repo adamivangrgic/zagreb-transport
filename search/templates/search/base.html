@@ -382,6 +382,14 @@ links.forEach(link => {
         overflow: hidden;
         position: relative; /* Required for the pseudo-element */
     }
+
+    [data-bs-theme=dark] .contrasted-text {
+        color: white !important;
+    }
+
+    [data-bs-theme=light] .contrasted-text {
+        color: black !important;
+    }
       
 </style>
 

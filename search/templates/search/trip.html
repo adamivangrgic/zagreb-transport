@@ -97,7 +97,7 @@
                     {% endif %}
                 </div>
                 <div class="col-auto d-flex align-items-center">
-                    <span class="badge bg-light text-dark position-relative" style="font-size: 13px;">
+                    <span class="badge contrasted-text position-relative" style="font-size: 13px;">
                         Stigao u {{ stime.arrival_time_an|date:'H:i' }}
                     </span>
                 </div>
@@ -183,7 +183,7 @@
                     {% elif stime.updated_at|within_last:30 and stime == next_stop or stime.wait_updated_at|within_last:30 and stime == next_stop %}
                         class="badge bg-secondary"
                     {% else %}
-                        class="badge bg-light text-dark"
+                        class="badge contrasted-text"
                     {% endif %}>
 
                     {%if stime.arrival_time_an == stime.departure_time_an %}
