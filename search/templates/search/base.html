@@ -51,9 +51,10 @@
     <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" async>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'icons/icons.css' %}"/>
     <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}"/>
+    <link rel="stylesheet" href="{% static 'a/a.css' %}"/>
     <script src="{% static 'leaflet/leaflet.js' %}"></script>
     <script src="{% static 'a/a.js' %}"></script>
 
@@ -332,77 +333,6 @@ links.forEach(link => {
 });
   
 </script>
-
-<style>
-    .marker-label {
-        min-width: 104px;
-        left: -46px;
-        top: 18px;
-        text-align: center;
-        font-weight: bold;
-        font-size: 9px;
-        min-height: 1.2em;
-    }
-
-    [data-bs-theme=dark] .leaflet-tile {
-        filter: grayscale(100%) brightness(70%) contrast(150%) invert(100%);
-        -webkit-filter: grayscale(100%) brightness(70%) contrast(150%) invert(100%);
-        -moz-filter: grayscale(100%) brightness(70%) contrast(150%) invert(100%);
-    }
-
-    [data-bs-theme=dark] .leaflet-container {
-        background: #494949;
-        outline: 0;
-    }
-
-    [data-bs-theme=dark] .c_icon {
-        filter: invert(100%);
-        -webkit-filter: invert(100%);
-        -moz-filter: invert(100%);
-    }
-
-    [data-bs-theme=light] .modal-backdrop {
-        background-color: white !important;
-    }
-
-    .pulse-icon {
-        filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
-        -webkit-filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
-        -moz-filter: invert(15%) sepia(92%) saturate(7494%) hue-rotate(360deg) brightness(94%) contrast(115%);
-    }
-
-    [data-bs-theme=dark] .shadow {
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important
-    }
-
-    .two-lines {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        max-height: 3em;
-        overflow: hidden;
-        position: relative; /* Required for the pseudo-element */
-    }
-
-    [data-bs-theme=dark] .contrasted-text {
-        color: white !important;
-    }
-
-    [data-bs-theme=light] .contrasted-text {
-        color: black !important;
-    }
-
-    .route-badge {
-        padding: 2px;
-        font-size: inherit;
-        font-weight: inherit;
-        min-width: 23px;
-    }
-
-    {% comment %} [data-bs-theme=dark] .route-badge {
-        opacity: 0.5;
-    } {% endcomment %}
-      
-</style>
 
 </body>
 </html>
