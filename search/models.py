@@ -59,7 +59,7 @@ class Route(models.Model):
         news_keyword = self.route_short_name
         news_entries = []
         if news_keyword:
-            regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
+            regex_pattern = "linij[aeioum]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
             news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
 
         return news_entries
@@ -86,7 +86,7 @@ class Trip(models.Model):
         news_keyword = self.route.route_short_name if self.route.route_short_name else self.trip_short_name
         news_entries = []
         if news_keyword:
-            regex_pattern = "linij[aeiu]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
+            regex_pattern = "linij[aeioum]\s?{}(?!\d).*".format(news_keyword) if len(news_keyword) < 3 else "{}(?!\d).*".format(news_keyword)
             news_entries = NewsEntry.objects.filter(Q(title__iregex=regex_pattern) | Q(description_text__iregex=regex_pattern))
 
         return news_entries
