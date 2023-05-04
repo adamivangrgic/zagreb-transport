@@ -284,71 +284,75 @@ def update_calendar(file):
 
 
 def sync_realtime():
-    feed = gtfs_realtime_pb2.FeedMessage()
-    response = requests.get(realtime_url)
-    feed.ParseFromString(response.content)
+    try:
+        feed = gtfs_realtime_pb2.FeedMessage()
+        response = requests.get(realtime_url)
+        feed.ParseFromString(response.content)
 
-    current_time = datetime.now()
-    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    if current_time.time().hour < 5:
-        today_mid = today_mid - timedelta(days=1)
+        current_time = datetime.now()
+        today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+        if current_time.time().hour < 5:
+            today_mid = today_mid - timedelta(days=1)
 
-    delays = {}
-    awaiting_departure = []
+        delays = {}
+        awaiting_departure = []
 
-    for entity in feed.entity:
+        for entity in feed.entity:
 
-        if entity.trip_update.stop_time_update[-1].departure.time > 0:
-            delays[entity.trip_update.trip.trip_id] = timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay)
+            if entity.trip_update.stop_time_update[-1].departure.time > 0:
+                delays[entity.trip_update.trip.trip_id] = timedelta(seconds=entity.trip_update.stop_time_update[-1].arrival.delay)
 
-        elif entity.trip_update.stop_time_update[-1].stop_sequence == 1:  # waiting to depart
-            awaiting_departure.append(entity.trip_update.trip.trip_id)
+            elif entity.trip_update.stop_time_update[-1].stop_sequence == 1:  # waiting to depart
+                awaiting_departure.append(entity.trip_update.trip.trip_id)
 
-    stop_times = StopTime.objects \
-        .filter(trip__trip_id__in=delays.keys()) \
-        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField())) \
-        .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
-        .filter(Q(departure_time_an__gt=current_time - timedelta(seconds=30)) |
-            ( Q(departure_time_an__lte=current_time - timedelta(seconds=30)) & Q(updated_at__lt=current_time - timedelta(hours=23)) ) )
-    stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
+        stop_times = StopTime.objects \
+            .filter(trip__trip_id__in=delays.keys()) \
+            .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField())) \
+            .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_an') + today_mid, output_field=fields.DateTimeField())) \
+            .filter(Q(departure_time_an__gt=current_time - timedelta(seconds=30)) |
+                ( Q(departure_time_an__lte=current_time - timedelta(seconds=30)) & Q(updated_at__lt=current_time - timedelta(hours=23)) ) )
+        stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
-    stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
-    stops_waiting.update(wait_updated_at=current_time, delay_departure=timedelta(), delay_arrival=timedelta())
+        stops_waiting = StopTime.objects.filter(trip__trip_id__in=awaiting_departure)
+        stops_waiting.update(wait_updated_at=current_time, delay_departure=timedelta(), delay_arrival=timedelta())
 
-    #### integrity check
+        #### integrity check
 
-    detected_trips_ids = []
+        detected_trips_ids = []
 
-    trips_ch = Trip.objects.filter(Q(trip_id__in=delays.keys())) #Q(checked_integrity_at__lte=current_time - timedelta(minutes=3)) & 
-    stop_times_ch = StopTime.objects.filter(trip__in=trips_ch).values('delay_departure', 'departure_time', 'trip__trip_id', 'stop_sequence')
+        trips_ch = Trip.objects.filter(Q(trip_id__in=delays.keys())) #Q(checked_integrity_at__lte=current_time - timedelta(minutes=3)) & 
+        stop_times_ch = StopTime.objects.filter(trip__in=trips_ch).values('delay_departure', 'departure_time', 'trip__trip_id', 'stop_sequence')
 
-    stoptime_timelines = {}
-    for trip_id, stop_times in groupby(stop_times_ch, key=lambda x: x['trip__trip_id']):
-        stoptime_timelines[trip_id] = sorted(list(stop_times), key=lambda d: d['stop_sequence']) 
+        stoptime_timelines = {}
+        for trip_id, stop_times in groupby(stop_times_ch, key=lambda x: x['trip__trip_id']):
+            stoptime_timelines[trip_id] = sorted(list(stop_times), key=lambda d: d['stop_sequence']) 
 
-    for trip_id in stoptime_timelines:
-        values = stoptime_timelines[trip_id]
+        for trip_id in stoptime_timelines:
+            values = stoptime_timelines[trip_id]
 
-        delay_list = []
-        departure_time_list = []
+            delay_list = []
+            departure_time_list = []
 
-        for val in values:
-            delay_list.append((val['delay_departure']).total_seconds())
-            departure_time_list.append((val['delay_departure'] + val['departure_time']).total_seconds())
+            for val in values:
+                delay_list.append((val['delay_departure']).total_seconds())
+                departure_time_list.append((val['delay_departure'] + val['departure_time']).total_seconds())
 
-        if (not is_strictly_climbing(departure_time_list)) or has_outliers_neighbour(delay_list, 102):# or has_outliers(delay_list)
-            detected_trips_ids.append(trip_id)
+            if (not is_strictly_climbing(departure_time_list)) or has_outliers_neighbour(delay_list, 102):# or has_outliers(delay_list)
+                detected_trips_ids.append(trip_id)
 
-            # print('{} / {}'.format(trip_id, max_outliers_neighbour(delay_list)))
+                # print('{} / {}'.format(trip_id, max_outliers_neighbour(delay_list)))
 
-    trips_ch.update(checked_integrity_at=current_time)
+        trips_ch.update(checked_integrity_at=current_time)
 
-    #### working with detected trips
+        #### working with detected trips
 
-    detected_stop_times = StopTime.objects \
-        .filter(trip__trip_id__in=detected_trips_ids) \
-        .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField()))
-    detected_stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
+        detected_stop_times = StopTime.objects \
+            .filter(trip__trip_id__in=detected_trips_ids) \
+            .annotate(delay_an=Case(*[When(trip__trip_id=t, then=delays[t]) for t in delays], output_field=fields.DurationField()))
+        detected_stop_times.update(updated_at=current_time, delay_departure=F('delay_an'), delay_arrival=F('delay_an'))
 
 
-    #print(detected_trips_ids) #datetime.now() - current_time
+        #print(detected_trips_ids) #datetime.now() - current_time
+
+    except:
+        print('sync error')
