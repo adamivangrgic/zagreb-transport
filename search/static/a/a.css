@@ -62,6 +62,6 @@
     min-width: 23px;
 }
 
-/* [data-bs-theme=dark] .route-badge {
+[data-bs-theme=dark] .route-badge {
     opacity: 0.5;
-} */
+}
