@@ -110,14 +110,14 @@
             <a id="stime-{{ stime.id }}" href="/trip/?id={{ stime.trip.trip_id }}&td={{ td }}" class="list-group-item list-group-item-action nav-load">
                 <div class="row">
                     {% if stime.trip.route.route_short_name %}
-                    {% comment %} <div class="d-inline" style="width: 50px">
+                    <div class="d-inline" style="width: 50px">
                         {{ stime.trip.route.route_short_name }}
-                    </div> {% endcomment %}
-                    <div class="col-auto" style="min-width: 45px;">
+                    </div>
+                    {% comment %} <div class="col-auto" style="min-width: 45px;">
                         <span class="badge route-badge" style="background-color: #{{ stime.trip.route.route_color }}; color: #{{ stime.trip.route.route_text_color }}">
                             {{ stime.trip.route.route_short_name }}
                         </span>
-                    </div>
+                    </div>{% endcomment %}
                     {% endif %}
                     <div class="col">
                         {% if stime.trip.news_entries %}
