@@ -70,7 +70,13 @@
             <div class="list-group-item list-group-item-dark">
                 <div class="row">
                     <div class="col">
-                        <a class="text-reset text-decoration-none nav-load" href="/station/?id={{ key }}">
+                        <a class="text-reset text-decoration-none {% if request.GET.cs != '1' %}nav-load{% endif %}"
+                            {% if request.GET.cs == '1' %}
+                            href="javascript: change_stop('{{ key }}', {{ val.stop_loc }})"
+                            {% else %}
+                            href="/station/?id={{ key }}"
+                            {% endif %}>
+
                             <strong>{{ val.station_name }}</strong>
                             {% if request.GET.hs == '1' %}
                                 {% if val.hs %} &rarr; {{ val.hs }}{% endif %}

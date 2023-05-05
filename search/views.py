@@ -222,7 +222,7 @@ def timetable(request):
         headsigns = Trip.objects.filter(stop_times__in=f_stimes).distinct().values_list('trip_headsign', flat=True)
 
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
-                              'station_name': stop.stop_name, 'provider': stop.provider}
+                              'station_name': stop.stop_name, 'provider': stop.provider, 'stop_loc': [stop.stop_loc.x, stop.stop_loc.y]}
 
     return render(request, 'search/timetable.html', {'station': station, 'stops': data, 'td': td, 'num': num})
 
