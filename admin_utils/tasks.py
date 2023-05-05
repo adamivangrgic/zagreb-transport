@@ -38,11 +38,17 @@ def update_static():
 
 
 def update_zet(url=zet.static_url):
-    zet.run_static_update(url)
+    try:
+        zet.run_static_update(url)
+    except:
+        print('zet error')
 
 
 def update_hzpp(url=hzpp.static_url):
-    hzpp.run_static_update(url)
+    try:
+        hzpp.run_static_update(url)
+    except:
+        print('hzpp error')
 
 
 ### realtime
