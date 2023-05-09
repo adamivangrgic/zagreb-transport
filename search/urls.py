@@ -11,6 +11,7 @@ urlpatterns = [
     path('timetable/', views.timetable, name='timetable'),
 
     path('save_stop/', views.save_stop, name='save_stop'),
+    path('save_stime/', views.save_stime, name='save_stime'),
     path('search_suggestions/', views.search_suggestions, name='search_suggestions'),
     path('location_search/', views.location_search, name='location_search'),
 ]

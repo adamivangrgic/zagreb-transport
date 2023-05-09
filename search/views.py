@@ -249,6 +249,28 @@ def save_stop(request):
     return response
 
 
+def save_stime(request):
+    stime_id = request.GET.get('id')
+    saved_stimes = request.COOKIES.get('saved_stimes')
+
+    if saved_stimes is None:
+        saved_stimes = []
+    else:
+        saved_stimes = saved_stimes.split('|')
+
+    if stime_id in saved_stimes:
+        saved_stimes.remove(stime_id)
+        action = 0
+    else:
+        saved_stimes.append(stime_id)
+        action = 1
+
+    response = JsonResponse({'status': 200, 'action': action})
+    response.set_cookie('saved_stops', '|'.join(saved_stimes), max_age=52560000)
+
+    return response
+
+
 def trip(request):
     trip_id = request.GET.get('id')
     trip = Trip.objects.get(trip_id=trip_id)
