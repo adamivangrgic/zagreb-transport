@@ -14,15 +14,11 @@ from zet_live.celery import app
 
 @app.task
 def update_static():
-    try:
-        update_zet()
-    except:
-        print('zet error')
+    try: update_zet()
+    except Exception as e: print(e)
     
-    try:
-        update_hzpp()
-    except:
-        print('hzpp error')
+    try: update_hzpp()
+    except Exception as e: print(e)
 
 
 def update_zet(url=zet.static_url):
