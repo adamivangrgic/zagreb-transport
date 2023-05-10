@@ -63,6 +63,71 @@
 
     <div id="timetable" class="d-grid gap-4" style="z-index: 2; pointer-events: auto;">
 
+        {% if trips %}
+        <div class="{% if request.GET.sh == '1' %}shadow{% endif %} list-group" {% if request.GET.rc == '1' %}style="border-radius: 29.6px;"{% endif %}>
+            {% for trip in trips %}
+            <a href="/trip/?id={{ trip.trip_id }}" class="list-group-item list-group-item-action nav-load">
+                <div class="row">
+                    {% with stime=trip.all_stops|get_nth:trip.saved_index %}
+
+                    {% if stime.trip.route.route_short_name %}
+                    <div class="col-auto d-flex align-items-center" style="min-width: 45px;">
+                        <span class="badge route-badge" style="background-color: #{{ stime.trip.route.route_color }}; color: #{{ stime.trip.route.route_text_color }}">
+                            {{ stime.trip.route.route_short_name }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <div class="col">
+                        <small>{{ trip.last_stop.stop.stop_name }}</small><br>
+                        &rarr; <strong>{{ stime.stop.stop_name }}</strong>
+                    </div>
+
+                    <div class="col-auto d-flex align-items-center">
+                        <span style="font-size: 15px;"
+                            {% if stime.updated_at|within_last:4 or stime.wait_updated_at|within_last:4 %}
+                            class="badge bg-success position-relative" 
+                            {% elif stime.updated_at|within_last:8 or stime.wait_updated_at|within_last:8 %}
+                            class="badge bg-warning position-relative"
+                            {% elif stime.updated_at|within_last:15 or stime.wait_updated_at|within_last:15 %}
+                            class="badge bg-danger position-relative"
+                            {% elif stime.updated_at|within_last:30 or stime.wait_updated_at|within_last:30 %}
+                            class="badge bg-secondary position-relative"
+                            {% else %}
+                            class="badge contrasted-text position-relative"
+                            {% endif %}
+                        >
+
+                        {% if request.GET.hm == '1' %}
+                            {{ stime.departure_time_an|min_convert }}
+                        {% else %}
+                            {{ stime.departure_time_an|date:'H:i' }}
+                        {% endif %}
+        
+                        {% comment %} or stime.wait_updated_at|within_last:30 {% endcomment %}
+                        {% if stime.updated_at|within_last:30 %}
+                            <i class="bi bi-broadcast-pin"></i>
+                        {% endif %}
+        
+                        {% if stime.delay_departure_an|delay_min != 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill px-1 shadow
+                            {% if stime.updated_at|within_last:8 %}
+                                bg-danger
+                            {% else %}
+                                text-bg-secondary
+                            {% endif %}"
+                            style="font-size: 12px; z-index:99">{{ stime.delay_departure_an|delay_min|signed }}&prime;</span>
+                        {% endif %} 
+                        </span>
+                    </div>
+                    {% endwith %}
+                </div>
+            </a>
+
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% for key, val in stops.items %}
         <div class="{% if request.GET.sh == '1' %}shadow{% endif %} list-group" {% if request.GET.rc == '1' %}style="border-radius: 29.6px;"{% endif %}>
 

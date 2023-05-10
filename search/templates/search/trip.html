@@ -69,18 +69,18 @@
     {% endif %}>
 
         {% for stime in past_stops %}
-        <a {% if stime.stop.location_type == 0 %}
-           href="/station/?id={{ stime.stop.parent_station.stop_id }}"
-           {% elif stime.stop.location_type == 1 %}
-           href="/station/?id={{ stime.stop.stop_id }}"
-           {% endif %}
-           class="list-group-item list-group-item-action nav-load"
-           id="{{ stime.stop.stop_id }}">
+        <div class="list-group-item list-group-item-action" id="{{ stime.stop.stop_id }}">
 
            <span class="data" data-x="{{ stime.stop.stop_loc.x }}" data-y="{{ stime.stop.stop_loc.y }}" data-id="#{{ stime.stop.stop_id }}" hidden></span>
 
             <div class="row">
-                <div class="col">
+                <a class="col text-reset text-decoration-none nav-load" 
+                    {% if stime.stop.location_type == 0 %}
+                    href="/station/?id={{ stime.stop.parent_station.stop_id }}"
+                    {% elif stime.stop.location_type == 1 %}
+                    href="/station/?id={{ stime.stop.stop_id }}"
+                    {% endif %}>
+
                     {% if stime.stop.news_entries %}
                     <span class="text-warning">
                         <i class="bi bi-exclamation-triangle-fill"></i>
@@ -95,11 +95,21 @@
                             &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'H:i' }}</span>
                         </small></div>
                     {% endif %}
-                </div>
-                <div class="col-auto d-flex align-items-center">
+                </a>
+                <div class="col-auto d-flex align-items-center gap-1">
                     <span class="badge contrasted-text position-relative" style="font-size: 13px;">
                         Stigao u {{ stime.arrival_time_an|date:'H:i' }}
                     </span>
+
+                    <a class="icon-link icon-link-hover link-secondary" onclick="save_stime('{{ stime.pk }}')">
+                        {% if stime.pk|stringformat:"d" in request.COOKIES.saved_stimes %}
+                        <i id="save-fill-{{ stime.pk }}" class="bi bi-star-fill"></i>
+                        <i id="save-nfill-{{ stime.pk }}" class="bi bi-star" style="display:none;"></i>
+                        {% else %}
+                        <i id="save-fill-{{ stime.pk }}" class="bi bi-star-fill" style="display:none;"></i>
+                        <i id="save-nfill-{{ stime.pk }}" class="bi bi-star"></i>
+                        {% endif %}
+                    </a>
                 </div>
             </div>
 
@@ -121,7 +131,7 @@
                 </div>
             </div>
             {% endif %}
-        </a>
+        </div>
         {% endfor %}
     </div>
 
@@ -133,18 +143,18 @@
 
     <div id="future" class="list-group list-group-flush" style="border-bottom-left-radius: 29.6px; border-bottom-right-radius: 29.6px">
         {% for stime in future_stops %}
-        <a {% if stime.stop.location_type == 0 %}
-            href="/station/?id={{ stime.stop.parent_station.stop_id }}"
-            {% elif stime.stop.location_type == 1 %}
-            href="/station/?id={{ stime.stop.stop_id }}"
-            {% endif %}
-            class="list-group-item list-group-item-action nav-load"
-            id="{{ stime.stop.stop_id }}">
+        <div class="list-group-item list-group-item-action" id="{{ stime.stop.stop_id }}">
 
             <span class="data" data-x="{{ stime.stop.stop_loc.x }}" data-y="{{ stime.stop.stop_loc.y }}" data-id="#{{ stime.stop.stop_id }}" hidden></span>
 
             <div class="row">
-                <div class="col">
+                <a class="col text-reset text-decoration-none nav-load" 
+                    {% if stime.stop.location_type == 0 %}
+                    href="/station/?id={{ stime.stop.parent_station.stop_id }}"
+                    {% elif stime.stop.location_type == 1 %}
+                    href="/station/?id={{ stime.stop.stop_id }}"
+                    {% endif %}>
+
                     {% if stime.stop.news_entries %}
                     <span class="text-warning">
                         <i class="bi bi-exclamation-triangle-fill"></i>
@@ -170,8 +180,8 @@
                         </small></div>
                         {% endif %}
                     {% endif %}
-                </div>
-                <div class="col-auto d-flex align-items-center">
+                </a>
+                <div class="col-auto d-flex align-items-center gap-1">
 
                     <span style="font-size: 15px;" 
                     {% if stime.updated_at|within_last:4 and stime == next_stop or stime.wait_updated_at|within_last:4 and stime == next_stop %}
@@ -196,6 +206,16 @@
                         <i class="bi bi-broadcast-pin"></i>
                     {% endif %}
                     </span>
+
+                    <a class="icon-link icon-link-hover link-secondary" onclick="save_stime('{{ stime.pk }}')">
+                        {% if stime.pk|stringformat:"d" in request.COOKIES.saved_stimes %}
+                        <i id="save-fill-{{ stime.pk }}" class="bi bi-star-fill"></i>
+                        <i id="save-nfill-{{ stime.pk }}" class="bi bi-star" style="display:none;"></i>
+                        {% else %}
+                        <i id="save-fill-{{ stime.pk }}" class="bi bi-star-fill" style="display:none;"></i>
+                        <i id="save-nfill-{{ stime.pk }}" class="bi bi-star"></i>
+                        {% endif %}
+                    </a>
                 </div>
 
             </div>
@@ -218,7 +238,7 @@
                     </div>
                 </div>
             {% endif %}
-        </a>
+        </div>
         {% endfor %}
     </div>
 </div>

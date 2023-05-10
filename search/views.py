@@ -194,6 +194,11 @@ def timetable(request):
 
     station = None
     stops = None
+    trips = None
+
+    current_time = datetime.now()
+    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
 
     if station_id == 'index':
         saved_stops = request.COOKIES.get('saved_stops')
@@ -203,17 +208,47 @@ def timetable(request):
         else:
             stop_ids = saved_stops.split('|')
 
-        data = {}
         stops = Stop.objects.filter(stop_id__in=stop_ids).order_by(Case(*[When(stop_id=id_val, then=pos) for pos, id_val in enumerate(stop_ids)]))
+
+        ## saved stimes / trips
+
+        saved_stimes = request.COOKIES.get('saved_stimes')
+
+        if not saved_stimes:
+            stime_ids = []
+        else:
+            stime_ids = [ int(x) for x in saved_stimes.split('|') if x ]
+
+        stimes = StopTime.objects.filter(pk__in=stime_ids)
+
+        trips = []
+
+        for stime in stimes:
+            stimes_objs = stime.trip.stop_times\
+                .annotate(up_to_date=Case(When(updated_at__gte=current_time - up_to_date_threshold, then=True), default=False, output_field=fields.BooleanField())) \
+                .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(), output_field=fields.DurationField())) \
+                .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure_an') + day, output_field=fields.DateTimeField())) \
+                .order_by('stop_sequence')
+
+            past_stops = stimes_objs.filter(departure_time_an__lt=current_time)
+
+            if past_stops:
+                last_stop = past_stops.order_by('-stop_sequence')[0]
+            else:
+                last_stop = stimes_objs.filter(departure_time_an__gte=current_time)[0]
+
+            if last_stop.stop_sequence < stime.stop_sequence:
+                
+                trips.append({
+                    "last_stop": last_stop,
+                    "all_stops": list(stimes_objs),
+                    "saved_index": stime.stop_sequence - 1,
+                    "trip_id": stime.trip.trip_id,
+                })
 
     else:
         station = Stop.objects.get(stop_id=station_id)
         stops = station.stops.all() if station.stops.all() else [station]
-
-    current_time = datetime.now()
-    today_mid = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
-
-    day = today_mid + timedelta(days=td) if not current_time.time().hour < 5 else today_mid + timedelta(days=td - 1)
 
     data = {}
 
@@ -224,7 +259,7 @@ def timetable(request):
         data[stop.stop_id] = {'hs': ', '.join(headsigns), 'stimes': f_stimes, 'stop_code': stop.stop_code,
                               'station_name': stop.stop_name, 'provider': stop.provider, 'stop_loc': [stop.stop_loc.x, stop.stop_loc.y]}
 
-    return render(request, 'search/timetable.html', {'station': station, 'stops': data, 'td': td, 'num': num})
+    return render(request, 'search/timetable.html', {'station': station, 'stops': data, 'trips': trips, 'td': td, 'num': num})
 
 
 def save_stop(request):
@@ -266,7 +301,7 @@ def save_stime(request):
         action = 1
 
     response = JsonResponse({'status': 200, 'action': action})
-    response.set_cookie('saved_stops', '|'.join(saved_stimes), max_age=52560000)
+    response.set_cookie('saved_stimes', '|'.join(saved_stimes), max_age=52560000)
 
     return response
 

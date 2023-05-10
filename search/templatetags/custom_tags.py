@@ -51,3 +51,7 @@ def subtract(value):
 @register.filter(name='abs')
 def absolute(value):
     return abs(value)
+
+@register.filter(name='get_nth')
+def get_nth(value, arg):
+    return value[arg]
