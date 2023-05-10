@@ -79,6 +79,12 @@
                     {% endif %}
 
                     <div class="col">
+                        {% if stime.trip.news_entries %}
+                        <span class="text-warning">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </span>
+                        {% endif %}
+
                         <small>{{ trip.last_stop.stop.stop_name }}</small><br>
                         &rarr; <strong>{{ stime.stop.stop_name }}</strong>
                     </div>
