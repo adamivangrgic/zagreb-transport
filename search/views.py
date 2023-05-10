@@ -219,12 +219,14 @@ def timetable(request):
         else:
             stime_ids = [ int(x) for x in saved_stimes.split('|') if x ]
 
+        service_ids = get_service_ids(day)
+
         stimes = StopTime.objects.filter(pk__in=stime_ids)
 
         trips = []
 
         for stime in stimes:
-            stimes_objs = stime.trip.stop_times\
+            stimes_objs = stime.trip.stop_times \
                 .annotate(up_to_date=Case(When(updated_at__gte=current_time - up_to_date_threshold, then=True), default=False, output_field=fields.BooleanField())) \
                 .annotate(delay_departure_an=Case(When(up_to_date=True, then=F('delay_departure')), default=timedelta(), output_field=fields.DurationField())) \
                 .annotate(departure_time_an=ExpressionWrapper(F('departure_time') + F('delay_departure_an') + day, output_field=fields.DateTimeField())) \
@@ -237,7 +239,7 @@ def timetable(request):
             else:
                 last_stop = stimes_objs.filter(departure_time_an__gte=current_time)[0]
 
-            if last_stop.stop_sequence < stime.stop_sequence:
+            if last_stop.stop_sequence < stime.stop_sequence and stime.trip.service_id in service_ids:
                 
                 trips.append({
                     "last_stop": last_stop,
