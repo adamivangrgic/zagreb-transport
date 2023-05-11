@@ -239,7 +239,7 @@ def timetable(request):
             else:
                 last_stop = stimes_objs.filter(departure_time_an__gte=current_time)[0]
 
-            if last_stop.stop_sequence < stime.stop_sequence and stime.trip.service_id in service_ids:
+            if last_stop.stop_sequence <= stime.stop_sequence and stime.trip.service_id in service_ids:
                 
                 trips.append({
                     "last_stop": last_stop,

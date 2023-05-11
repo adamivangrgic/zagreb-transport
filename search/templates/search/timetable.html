@@ -85,11 +85,19 @@
                         </span>
                         {% endif %}
 
+                        {% if trip.last_stop.stop.stop_name != stime.stop.stop_name %}
                         <small>{{ trip.last_stop.stop.stop_name }}</small><br>
                         &rarr; <strong>{{ stime.stop.stop_name }}</strong>
+                        {% else %}
+                        <strong>{{ stime.stop.stop_name }}</strong>
+                        {% endif %}
                     </div>
 
                     <div class="col-auto d-flex align-items-center">
+                        {% if stime.departure_time_an|arrived:2 %}
+                        <span class="badge contrasted-text" style="font-size: 15px;">Stigao</span>
+                        {% else %}
+        
                         <span style="font-size: 15px;"
                             {% if stime.updated_at|within_last:4 or stime.wait_updated_at|within_last:4 %}
                             class="badge bg-success position-relative" 
@@ -125,6 +133,7 @@
                             style="font-size: 12px; z-index:99">{{ stime.delay_departure_an|delay_min|signed }}&prime;</span>
                         {% endif %} 
                         </span>
+                        {% endif %}
                     </div>
                     {% endwith %}
                 </div>
