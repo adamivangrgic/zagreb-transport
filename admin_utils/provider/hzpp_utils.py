@@ -108,7 +108,9 @@ def update_routes(file):
                 route_long_name=data[3],
                 route_type=data[5],
                 agency=agency,
-                provider=provider
+                provider=provider,
+                route_color="f01414",
+                route_text_color="ffffff"
             )
 
             bulk_list.append(new_route)

@@ -33,7 +33,8 @@ def split_by_dash(value, arg):
 
 @register.filter(name='delay_min')
 def delay_min(value):
-    return int(round(value.total_seconds() / 60))
+    #return int(round(value.total_seconds() / 60))
+    return int(value.total_seconds() / 60)
 
 
 @register.filter(name='subtract')
