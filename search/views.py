@@ -252,6 +252,11 @@ def timetable(request):
         station = Stop.objects.get(stop_id=station_id)
         stops = station.stops.all() if station.stops.all() else [station]
 
+    if station:
+        if station.stops.exists():
+            num = 4 ## for parent stations
+            
+
     data = {}
 
     for stop in stops:
