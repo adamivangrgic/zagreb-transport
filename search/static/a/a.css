@@ -63,5 +63,7 @@
 }
 
 [data-bs-theme=dark] .route-badge {
-    opacity: 0.5;
+    filter: brightness(50%);
+    -webkit-filter: brightness(50%);
+    -moz-filter: brightness(50%);
 }
