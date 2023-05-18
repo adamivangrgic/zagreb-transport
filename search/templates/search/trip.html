@@ -197,9 +197,10 @@
                     {% endif %}>
 
                     {%if stime.arrival_time_an == stime.departure_time_an %}
-                        {{ stime.arrival_time_an|min_convert }}
+                        <span class="countdown" data-datetime="{{ stime.arrival_time_an|date:'r' }}">{{ stime.arrival_time_an|min_convert }}</span>
                     {% else %}
-                        {{ stime.arrival_time_an|min_convert }} &#8226; {{ stime.departure_time_an|min_convert }}
+                        <span class="countdown" data-datetime="{{ stime.arrival_time_an|date:'r' }}">{{ stime.arrival_time_an|min_convert }}</span> &#8226; 
+                        {{ stime.departure_time_an|min_convert }}
                     {% endif %}
 
                     {% if stime.updated_at|within_last:30 and stime == next_stop %}

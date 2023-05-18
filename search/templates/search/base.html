@@ -341,6 +341,36 @@ links.forEach(link => {
         link.setAttribute("target", "_blank");
     }
 });
+
+function getRelativeTimeOrHHMM(dateObj) {
+    const now = new Date();
+    const timeDiffMs = dateObj - now;
+    const timeDiffMinutes = Math.floor(timeDiffMs / (1000 * 60));
+
+    if (timeDiffMs < 0) {
+        return "Stigao";
+    } else if (timeDiffMinutes <= 10) {
+        return timeDiffMinutes + " min";
+    } else {
+        const hours = String(dateObj.getHours()).padStart(2, "0");
+        const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+        return hours + ":" + minutes;
+    }
+}
+
+function updateCountdownElements() {
+    $(".countdown").each(function() {
+      const datetime = $(this).data("datetime");
+      const targetDate = new Date(datetime);
+      $(this).html(getRelativeTimeOrHHMM(targetDate));
+    });
+}
+  
+$(document).ready(function() {
+    setInterval(function() {
+      updateCountdownElements();
+    }, 4 * 1000);
+});
   
 </script>
 
