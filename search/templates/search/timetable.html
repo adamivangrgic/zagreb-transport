@@ -114,9 +114,9 @@
                         >
 
                         {% if request.GET.hm == '1' %}
-                            {{ stime.departure_time_an|min_convert }}
+                            <span class="countdown" data-datetime="{{ stime.departure_time_an|date:'r' }}">{{ stime.departure_time_an|min_convert }}</span>
                         {% else %}
-                            {{ stime.departure_time_an|date:'H:i' }}
+                            <span>{{ stime.departure_time_an|date:'H:i' }}</span>
                         {% endif %}
         
                         {% comment %} or stime.wait_updated_at|within_last:30 {% endcomment %}
@@ -244,9 +244,9 @@
                         >
 
                         {% if request.GET.hm == '1' %}
-                            {{ stime.departure_time_an|min_convert }}
+                            <span class="countdown" data-datetime="{{ stime.departure_time_an|date:'r' }}">{{ stime.departure_time_an|min_convert }}</span>
                         {% else %}
-                            {{ stime.departure_time_an|date:'H:i' }}
+                            <span>{{ stime.departure_time_an|date:'H:i' }}</span>
                         {% endif %}
         
                         {% comment %} or stime.wait_updated_at|within_last:30 {% endcomment %}
