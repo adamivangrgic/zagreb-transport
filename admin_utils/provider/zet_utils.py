@@ -12,8 +12,8 @@ from django.contrib.gis.geos import Point
 from itertools import groupby
 
 
-static_url = "https://zet.hr/gtfs-scheduled/latest"
-realtime_url = "https://zet.hr/gtfs-rt-protobuf"
+static_url = "https://www.zet.hr/gtfs-scheduled/latest" #"https://zet.hr/gtfs-scheduled/latest"
+realtime_url = "https://www.zet.hr/gtfs-rt-protobuf" #"https://zet.hr/gtfs-rt-protobuf"
 provider = 'zet'
 
 rss_url = "https://www.zet.hr/rss_promet.aspx"
