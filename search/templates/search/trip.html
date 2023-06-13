@@ -117,17 +117,15 @@
             <div class="row font-monospace bg-dark text-white">
                 <div class="col-auto">
                     Departure time:<br>
-                    Stop sequence:<br>
-                    Trip id:<br>
                     Delay:<br>
-                    Updated at:
+                    Updated<br>
+                    Wait updated
                 </div>
                 <div class="col">
                     {{ stime.departure_time }}<br>
-                    {{ stime.stop_sequence }}<br>
-                    {{ stime.trip.trip_id }}<br>
-                    {{ stime.delay_departure_an }}<br>
-                    {{ stime.updated_at|timesince }}
+                    {{ stime.delay_departure_an.total_seconds }} sec<br>
+                    {{ stime.updated_at|timesince }}<br>
+                    {{ stime.wait_updated_at|timesince }}
                 </div>
             </div>
             {% endif %}
@@ -225,17 +223,15 @@
                 <div class="row font-monospace bg-dark text-white" style="z-index: 10">
                     <div class="col-auto">
                         Departure time:<br>
-                        Stop sequence:<br>
-                        Trip id:<br>
                         Delay:<br>
-                        Updated at:
+                        Updated<br>
+                        Wait updated
                     </div>
                     <div class="col">
                         {{ stime.departure_time }}<br>
-                        {{ stime.stop_sequence }}<br>
-                        {{ stime.trip.trip_id }}<br>
-                        {{ stime.delay_departure_an }}<br>
-                        {{ stime.updated_at|timesince }}
+                        {{ stime.delay_departure_an.total_seconds }} sec<br>
+                        {{ stime.updated_at|timesince }}<br>
+                        {{ stime.wait_updated_at|timesince }}
                     </div>
                 </div>
             {% endif %}
