@@ -10,9 +10,6 @@ import feedparser
 import re
 from bs4 import BeautifulSoup
 
-from zet_live.celery import app
-
-@app.task
 def update_static():
     try: update_zet()
     except Exception as e: print(e)
@@ -46,14 +43,12 @@ def update_hzpp(url=hzpp.static_url):
 
 ### realtime
 
-@app.task
 def sync_zet():
     zet.sync_realtime()
 
 
 ### news
 
-@app.task
 def sync_news():
     NewsEntry.objects.all().delete()
 

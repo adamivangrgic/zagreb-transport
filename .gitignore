@@ -2,5 +2,4 @@ db.sqlite3
 *.pyc
 .idea/
 /static/
-celerybeat-schedule
 search/migrations/
