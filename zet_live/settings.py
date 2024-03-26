@@ -29,13 +29,13 @@ DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False")
 ALLOWED_HOSTS = ['localhost']
 
 if os.getenv("ALLOWED_DOMAIN"):
-    ALLOWED_HOSTS.append(os.getenv("ALLOWED_DOMAIN"))
+    ALLOWED_HOSTS.append( os.getenv("ALLOWED_DOMAIN") )
 
 elif os.getenv("ALLOWED_IPV4"):
-    ALLOWED_HOSTS.append(os.getenv("ALLOWED_IPV4"))
+    ALLOWED_HOSTS.append( os.getenv("ALLOWED_IPV4") )
 
 elif os.getenv("ALLOWED_IPV6"):
-    ALLOWED_HOSTS.append(os.getenv("ALLOWED_IPV6"))
+    ALLOWED_HOSTS.append( os.getenv("ALLOWED_IPV6") )
 
 # Application definition
 
