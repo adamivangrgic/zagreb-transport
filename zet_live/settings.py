@@ -20,14 +20,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "7CA*PPSGWkx}?*d}6Zyy4kySLX[$~GC-"
+SECRET_KEY = os.getenv("SECRET_KEY", "7CA*PPSGWkx}?*d}6Zyy4kySLX[$~GC-")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = "True"
-DEVELOPMENT_MODE = "True"
+DEBUG = os.getenv("DEBUG", "False")
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False")
 
-ALLOWED_HOSTS = ['46.101.148.16', 'zagrebtransport.eu', 'localhost']
+ALLOWED_HOSTS = ['localhost']
 
+if os.getenv("ALLOWED_DOMAIN"):
+    ALLOWED_HOSTS.append(os.getenv("ALLOWED_DOMAIN"))
+
+elif os.getenv("ALLOWED_IPV4"):
+    ALLOWED_HOSTS.append(os.getenv("ALLOWED_IPV4"))
+
+elif os.getenv("ALLOWED_IPV6"):
+    ALLOWED_HOSTS.append(os.getenv("ALLOWED_IPV6"))
 
 # Application definition
 
@@ -82,11 +90,11 @@ WSGI_APPLICATION = 'zet_live.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'zagreb_transport',
-        'USER': 'doadmin',
-        'PASSWORD': 'AVNS_G7gHqq-AYp-2h5mY6cE',
-        'HOST': 'db-postgresql-fra1-81922-do-user-13661009-0.b.db.ondigitalocean.com',
-        'PORT': '25060',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASS"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
 
@@ -113,9 +121,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-US'
+LANGUAGE_CODE = os.getenv("LANGUAGE_CODE", 'hr_HR')
 
-TIME_ZONE = 'Europe/Zagreb'
+TIME_ZONE = os.getenv("TIME_ZONE", 'Europe/Zagreb')
 
 USE_I18N = True
 
@@ -176,7 +184,7 @@ PWA_APP_ICONS_APPLE = [
 #     }
 # ]
 PWA_APP_DIR = 'ltr'
-PWA_APP_LANG = 'hr-HR'
-PWA_APP_DEBUG_MODE = True
+PWA_APP_LANG = LANGUAGE_CODE
+PWA_APP_DEBUG_MODE = DEBUG
 
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static', 'serviceworker.js')
