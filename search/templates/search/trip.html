@@ -188,8 +188,6 @@
                             {{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span>
                     {% endif %}
 
-                    &#8226;
-
                     <span style="font-size: 15px;" 
                     {% if stime.updated_at|within_last:4 and stime == next_stop or stime.wait_updated_at|within_last:4 and stime == next_stop %}
                         class="badge bg-success"
