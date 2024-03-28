@@ -160,12 +160,12 @@
                     {% endif %}
                     
                     {{ stime.stop.stop_name }}
-                    {% if stime.delay_departure_an|delay_min != 0 %}
+                    {% if stime.delay_departure_an|delay_min != 0 and stime == next_stop  %}
                         {% if stime.updated_at|within_last:8 %}
                         <br><div class="fw-semibold text-danger-emphasis"><small>
                             Stiže {{ stime.delay_departure_an|delay_min|abs }} min
                             {% if stime.delay_departure_an|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
-                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'H:i' }}</span>
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span>
                         </small></div>
                         {% else %}
                         <br><div class="text-muted"><small>
@@ -174,12 +174,16 @@
                             {% else %}
                             Moguće kašnjenje od {{ stime.delay_departure_an|delay_min|abs }} min
                             {% endif %}
-                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'H:i' }}</span>
+                            &#8226; <span class="text-decoration-line-through">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span>
                         </small></div>
                         {% endif %}
                     {% endif %}
                 </a>
                 <div class="col-auto d-flex align-items-center gap-1">
+
+                    {% if stime.delay_departure_an|delay_min != 0 and stime == next_stop  %}
+                        <span class="text-decoration-line-through text-muted">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span>
+                    {% endif %}
 
                     <span style="font-size: 15px;" 
                     {% if stime.updated_at|within_last:4 and stime == next_stop or stime.wait_updated_at|within_last:4 and stime == next_stop %}
