@@ -48,6 +48,8 @@ def update_hzpp(url=hzpp.static_url):
 
 def sync_zet(request):
     zet.sync_realtime()
+    
+    return JsonResponse({'status': 200, 'msg': 'OK'})
 
 
 ### news
@@ -58,6 +60,8 @@ def sync_news(request):
     parse_html('https://holdingcentar.zgh.hr/', 'div.alert-item.grupa_5631 > div.alert-text > p', guid='zet_stanje')
     parse_rss(zet.rss_url)
     parse_html('https://www.hzpp.hr/stanje-u-prometu-2', 'div.article-item.full', guid='hzpp_stanje', title='HŽPP izmjene u prometu')
+
+    return JsonResponse({'status': 200, 'msg': 'OK'})
 
 
 def parse_rss(url, provider=None):
