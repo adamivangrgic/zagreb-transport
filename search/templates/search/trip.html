@@ -165,8 +165,8 @@
                         <br><div class="fw-semibold text-danger-emphasis"><small>
                             Stiže {{ stime.delay_departure_an|delay_min|abs }} min
                             {% if stime.delay_departure_an|delay_min < 0 %} ranije{% else %} kasnije{% endif %}
-                            &#8226; <span class="text-decoration-line-through countdown" data-datetime="{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'r' }}">
-                                {{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span>
+                            {% comment %} &#8226; <span class="text-decoration-line-through countdown" data-datetime="{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'r' }}">
+                                {{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span> {% endcomment %}
                         </small></div>
                         {% else %}
                         <br><div class="text-muted"><small>
@@ -175,8 +175,8 @@
                             {% else %}
                             Moguće kašnjenje od {{ stime.delay_departure_an|delay_min|abs }} min
                             {% endif %}
-                            &#8226; <span class="text-decoration-line-through countdown" data-datetime="{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'r' }}">
-                                {{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span>
+                            {% comment %} &#8226; <span class="text-decoration-line-through countdown" data-datetime="{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'r' }}">
+                                {{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span> {% endcomment %}
                         </small></div>
                         {% endif %}
                     {% endif %}
