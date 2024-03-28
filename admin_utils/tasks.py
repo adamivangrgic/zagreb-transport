@@ -9,13 +9,16 @@ from datetime import date, datetime
 import feedparser
 import re
 from bs4 import BeautifulSoup
+from django.http import JsonResponse
 
-def update_static():
+def update_static(request):
     try: update_zet()
-    except Exception as e: print(e)
+    except Exception as e: return JsonResponse({'status': 200, 'msg': e})
     
     try: update_hzpp()
-    except Exception as e: print(e)
+    except Exception as e: return JsonResponse({'status': 200, 'msg': e})
+
+    return JsonResponse({'status': 200, 'msg': 'OK'})
 
 
 def update_zet(url=zet.static_url):
@@ -43,13 +46,13 @@ def update_hzpp(url=hzpp.static_url):
 
 ### realtime
 
-def sync_zet():
+def sync_zet(request):
     zet.sync_realtime()
 
 
 ### news
 
-def sync_news():
+def sync_news(request):
     NewsEntry.objects.all().delete()
 
     parse_html('https://holdingcentar.zgh.hr/', 'div.alert-item.grupa_5631 > div.alert-text > p', guid='zet_stanje')
