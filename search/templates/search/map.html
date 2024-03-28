@@ -9,7 +9,7 @@
     <div class="row align-items-end">
         <div class="col me-auto">
             <button id="home-button" type="button" class="btn btn-secondary mx-auto shadow rounded-pill"
-                onclick="show_favourites()" style="{% if not station %}display: none;{% endif %} z-index: 10">
+                onclick="show_favourites()" style="{% if not station %}display: none;{% endif %} z-index: unset">
                 {% comment %} {% if request.COOKIES.saved_stops %}
                 <i class="bi bi-star-fill"></i> Spremljene stanice
                 {% else %}
