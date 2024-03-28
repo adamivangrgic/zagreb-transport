@@ -184,8 +184,7 @@
                 <div class="col-auto d-flex align-items-center gap-1">
 
                     {% if stime.delay_departure_an|delay_min != 0 and stime != next_stop  %}
-                        <small><span class="text-decoration-line-through text-muted fw-semibold countdown" data-datetime="{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|date:'r' }}">
-                            {{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span></small>
+                        <small><span class="text-decoration-line-through text-muted fw-semibold">{{ stime.arrival_time_an|subtract:stime.delay_arrival_an|min_convert }}</span></small>
                     {% endif %}
 
                     <span style="font-size: 15px;" 
