@@ -347,7 +347,7 @@ function getRelativeTimeOrHHMM(dateObj) {
 
     if (timeDiffMs < 0) {
         return "Stigao";
-    } else if (timeDiffMinutes <= 10) {
+    } else if (timeDiffMinutes < 10) {
         return timeDiffMinutes + " min";
     } else {
         const hours = String(dateObj.getHours()).padStart(2, "0");
