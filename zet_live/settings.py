@@ -121,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = os.getenv("LANGUAGE_CODE", 'hr_HR')
+LANGUAGE_CODE = os.getenv("LANGUAGE_CODE", 'en')
 
 TIME_ZONE = os.getenv("TIME_ZONE", 'Europe/Zagreb')
 
@@ -159,30 +159,16 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'black-translucent'
 PWA_APP_ICONS = [
     {
-        'src': '/static/images/icon-160.png',
+        'src': '/static/pwa_static/icon.png',
         'sizes': '160x160'
-    },
-    {
-        'src': '/static/images/icon-512.png',
-        'sizes': '512x512'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/static/images/icon-160.png',
+        'src': '/static/pwa_static/icon.png',
         'sizes': '160x160'
-    },
-    {
-        'src': '/static/images/icon-512.png',
-        'sizes': '512x512'
     }
 ]
-# PWA_APP_SPLASH_SCREEN = [
-#     {
-#         'src': '/static/images/icons/iPhone_14_Pro_landscape.png',
-#         # 'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
-#     }
-# ]
 PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = LANGUAGE_CODE
 PWA_APP_DEBUG_MODE = DEBUG
