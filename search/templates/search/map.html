@@ -6,7 +6,7 @@
 
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;"></div>
 <div id="map-window" style="width:100%; height: 50vh; pointer-events: none; position: relative">
-    <button id="home-button" type="button" class="btn btn-secondary mx-auto shadow rounded-circle" onclick="show_favourites()"
+    <button id="home-button" type="button" class="btn btn-gray-400 mx-auto shadow rounded-circle" onclick="show_favourites()"
     style="z-index: 999; position: absolute; bottom: 0; left: 0; pointer-events: all; aspect-ratio: 1/1; {% if not station %}display: none;{% endif %}">
         {% comment %} {% if request.COOKIES.saved_stops %}
         <i class="bi bi-star-fill"></i> Spremljene stanice
