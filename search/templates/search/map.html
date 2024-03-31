@@ -6,7 +6,7 @@
 
 <div id="map" style="position: fixed; top: 0; left: 0; z-index: 0; height:120vh; width:100%; pointer-events:auto;">
     <button id="home-button" type="button" class="btn btn-secondary mx-auto shadow rounded-pill"
-        onclick="show_favourites()" style="{% if not station %}display: none;{% endif %} z-index: 2, position: absolute; bottom:0; left:0;">
+        onclick="show_favourites()" style=" z-index: 2, position: absolute; bottom:0; left:0; {% if not station %}display: none;{% endif %}">
         {% if request.COOKIES.saved_stops %}
         <i class="bi bi-star-fill"></i> Spremljene stanice
         {% else %}
