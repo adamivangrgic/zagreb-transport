@@ -239,6 +239,10 @@
             var r = $(page);
             $('#timetable').replaceWith(r);
             $('#alerts').replaceWith(r);
+
+            if($.trim($("#alerts").text()) == "") {
+                $('#alerts').attr("style", "display: none !important");
+            }
         });
     }
 
