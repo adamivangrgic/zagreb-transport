@@ -214,7 +214,7 @@
             $('#timetable').replaceWith(r);
             $('#alerts').replaceWith(r);
         });
-        $('div#alerts:empty').hide();
+        $('div#alerts:empty').attr("style", "display: none !important");
 
         set_view_offset(latlang, Math.max(17, map.getZoom()));
         home_toggle(1);
