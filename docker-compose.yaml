@@ -39,5 +39,7 @@ services:
       POSTGRES_DB: gis
       POSTGRES_USER: geodjango
       POSTGRES_PASSWORD: passw0rd
+    volumes:
+      - /some/path:/var/lib/postgresql/data
     ports:
       - 9203:5432
