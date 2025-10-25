@@ -23,13 +23,13 @@ services:
       - 9202:8000
     depends_on:
       - db
-    # command: >                                                # uncomment after the first run
+    # command: >                                                # uncomment for the first run
     #   bash -c "python manage.py makemigrations
     #   && python manage.py migrate
     #   && python manage.py createsuperuser --noinput
     #   && python manage.py collectstatic
     #   && python manage.py runserver 0.0.0.0:8000"
-    command: >                                                # comment out after the first run as the database is filled
+    command: >                                                # comment out for the first run
       bash -c "python manage.py runserver 0.0.0.0:8000"
 
   db:
