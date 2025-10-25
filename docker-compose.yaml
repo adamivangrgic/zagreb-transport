@@ -23,12 +23,14 @@ services:
       - 9202:8000
     depends_on:
       - db
-    command: >
+    command: >                                                # comment out after the first run
       bash -c "python manage.py makemigrations
       && python manage.py migrate
       && python manage.py createsuperuser --noinput
       && python manage.py collectstatic
       && python manage.py runserver 0.0.0.0:8000"
+    #command: >                                                # uncomment on runs after the first as the database is filled
+    #  bash -c "python manage.py runserver 0.0.0.0:8000"
 
   db:
     image: postgis/postgis:14-3.1-alpine
