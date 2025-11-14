@@ -23,14 +23,14 @@ services:
       - 9202:8000
     depends_on:
       - db
-    # command: >                                                # uncomment for the first run
-    #   bash -c "python manage.py makemigrations
-    #   && python manage.py migrate
-    #   && python manage.py createsuperuser --noinput
-    #   && python manage.py collectstatic
-    #   && python manage.py runserver 0.0.0.0:8000"
-    command: >                                                # comment out for the first run
-      bash -c "python manage.py runserver 0.0.0.0:8000"
+    command: >                                                # comment out after the first run
+      bash -c "python manage.py makemigrations
+      && python manage.py migrate
+      && python manage.py createsuperuser --noinput
+      && python manage.py collectstatic
+      && python manage.py runserver 0.0.0.0:8000"
+    # command: >                                                # uncomment after the first run
+    #   bash -c "python manage.py runserver 0.0.0.0:8000"
 
   db:
     image: postgis/postgis:14-3.1-alpine
@@ -39,7 +39,7 @@ services:
       POSTGRES_DB: gis
       POSTGRES_USER: geodjango
       POSTGRES_PASSWORD: passw0rd
-    volumes:
-      - /some/path:/var/lib/postgresql/data
+    # volumes:
+    #   - /some/path:/var/lib/postgresql/data
     ports:
       - 9203:5432
